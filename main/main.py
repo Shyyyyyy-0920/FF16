@@ -3,7 +3,7 @@ import sys
 from menu import menu
 from battle import battle
 from lose import lose
-from map1 import darw_map
+# from map1 import darw_map
 FPS=60
 BLACK=(0,0,0)
 WHITE=(255,255,255)
@@ -24,10 +24,10 @@ while 1 :
     match flag:
         case 0:
             flag=menu(window)#菜单界面
-        case 1:
-            flag=battle([0,200],[800,200])#主要战斗界面
         case 2:
-            darw_map()
+            flag=battle([0,200],[800,200])#主要战斗界面
+        # case :
+        #     darw_map()
         case 3:#失败结算界面
             flag=lose(window)
 

@@ -21,7 +21,7 @@ class button:
         self.g2=g2
         self.b2=b2
     def draw_button(self,window):#绘制按钮
-        font=pygame.font.Font('write_style/DTM-Mono.otf',self.size)
+        font=pygame.font.Font('arrests/write_style/DTM-Mono.otf',self.size)
         pygame.draw.rect(window,(self.r1,self.g1,self.b1),(self.inix,self.iniy,self.width,self.height))#绘制矩形
         text=font.render(self.text,True,(self.r2,self.g2,self.b2))
         tw1,th1=text.get_size()

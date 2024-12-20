@@ -23,6 +23,7 @@ class my_heart(pygame.sprite.Sprite):
     def __init__(self,line_start_lst,line_end_lst):
         pygame.sprite.Sprite.__init__(self)
         self.image=pygame.image.load('arrests/Image/heart.png')
+        
         self.rect=self.image.get_rect()
         self.rect.center = (window_lenth/2,window_height/2)
         self.rect.bottom= window_height-3
@@ -53,6 +54,7 @@ class bullet(pygame.sprite.Sprite):
         self.line_end_lst=line_end_lst
         pygame.sprite.Sprite.__init__(self)
         self.image=pygame.image.load('arrests/Image/B_DOWN_w.png')
+        self.image.set_colorkey(WHITE)
         self.rect=self.image.get_rect()
         self.rect.x=random.randrange(self.line_start_lst[0],self.line_end_lst[0]-self.rect.width)
         self.rect.y=self.line_end_lst[1]
@@ -78,6 +80,7 @@ def battle(line_start_lst,line_end_lst):
         b=bullet(line_start_lst,line_end_lst)
         all_sprites.add(b)
         bullets.add(b)
+
     while 1:
         clock.tick(FPS)
         #检测事件
@@ -85,15 +88,21 @@ def battle(line_start_lst,line_end_lst):
             if event.type == pygame.QUIT:
                 sys.exit()
         all_sprites.update()
+        #判断是否发生碰撞
         hits=pygame.sprite.spritecollide(player,bullets,False)
         if hits:
             myhp=myhp-1
             if myhp<=0:
                 return 3
+        #用于显示血量 
         title_HP=str(myhp)
         window.fill(BLACK)
-        a=button(0,0,0,30,30,660,550,title_HP,30,255,255,255)
-        a.draw_button(window)
+        show_hp=button(0,0,0,30,30,660,550,title_HP,30,255,255,255)
+        show_hp.draw_button(window)
+        
+        
+        boss_image=pygame.image.load('arrests/人物/demon/idle1.png')
+        window.blit(boss_image,(line_end_lst[0]/2,line_start_lst[1]-200))
         all_sprites.draw(window)
         pygame.draw.line(window,(255,255,255),line_start,line_end)
         pygame.display.update()

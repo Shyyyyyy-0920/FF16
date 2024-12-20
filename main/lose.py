@@ -23,9 +23,9 @@ def lose(window):
             quiet_key=quiet_button.change_color(pygame.mouse.get_pos(),window)
 #----------=====================----------------------------------------
             if event.type==pygame.MOUSEBUTTONDOWN:
-                if start_key==True:#判断是否按到了开始游戏
+                if start_key==True:#判断是否按到了重新游戏
                     window.fill((255,255,255))
                     pygame.display.update()
-                    return 1
+                    return 2
                 elif quiet_key==1:#判断是否按到了退出游戏
                     sys.exit()
