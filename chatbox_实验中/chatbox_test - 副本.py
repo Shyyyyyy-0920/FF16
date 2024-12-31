@@ -80,7 +80,7 @@ if __name__ == '__main__':
     import os
 
 # 获取chatbox_test.py所在的目录路径（即桌面路径）
-    path = os.path.dirname("c:\\Users\\VehicleZero\\Desktop\\chatbox_test.py")#不太懂文件路径，先这样吧
+    path = os.path.dirname("c:\\Users\\VehicleZero\\Desktop\\chatbox_test.py")#不太懂文件设置，先这样吧
     os.chdir(path)
     # 基本设置 
     pygame.init()

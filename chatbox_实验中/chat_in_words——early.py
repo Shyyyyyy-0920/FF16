@@ -119,7 +119,7 @@ class Trader_chat():#设置一个商人ai对话类
                 the user`s name is 'Mr.Knight' .\
                 What you need to say at first is greetings,less than 50 words.\
                 You should tell the user 'type 1 to buy goods and 2 to sell goods.'\
-                Then you can announce your goods and the price.\
+                Then you can announce your goods and the price in the properate part.\
                 the details are as follows:\
                 1 corn per 4 dollar for user to buy,10 dollar for user to sell\
                 1 tomato per 5 dollar for user to buy,20 dollar for user to sell\
@@ -181,13 +181,13 @@ class Trader_chat():#设置一个商人ai对话类
 需要对接的东西：
     list_ai = []#AI当前语句
     list_user = []#用户当前语句
+    print函数应该更改纳入对应的聊天记录list中
 
-
-# '''
+'''
 trader1 = Trader_chat()
 Trader_chat.chat(trader1)
 
-class Player1_chat():#设置一个商人ai对话类
+class Player1_chat():#设置一个npc ai对话类
     def __init__(self,messages_player1 = [{}] , list_chat = [] , list_ai = [] , list_user = []):
         self.messages_trader = messages_player1
         self.list_chat = list_chat
