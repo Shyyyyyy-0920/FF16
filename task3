@@ -1,0 +1,26 @@
+#更新摄像机随人物坐标移动的一种理论方法
+
+class Cord:
+    def __init__(self,x:float,y:float):
+        self.x = x
+        self.y = y
+
+    @property
+    def norm2(self):
+        return (self.x**2 + self.y**2)
+    
+    @norm2.setter
+    def norm2(self,value):
+        self.x = (value/2)**(1/2)
+        self.y = (value/2)**(1/2)    
+
+c = Cord(3,4)
+c.x = 10
+print(c.x)
+print(c.y)
+c.x = 100
+print(c.norm2)
+
+c.norm2 = 200
+print(c.x)
+print(c.y)
