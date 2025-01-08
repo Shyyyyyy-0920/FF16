@@ -427,6 +427,8 @@ class bullet(pygame.sprite.Sprite):
 		self.image=pygame.image.load('../assets/Image/B_DOWN_w.png')
 		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
+		#碰撞体积缩小
+		self.hitbox = self.rect.inflate(0,0)
 		#出发的坐标
 		self.line_startx=line_start_tuple[0]
 		self.line_endx=line_end_tuple[0]
@@ -434,12 +436,12 @@ class bullet(pygame.sprite.Sprite):
 		self.line_endy=line_end_tuple[1]
 		self.rect.x=randrange(self.line_startx,self.line_endx-self.rect.width)
 		self.rect.y=self.line_endy
-		self.speedy=randrange(2,10)
-		self.speedx=randrange(-3,3)
+		self.speedy=randrange(3,12)
+		self.speedx=randrange(-4,4)
 
 	def update(self,dt):
-         self.rect.y +=self.speedy
-         self.rect.x +=self.speedx
+         self.rect.y +=self.speedy*dt*70
+         self.rect.x +=self.speedx*dt*70
          if self.rect.top > SCREEN_HEIGHT or self.rect.left > self.line_endx or self.rect.right <self.line_startx:
             self.rect.x=randrange(self.line_startx,self.line_endx-self.rect.width)
             self.rect.y=self.line_endy

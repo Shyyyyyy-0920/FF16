@@ -9,101 +9,102 @@ from sprites import boss,bullet
 from add_event import add_event,g_evene_queue
 from Player import Player_heart
 
-class Battle:
-    def __init__(self,line_start_tuple,line_end_tuple,toggle_battle,toggle_stop,player):
+class Trader_Battle:
+    def __init__(self):
         #画障碍线的坐标
-        self.line_start_tuple=line_start_tuple
-        self.line_end_tuple=line_end_tuple
-        #停止或开始游戏
-        self.toggle_battle=toggle_battle
-        self.toggle_stop=toggle_stop
-        self.timer = Timer(200)
+        self.line_start_tuple=(0,200)
+        self.line_end_tuple=(800,200)
         #显示界面
         self.display_surface = pygame.display.get_surface()
 #------------------
-        self.battle1_sprites = pygame.sprite.Group()#用于添加战斗场景的组分
-        self.bullets_spprites = pygame.sprite.Group()#单独创建一个储存场景子弹的组分
+        self.all_sprites = pygame.sprite.Group()#用于添加战斗场景的组分
+        self.bullets_sprites = pygame.sprite.Group()#单独创建一个储存场景子弹的组分
         self.collision_sprites = pygame.sprite.Group()#用于存储哪些组分需要有碰撞判定
+        self.set_up()
 #--------------------
-        #添加心脏进入我的战斗
-        self.Player_heart=Player_heart((400,300),self.display_surface,(0,200),(800,200))
-        self.Player_heart.hp=100
-        #添加boss进入我的战斗
-        boss_frames = import_folder('../assets/demon1/react')
-        boss((400,70),boss_frames,self.battle1_sprites)
-        self.boss_hp=100
-
-        self.battle1_sprites.add(self.Player_heart)
-
        
         #记录增加怪的次数
-        self.bout_time=True
-         #记录开始时间
-        self.start_ticks=pygame.time.get_ticks()
-        #用来传数据
-        self.player=player    
-    def battle(self,dt):
-       
-        self.display_surface.fill((0,0,0))
-        if self.bout_time==True:
-            for i in range(10):
-                #添加子弹进入我的战斗（敌人方）
-                self.bullet=bullet((0,200),(800,200))
-                self.battle1_sprites.add(self.bullet)
-                self.bullets_spprites.add(self.bullet)
-                #添加进入需要判定碰撞的组
-                self.collision_sprites.add(self.bullet)
+        #self.bout_time=True
+        #暂停界面
+        self.Stop_Menu=stop_menu(self.toggle_stop)
+        self.stop_active = False
 
-            self.bout_time=False
-        clock=pygame.time.Clock().tick(FPS)#帧率控制
-        self.timer.update()
-        #检测按键
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
-                if event.key ==pygame.K_f:
-                    self.toggle_battle()
-                elif event.key == pygame.K_ESCAPE:
-                    self.start_ticks=pygame.time.get_ticks()
-                    self.toggle_battle()
-                    self.toggle_stop()
-                    
-            elif event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-        if not self.timer.active:
-            self.title_time=int((pygame.time.get_ticks()-self.start_ticks)/1000)
-            self.battle1_sprites.update(dt)
-            #判断是否发生碰撞
-            hits=pygame.sprite.spritecollide(self.Player_heart,self.bullets_spprites,False)
-            if hits:
-                self.Player_heart.hp=self.Player_heart.hp-1
-                if self.Player_heart.hp<=0:#没血了就进入失败画面
-                    restart_flag=defeat_menu(self.display_surface)
-                    return restart_flag
+    def set_up(self):
+        self.start_time=pygame.time.get_ticks()
+        #添加心脏进入我的战斗
+        self.Player_heart=Player_heart((400,500),self.all_sprites,self.collision_sprites,None,self.toggle_stop,None)
+        for i in range(10):
+            #添加子弹进入我的战斗（敌人方）
+            self.bullet=bullet((0,200),(800,200))
+            self.all_sprites.add(self.bullet)
+            self.bullets_sprites.add(self.bullet)
+            #添加进入需要判定碰撞的组
+            self.collision_sprites.add(self.bullet)
+        #添加boss进入我的战斗
+        boss_frames = import_folder('../assets/demon1/react')
+        boss((400,70),boss_frames,self.all_sprites)
+        self.boss_hp=100
 
-            self.battle1_sprites.draw(self.display_surface)
-            if self.title_time%5==0:
-                self.boss_hp=self.boss_hp-self.title_time*10
-
-            if self.boss_hp<=0:
-                    self.boss_hp=0
-                    add_event(4)
-                    g_evene_queue[-1]=4
-                    self.bout_time=True
-                    self.toggle_battle()
-            pygame.draw.line(self.display_surface,(255,255,255),self.line_start_tuple,self.line_end_tuple)
-#----------------------血量，时间的绘制---------------
-            show_hp=button(0,0,0,30,30,660,550,f'HP: {self.Player_heart.hp}',30,255,255,255)
-            show_time=button(0,0,0,30,30,150,550,f'TIME: {self.title_time}',30,255,255,255)
-            show_hp.draw_button(self.display_surface)
-            show_time.draw_button(self.display_surface)
-            self.show_boss_hp=button(0,0,0,30,30,660,100,f'BOSSHP: {self.boss_hp}',30,255,255,255)
-            self.show_boss_hp.draw_button(self.display_surface)
-#----------------------------------------------------
-
-    def update(self,dt):
-        restart_flag=self.battle(dt)
-        return restart_flag
+    def toggle_stop(self):
+        self.stop_active = not self.stop_active
+    def damage_player(self):
+        #判断是否发生碰撞
+        hits=pygame.sprite.spritecollide(self.Player_heart,self.bullets_sprites,True)
+        if hits:
+            if self.Player_heart.vulnerable:
+                  self.Player_heart.hp -= 5
+                  self.Player_heart.vulnerable=False
+                  self.Player_heart.hurt_time = pygame.time.get_ticks()
+                #   for bullet in hits:
+                #         bullet.kill()
+                  #self.animation_player.create_particles(attack_type,self.player.rect.center,[self.all_sprites])
+    def is_defeat(self):
+        self.restart_flag=2
+        if self.Player_heart.hp<=0:#没血了就进入失败画面
+            self.restart_flag=defeat_menu(self.display_surface)
+    def draw_ui(self):
+        self.now_time=pygame.time.get_ticks()
+        self.title_time=int((self.now_time - self.start_time)/1000)
+        #----------------------血量，时间的绘制---------------
+        self.show_hp=button(0,0,0,30,30,660,550,f'HP: {self.Player_heart.hp}',30,255,255,255)
+        self.show_time=button(0,0,0,30,30,150,550,f'TIME: {self.title_time}',30,255,255,255)
+        self.show_boss_hp=button(0,0,0,30,30,660,100,f'BOSSHP: {self.boss_hp}',30,255,255,255)
+        self.show_hp.draw_button(self.display_surface)
+        self.show_time.draw_button(self.display_surface)
+        self.show_boss_hp.draw_button(self.display_surface)
+        pygame.draw.line(self.display_surface,(255,255,255),self.line_start_tuple,self.line_end_tuple)
+    def reset(self):
+        self.all_sprites.empty()
+        self.bullets_sprites.empty()
+        self.collision_sprites.empty()
+        self.set_up()
+    def run(self,dt):
+        self.display_surface.fill('black')
+        self.all_sprites.draw(self.display_surface)
+        self.draw_ui()
+        self.damage_player()
+        self.is_defeat()
+        if not self.stop_active:
+            self.all_sprites.update(dt)
+            add_event(5)
+            return 5
+        else:
+            self.menu_flag=self.Stop_Menu.update()
+            if self.menu_flag == 1 or self.restart_flag == 1:
+                  self.reset()
+                  add_event(5)
+                  return 5
+            elif self.menu_flag == 2:
+                  add_event(9)
+                  return 9
+        if g_evene_queue[-1]==5:
+              return 5
+        else:
+              pass
+ 
+        
+    
+        
 #----------------------到此为止--------------
 
 

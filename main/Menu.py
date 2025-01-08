@@ -3,6 +3,7 @@ from Setting import *
 from Timer import Timer
 from UI import button
 import sys
+from add_event import add_event
 
 #这个类主要是各个菜单界面的创建和绘制与反应
 class Menu:
@@ -101,11 +102,7 @@ class Menu:
 
 				#聊天
 				else:
-					pass
-					# seed_price = PURCHASE_PRICES[current_item]
-					# if self.player.money >= seed_price:
-					# 	self.player.seed_inventory[current_item] += 1
-					# 	self.player.money -= PURCHASE_PRICES[current_item]
+					add_event(5)
 			if keys[pygame.K_LCTRL]:
 				self.timer.activate()
 				self.menu_loot.play()
@@ -117,7 +114,7 @@ class Menu:
 						self.player.item_inventory[current_item] += 1
 						self.trader_item_inventory[current_item] -=1
 				else:#聊天
-					pass
+					add_event(5)
 
 
 		# 可以上下滚动保证不出界
@@ -154,7 +151,7 @@ class Menu:
 	def update(self):
 		self.input()
 		self.display_money()
-		print(self.player.item_inventory,self.trader_item_inventory)
+		#print(self.player.item_inventory,self.trader_item_inventory)
 		for text_index, text_surf in enumerate(self.text_surfs):
 			top = self.main_rect.top + text_index * (text_surf.get_height() + (self.padding * 2) + self.space)
 			amount_list = list(self.player.item_inventory.values())+ list(self.player.talk_inventory.values())
@@ -327,6 +324,7 @@ def defeat_menu(window):
                     # pygame.display.update()
                     return 1#代表重新开始
                 elif quiet_key==1:#判断是否按到了退出游戏
+                    pygame.quit()
                     sys.exit()
 
 #------------------------------------------
@@ -359,7 +357,7 @@ def start_menu(window):
                 if start_key==True:#判断是否按到了开始游戏
                     window.fill((255,255,255))
                     pygame.display.update()
-                    return 1
+                    return 5
                 elif set_key==1:#判断是否按到了故事
                     window.fill((255,255,255))
                     pygame.display.update()
@@ -415,7 +413,7 @@ class stop_menu:
 	def input(self):#一些输入和引起的反应
 		keys = pygame.key.get_pressed()
 		self.timer.update()
-		if keys[pygame.K_f]:
+		if keys[pygame.K_ESCAPE]:
 			self.toggle_menu()
 
 		if not self.timer.active:
@@ -437,22 +435,13 @@ class stop_menu:
 				if self.index <= self.border:
 					if self.item_inventory[current_item] ==0:
 						self.toggle_menu()
-						if self.toggle_battle == None:
-							pass
-						else:
-							self.toggle_battle()
+						return 0
 					elif self.item_inventory[current_item] ==1:
 						self.toggle_menu()
-						if self.toggle_battle == None:
-							pass
-						else:
-							self.toggle_battle()
-
 						return 1
 					elif self.item_inventory[current_item] ==2:
-						self.toggle_menu()
-						return 0
-						# self.toggle_battle()
+						pygame.quit()
+						sys.exit()
 		# 可以上下滚动保证不出界
 		if self.index < 0:
 			self.index = len(self.options) - 1

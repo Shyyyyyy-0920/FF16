@@ -171,9 +171,7 @@ class Level2:
 					plant.kill()
 					Particle(plant.rect.topleft, plant.image, self.all_sprites, z = LAYERS['main'])
 					self.soil_layer.grid[plant.rect.centery // TILE_SIZE][plant.rect.centerx // TILE_SIZE].remove('P')
-	def toggle_battle(self):
-		self.battle_active = not self.battle_active
-
+	
 	def toggle_stop(self):
 		self.stop_active = not self.stop_active
 	def get_player_will(self):
@@ -202,6 +200,8 @@ class Level2:
 		self.is_win()
 		if g_evene_queue[-1]==4:
 			return 4
+		if g_evene_queue[-1]==5:
+			return 5
 		else:
 			return 3
 

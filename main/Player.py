@@ -567,7 +567,21 @@ class MagicPlayer:
 
 class Player_heart(Player):
 	def __init__(self, pos, group, collision_sprites,interaction,toggle_stop, levelint):
-		super().__init__(pos, group, collision_sprites,interaction,toggle_stop, levelint)
+		super().__init__(
+			pos = pos, 
+			group = group, 
+			collision_sprites = collision_sprites,
+			interaction = interaction,
+			tree_sprites = None,
+			soil_layer = None,
+			toggle_shop = toggle_stop, 
+			levelint= levelint)
+		self.image=pygame.image.load('../assets/Image/heart/0.png')
+		self.rect=self.image.get_rect(center = pos)
+		self.hp=100
+		self.vulnerable = True#受到伤害的标志
+		self.invulnerability_duration = 500
+		self.hurt_time = None
 	def animate(self,dt):
 		self.frames=import_folder('../assets/Image/heart')
 		self.frame_index += 15*dt#帧速率，但是会返回一个浮点数，下面这个记得转换
@@ -577,23 +591,34 @@ class Player_heart(Player):
 		self.image = self.frames[int(self.frame_index)]
 	def input(self):
 		keys = pygame.key.get_pressed()
-		if not self.timers['tool use'].active and not self.sleep:
-		    # directions 
-			if keys[pygame.K_w]:
-				self.direction.y = -1#这些都表示某个方向向量
-			elif keys[pygame.K_s]:
-				self.direction.y = 1
-			else:
-				self.direction.y = 0
+		#方向
+		if keys[pygame.K_w]:
+			self.direction.y = -1#这些都表示某个方向向量
+		elif keys[pygame.K_s]:
+			self.direction.y = 1
+		else:
+			self.direction.y = 0
 
-			if keys[pygame.K_d]:
-				self.direction.x = 1
-			elif keys[pygame.K_a]:
-				self.direction.x = -1
-			else:
-				self.direction.x = 0
+		if keys[pygame.K_d]:
+			self.direction.x = 1
+		elif keys[pygame.K_a]:
+			self.direction.x = -1
+		else:
+			self.direction.x = 0
+		if keys[pygame.K_f]:
+			self.toggle_shop()
+	def is_defeat(self):
+		if self.hp<=0:
+			self.kill()
+	def cooldowns(self):
+		current_time = pygame.time.get_ticks()
+		if not self.vulnerable:#无敌时间
+			if current_time - self.hurt_time >= self.invulnerability_duration:
+				self.vulnerable = True
 	def update(self,dt):
 		self.input()
+		self.cooldowns()
 		self.move(dt)
 		self.animate(dt)
+		self.is_defeat()
 #----------------到此为止-------------	
