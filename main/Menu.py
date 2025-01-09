@@ -102,6 +102,7 @@ class Menu:
 
 				#聊天
 				else:
+	
 					add_event(5)
 			if keys[pygame.K_LCTRL]:
 				self.timer.activate()
@@ -114,6 +115,7 @@ class Menu:
 						self.player.item_inventory[current_item] += 1
 						self.trader_item_inventory[current_item] -=1
 				else:#聊天
+
 					add_event(5)
 
 

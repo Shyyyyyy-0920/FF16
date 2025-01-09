@@ -46,6 +46,8 @@ class Level2:
 		#音乐
 		self.success = pygame.mixer.Sound('../assets/audio/success.wav')
 		self.success.set_volume(0.3)
+		self.rain_sound = pygame.mixer.Sound('../assets/audio/mus_rain.mp3')
+		self.rain_sound.set_volume(0.3)
 
 
 	def setup(self):
@@ -193,6 +195,7 @@ class Level2:
 		self.overlay.display()
 		if self.raining and not self.shop_active:
 			self.rain.update()
+			self.rain_sound.play()
 		self.sky.display(dt)
 
 		if self.player.sleep:

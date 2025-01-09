@@ -615,6 +615,34 @@ class Player_heart(Player):
 		if not self.vulnerable:#无敌时间
 			if current_time - self.hurt_time >= self.invulnerability_duration:
 				self.vulnerable = True
+	def move(self,dt):#在这里写hitbox连同角色的移动而发生移动
+
+		#归一化,由于向量的矢量和的性质，斜对角速度会变快，故这里要归一化
+		if self.direction.magnitude() > 0:#用于检测这个向量的长度是否为0，如果为0就没有方向，所以不能为0
+			self.direction = self.direction.normalize()
+		
+#---------由于后面会有碰撞的过程，故需要将水平与竖直方向分开
+
+		#水平方向移动
+		     
+		self.pos.x += self.direction.x * self.speed * dt#这个物体的位置位于方向向量乘以自己的速度和时间增量
+		self.hitbox.centerx = round(self.pos.x)#变为范围判定，更准
+		self.rect.centerx = self.hitbox.centerx#再将矩形中心移到改变后的位置
+		self.collision('horizontal')
+		if self.rect.right>=800:
+			self.rect.right=800
+		elif self.rect.left<=0:
+			self.rect.left=0
+		#竖直方向移动
+		self.pos.y += self.direction.y * self.speed * dt
+		self.hitbox.centery = round(self.pos.y)
+		self.rect.centery = self.hitbox.centery
+		#print(f'y坐标为:{self.rect.centery}')
+		self.collision('vertical')
+		if self.rect.bottom>=600:
+			self.rect.bottom=600
+		elif self.rect.top<=200:
+			self.rect.top=200
 	def update(self,dt):
 		self.input()
 		self.cooldowns()

@@ -1,7 +1,7 @@
 import pygame
 import sys
 from Setting import *
-from Menu import defeat_menu,stop_menu
+from Menu import defeat_menu,stop_menu,Menu
 from Timer import Timer
 from UI import button
 from support import *
@@ -29,9 +29,13 @@ class Trader_Battle:
         self.Stop_Menu=stop_menu(self.toggle_stop)
         self.stop_active = False
 
+        self.restart_flag=2
+        self.use_time=0
+
     def set_up(self):
-        self.start_time=pygame.time.get_ticks()
+        
         #添加心脏进入我的战斗
+        self.start_time=0
         self.Player_heart=Player_heart((400,500),self.all_sprites,self.collision_sprites,None,self.toggle_stop,None)
         for i in range(10):
             #添加子弹进入我的战斗（敌人方）
@@ -42,9 +46,10 @@ class Trader_Battle:
             self.collision_sprites.add(self.bullet)
         #添加boss进入我的战斗
         boss_frames = import_folder('../assets/demon1/react')
-        boss((400,70),boss_frames,self.all_sprites)
+        self.boss1=boss((400,70),boss_frames,self.all_sprites)
         self.boss_hp=100
-
+    def time(self):
+          pass
     def toggle_stop(self):
         self.stop_active = not self.stop_active
     def damage_player(self):
@@ -58,15 +63,43 @@ class Trader_Battle:
                 #   for bullet in hits:
                 #         bullet.kill()
                   #self.animation_player.create_particles(attack_type,self.player.rect.center,[self.all_sprites])
+    def playere_attack(self):
+        if self.title_time%5==0:
+            if self.title_time /5==1 :
+                self.boss_hp = 70
+                self.boss1.kill()
+                boss_frames = import_folder('../assets/demon1/attack')
+                self.boss1=boss((400,70),boss_frames,self.all_sprites)
+            elif self.title_time / 5==2:
+                self.boss_hp =30
+                self.boss1.kill()
+                boss_frames = import_folder('../assets/demon1/injury')
+                self.boss1=boss((400,70),boss_frames,self.all_sprites)
+            elif self.title_time / 5 == 3:
+                self.boss_hp =5
+                self.boss1.kill()
+                boss_frames = import_folder('../assets/demon1/injury')
+                self.boss1=boss((400,70),boss_frames,self.all_sprites)
+            elif self.title_time / 5 == 4:
+                self.boss_hp =0
+                self.boss1.kill()
+                boss_frames = import_folder('../assets/demon1/die')
+                self.boss1=boss((400,70),boss_frames,self.all_sprites)
     def is_defeat(self):
-        self.restart_flag=2
         if self.Player_heart.hp<=0:#没血了就进入失败画面
             self.restart_flag=defeat_menu(self.display_surface)
-    def get_time(self):
-           self.now_time=pygame.time.get_ticks()
+    def over(self):#这是结束后的场景，无论失败还是胜利
+          if self.Player_heart.hp<=0:#没血了就进入失败画面,失败的对话
+                pass
+          elif self.boss_hp <=0:#打赢了boss，进入胜利对话
+                pass
+          #无论胜利与否，都会减少善良值增加邪恶值
+        
     def draw_ui(self):
-       
-        self.title_time=int((self.now_time - self.start_time)/1000)
+        self.now_time=pygame.time.get_ticks()
+        self.time_clock=(self.now_time-self.start_time)/1000
+
+        self.title_time=round(self.time_clock)
         #----------------------血量，时间的绘制---------------
         self.show_hp=button(0,0,0,30,30,660,550,f'HP: {self.Player_heart.hp}',30,255,255,255)
         self.show_time=button(0,0,0,30,30,150,550,f'TIME: {self.title_time}',30,255,255,255)
@@ -75,26 +108,39 @@ class Trader_Battle:
         self.show_time.draw_button(self.display_surface)
         self.show_boss_hp.draw_button(self.display_surface)
         pygame.draw.line(self.display_surface,(255,255,255),self.line_start_tuple,self.line_end_tuple)
+    def open_time(self):
+          self.use_time+=1
     def reset(self):
         self.all_sprites.empty()
         self.bullets_sprites.empty()
         self.collision_sprites.empty()
         self.set_up()
     def run(self,dt):
+        if self.use_time==0:
+              self.start_time=pygame.time.get_ticks()
+              self.open_time()
         self.display_surface.fill('black')
         self.all_sprites.draw(self.display_surface)
         self.draw_ui()
+        self.playere_attack()
         self.damage_player()
+        
         self.is_defeat()
         if not self.stop_active:
-            self.get_time()
             self.all_sprites.update(dt)
+            if self.restart_flag == 1:
+                  print(self.restart_flag)
+                  self.reset()
+                  self.start_time=pygame.time.get_ticks()
+            self.restart_flag=2
             add_event(5)
             return 5
         else:
+            self.start_time+=2.475
             self.menu_flag=self.Stop_Menu.update()
-            if self.menu_flag == 1 or self.restart_flag == 1:
+            if self.menu_flag == 1:
                   self.reset()
+                  self.start_time=pygame.time.get_ticks()
                   add_event(5)
                   return 5
             elif self.menu_flag == 2:
