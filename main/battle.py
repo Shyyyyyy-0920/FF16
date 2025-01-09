@@ -5,7 +5,7 @@ from Menu import defeat_menu,stop_menu,Menu
 from Timer import Timer
 from UI import button
 from support import *
-from sprites import boss,bullet
+from sprites import boss,bullet,sans
 from add_event import add_event,g_evene_queue
 from Player import Player_heart
 
@@ -187,7 +187,6 @@ class Trader_Battle:
               pass
  
         
-    
 class Final_battle:
     def __init__(self):
 
@@ -211,6 +210,9 @@ class Final_battle:
         
         #粒子效果
         #self.animation_player = AnimationPlayer()
+        #战斗音乐
+        self.battle_sound = pygame.mixer.Sound('../assets/audio/in_battle.wav')
+        self.battle_sound.set_volume(0.3)
 
     def set_up(self):
         self.player = Player_heart(
@@ -220,31 +222,32 @@ class Final_battle:
                 interaction=None,
                 toggle_stop=self.toggle_menu
                 )
-        # Enemy(
-        # 	monster_name,
-        # 	(x,y),
-        # 	[self.visible_sprites,self.attackable_sprites,self.all_moster_sprites],
-        # 	self.obstacle_sprites,
-        # 	self.damage_player,
-        # 	self.trigger_death_particles,
-        # 	self.add_exp)
-    def damage_player(self,amount,attack_type):
+         #添加boss进入我的战斗
+        boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/common_head')
+        self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
+        boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/common_body')
+        self.boss_body=sans((400,70),boss_frames_body,self.all_sprites)
+        self.boss_hp=100
+    def damage_player(self,amount):
         if self.player.vulnerable:
             self.player.health -= amount
             self.player.vulnerable = False
             self.player.hurt_time = pygame.time.get_ticks()
-            #self.animation_player.create_particles(attack_type,self.player.rect.center,[self.all_sprites])
-    #def trigger_death_particles(self,pos,particle_type):
-        #self.animation_player.create_particles(particle_type,pos,self.all_sprites)
-    #def add_exp(self,amount):#增加或减少善恶值
-        #self.player.exp += amount
+    def boss_states(self):
+        pass
     def toggle_menu(self):
         self.game_paused = not self.game_paused 
     def is_win(self):
         pass
+    def draw_ui(self):
+        pygame.draw.line(self.display_surface,(255,255,255),(0,200),(800,200))
     def run(self,dt):
+        pygame.mixer.music.fadeout(1000)
+        self.battle_sound.play(loops=-1)
+        
         self.display_surface.fill('black')
         self.all_sprites.draw(self.display_surface)
+        self.draw_ui()
         if self.game_paused:
             self.stop_menu.update()
         else:

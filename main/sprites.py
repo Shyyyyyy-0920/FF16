@@ -42,7 +42,9 @@ class Water(Generic):
 
 	def update(self,dt):
 		self.animate(dt)
-
+class sans(Water):
+	def __init__(self, pos, frames, groups):
+		super().__init__(pos, frames, groups)
 class WildFlower(Generic):
 	def __init__(self, pos, surf, groups):
 		super().__init__(pos, surf, groups)
@@ -371,40 +373,6 @@ class Enemy(pygame.sprite.Sprite):#所有的怪物类
 	def enemy_update(self,player):
 		self.get_status(player)
 		self.actions(player)
-class enemy_bullet(pygame.sprite.Sprite):
-	def __init__(self,pos,surf,groups,direction,speed):
-		super().__init__(groups)
-		self.pos=pos
-		self.image=surf
-		self.rect = self.image.get_rect(center = pos)
-		self.z=LAYERS['main']
-		self.hitbox = self.rect.copy().inflate(-25,-self.rect.height*0.7)
-		self.group=groups
-		self.direction=direction#这是一个向量
-		self.speed = speed#这是子弹飞行速度
-		self.collision_sprites=groups[1]
-		self.pos = pygame.math.Vector2(self.rect.center)
-		self.start_time=pygame.time.get_ticks()
-
-	def update(self,dt):
-		self.now_time=pygame.time.get_ticks()
-		#水平方向移动
-		self.pos.x += self.direction[0] * self.speed * dt
-		self.hitbox.centerx = round(self.pos.x)#变为范围判定，更准
-		self.rect.centerx = self.hitbox.centerx#再将矩形中心移到改变后的位置
-		#竖直方向移动
-		self.pos.y += self.direction[1] * self.speed * dt
-		self.hitbox.centery = round(self.pos.y)
-		self.rect.centery = self.hitbox.centery
-
-		for sprite in self.collision_sprites.sprites():
-			if hasattr(sprite, 'hitbox'):
-				if sprite.hitbox.colliderect(self.hitbox):
-					self.direction=[0,0]
-					# self.rect.centerx = self.hitbox.centerx
-					# self.pos.y = self.hitbox.centery
-					# self.pos.x = self.hitbox.centerx
-					
 					
 class collision_rect(Generic):# 障碍物的类、
 	def __init__(self, pos, surf, groups):
