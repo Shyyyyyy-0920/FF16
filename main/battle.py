@@ -62,8 +62,10 @@ class Trader_Battle:
         self.restart_flag=2
         if self.Player_heart.hp<=0:#没血了就进入失败画面
             self.restart_flag=defeat_menu(self.display_surface)
+    def get_time(self):
+           self.now_time=pygame.time.get_ticks()
     def draw_ui(self):
-        self.now_time=pygame.time.get_ticks()
+       
         self.title_time=int((self.now_time - self.start_time)/1000)
         #----------------------血量，时间的绘制---------------
         self.show_hp=button(0,0,0,30,30,660,550,f'HP: {self.Player_heart.hp}',30,255,255,255)
@@ -85,6 +87,7 @@ class Trader_Battle:
         self.damage_player()
         self.is_defeat()
         if not self.stop_active:
+            self.get_time()
             self.all_sprites.update(dt)
             add_event(5)
             return 5
