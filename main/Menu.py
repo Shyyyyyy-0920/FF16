@@ -359,11 +359,11 @@ def start_menu(window):
                 if start_key==True:#判断是否按到了开始游戏
                     window.fill((255,255,255))
                     pygame.display.update()
-                    return 1
+                    return 6
                 elif set_key==1:#判断是否按到了故事
                     window.fill((255,255,255))
                     pygame.display.update()
-                    return 2
+                    return 7
                 elif quiet_key==1:#判断是否按到了退出游戏
                     return 9
 

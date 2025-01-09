@@ -7,7 +7,7 @@ import random
 from math import sin
 #人物类，主要是各个人物属性的创建
 class Player(pygame.sprite.Sprite):
-	def __init__(self, pos, group,collision_sprites, tree_sprites,interaction,soil_layer,toggle_shop,levelint):
+	def __init__(self, pos, group,collision_sprites, tree_sprites,interaction,soil_layer,toggle_shop):
 		# self.group=group
 		super().__init__(group)
 
@@ -70,7 +70,6 @@ class Player(pygame.sprite.Sprite):
 		self.sleep = False
 		self.toggle_shop = toggle_shop
 		self.soil_layer = soil_layer
-		self.levelint=levelint
 
 		#音乐
 		self.watering = pygame.mixer.Sound('../assets/audio/water.mp3')
@@ -177,7 +176,7 @@ class Player(pygame.sprite.Sprite):
 						self.toggle_shop()#这里就是碰撞的判断，如果碰到了就改变商店的状态
 					elif collided_interaction_sprite[0].name =='portal':
 						self.portal.play()
-						add_event(self.levelint)
+						add_event(6)
 					else:
 						self.status = 'left_idle'
 						self.sleep = True
@@ -566,7 +565,7 @@ class MagicPlayer:
 					self.animation_player.create_particles('flame',(x,y),groups)
 
 class Player_heart(Player):
-	def __init__(self, pos, group, collision_sprites,interaction,toggle_stop, levelint):
+	def __init__(self, pos, group, collision_sprites,interaction,toggle_stop):
 		super().__init__(
 			pos = pos, 
 			group = group, 
@@ -574,8 +573,7 @@ class Player_heart(Player):
 			interaction = interaction,
 			tree_sprites = None,
 			soil_layer = None,
-			toggle_shop = toggle_stop, 
-			levelint= levelint)
+			toggle_shop = toggle_stop)
 		self.image=pygame.image.load('../assets/Image/heart/0.png')
 		self.rect=self.image.get_rect(center = pos)
 		self.hp=100

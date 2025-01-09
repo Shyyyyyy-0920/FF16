@@ -5,7 +5,8 @@ from Level2 import Level2
 from Level1 import Level1
 from Menu import start_menu,win_menu
 from add_event import add_event
-from battle import Trader_Battle
+from battle import Trader_Battle,Final_battle
+from chat import ChatBot
 #
 class selected:
     def __init__(self,player_will):
@@ -16,6 +17,8 @@ class selected:
         self.win_menu=win_menu()
         self.Level1=Level1(player_will)
         self.Trader_Battle=Trader_Battle()
+        self.Final_battle=Final_battle()
+        self.ChatBot=ChatBot("trader3")
     def selected_level(self,dt,window):
         if self.flag==0:#菜单界面
             self.start_menu=start_menu(window)
@@ -33,9 +36,10 @@ class selected:
             self.event_queue=add_event(self.win_menu.run())
         if self.flag == 5:#与trader对战的场景
             self.event_queue=add_event(self.Trader_Battle.run(dt))
-
-        if self.flag == 6:#每次对话的场景
-            pass
+        if self.flag == 6:#最终boss战
+            self.event_queue=add_event(self.Final_battle.run(dt))
+        if self.flag == 7:#每次对话的场景
+            self.event_queue=add_event(self.ChatBot.start())
 
         if self.flag==9:
             pygame.quit()

@@ -20,7 +20,7 @@ class ChatBot:
         """
         self.messages = [{}]  # 存储对话消息
         self.chat_history = []  # 存储聊天历史记录
-        self.bg_color = (200, 200, 200)  # 设置背景颜色为浅灰色    
+        self.bg_color = (0,0,0)  # 设置背景颜色为浅灰色    
         self.screen = pygame.display.get_surface()# 屏幕对象   
         self.path = r"..\assets\font\DTM-Sans.otf"
 
@@ -35,8 +35,8 @@ class ChatBot:
         self.output_height = 400  # 输出文本区域的高度
         
         self.input_box = pygame.Rect(30, 500, 700, 32)  # 设置输入框的位置和大小
-        self.color_inactive = pygame.Color(0,0,0)  # 输入框未激活时的颜色
-        self.color_active = pygame.Color(72,61,139)  # 输入框激活时的颜色
+        self.color_inactive = pygame.Color(72,61,139)  # 输入框未激活时的颜色
+        self.color_active = pygame.Color(255,255,255)  # 输入框激活时的颜色
         self.color = self.color_inactive  # 初始颜色为未激活颜色
         self.person = person  # 设置对话角色
 
@@ -65,10 +65,11 @@ class ChatBot:
             {"role": "user", "content": "Hello!"}
         ]
 
-        image_chat = pygame.image.load(name.image).convert()
+        image_chat = pygame.image.load(name.image).convert_alpha()
+        image_chat=pygame.transform.scale(image_chat,(270,300))
         # image_chat = pygame.transform.scale(image_chat, (64, 64))
 
-        image_main = pygame.image.load(r"..\assets\graphics\player\down\down_0.png").convert()
+        image_main = pygame.image.load(r"..\assets\graphics\player\down\down_0.png").convert_alpha()
         # image_main = pygame.transform.scale(image_main, (64, 64))
 
 
@@ -86,8 +87,7 @@ class ChatBot:
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 
                 if chat_open:
-                    background_image = pygame.image.load(r"..\assets\chat\background1.png").convert()
-                    background_image = pygame.transform.scale(background_image, (800, 600))
+                    background_image = pygame.image.load(r"..\assets\chat\background1.png").convert_alpha()
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if self.input_box.collidepoint(event.pos):
                             active = not active  # 如果点击输入框，则切换激活状态
@@ -147,10 +147,12 @@ class ChatBot:
                 self.input_box.w = width  # 更新输入框宽度
                 screen.blit(txt_surface, (self.input_box.x+5, self.input_box.y+2))  # 绘制输入框文本
                 pygame.draw.rect(screen, self.color, self.input_box, 2)  # 绘制输入框边框
-
+                pygame.draw.line(screen,(255,255,255), (550, 0), (550, 600), 5)
+                pygame.draw.line(screen,(255,255,255), (550, 350), (800, 350), 5)
+                pygame.draw.line(screen,(255,255,255), (0, 330), (550, 330), 5)
                 self.render_output(screen)  # 渲染输出文本
 
-                screen.blit(image_chat, (670, 200))  # 绘制角色
+                screen.blit(image_chat, (520, 0))  # 绘制角色
                 screen.blit(image_main, (670, 490)) 
             else:
                 break
@@ -204,7 +206,7 @@ class ChatBot:
 
             # 只绘制在可见区域内的行
             if 0 <= current_y < output_height:
-                output_rendered_text = font.render(line, True, (0, 0, 0))  # 渲染每一行文本为图像
+                output_rendered_text = font.render(line, True, (255, 255, 255))  # 渲染每一行文本为图像
                 screen.blit(output_rendered_text, (output_x + 10, current_y))  # 绘制文本到屏幕上
 
             # 如果已经超过了可见区域的最后一行，停止绘制

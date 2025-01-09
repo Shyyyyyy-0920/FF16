@@ -24,7 +24,7 @@ class trader1:
             "You need to ask 6 question to find out this problem"\
             "The questuons are as follows:" + general.words
     
-    image = r"..\assets\demon1\attack1.png"
+    image = r"..\assets\demon1\attack\attack1.png"
         
 
 class trader3:
@@ -50,7 +50,8 @@ class trader3:
             "'sell 'good's name' 'good's quantity' for selling goods. "+ general.words
 
     
-    image = r"..\assets\demon1\attack1.png"
+    image = r"..\assets\demon1\attack\attack1.png"
+    
 
 class monster2a:
     quest = ""\

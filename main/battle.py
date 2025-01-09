@@ -22,9 +22,6 @@ class Trader_Battle:
         self.collision_sprites = pygame.sprite.Group()#用于存储哪些组分需要有碰撞判定
         self.set_up()
 #--------------------
-       
-        #记录增加怪的次数
-        #self.bout_time=True
         #暂停界面
         self.Stop_Menu=stop_menu(self.toggle_stop)
         self.stop_active = False
@@ -42,7 +39,7 @@ class Trader_Battle:
         
         #添加心脏进入我的战斗
         self.start_time=0
-        self.Player_heart=Player_heart((400,500),self.all_sprites,self.collision_sprites,None,self.toggle_stop,None)
+        self.Player_heart=Player_heart((400,500),self.all_sprites,self.collision_sprites,None,self.toggle_stop)
         for i in range(5):
             #添加子弹进入我的战斗（敌人方）
             self.bullet=bullet((0,200),(800,200))
@@ -62,9 +59,9 @@ class Trader_Battle:
         for sprite in hits:
             if sprite is not self.Player_heart:
                 if self.Player_heart.vulnerable:
-                      self.Player_heart.hp -= 5
-                      self.Player_heart.vulnerable=False
-                      self.Player_heart.hurt_time = pygame.time.get_ticks()
+                    self.Player_heart.hp -= 5
+                    self.Player_heart.vulnerable=False
+                    self.Player_heart.hurt_time = pygame.time.get_ticks()
                
     def playere_attack(self):
         if self.title_time%5==0:
@@ -192,66 +189,67 @@ class Trader_Battle:
         
     
 class Final_battle:
-	def __init__(self):
+    def __init__(self):
 
-		# 获取屏幕表面
-		self.display_surface = pygame.display.get_surface()
-		self.game_paused = False
-		
+        # 获取屏幕表面
+        self.display_surface = pygame.display.get_surface()
+        
+        
         # sprite group setup
-		self.collision_sprites = pygame.sprite.Group()
-		self.all_sprites=pygame.sprite.Group()
+        self.collision_sprites = pygame.sprite.Group()
+        self.all_sprites=pygame.sprite.Group()
         #攻击组分
 
-		self.attack_sprites = pygame.sprite.Group()
-		
+        self.attack_sprites = pygame.sprite.Group()
+        
         #初始化
-		self.set_up()
-		self.stop_menu=stop_menu(self.toggle_menu)
+        self.set_up()
+        self.stop_menu=stop_menu(self.toggle_menu)
+        self.game_paused = False
         #人物ui界面
-		#self.ui = UI()
-		
+        #self.ui = UI()
+        
         #粒子效果
-		#self.animation_player = AnimationPlayer()
+        #self.animation_player = AnimationPlayer()
 
-	def set_up(self):
-		self.player = Player_heart(
-				pos = (400,500),
-				group=[self.all_sprites],
-				collision_sprites=self.collision_sprites,
+    def set_up(self):
+        self.player = Player_heart(
+                pos = (400,500),
+                group=[self.all_sprites],
+                collision_sprites=self.collision_sprites,
                 interaction=None,
-                toggle_stop=self.toggle_menu,
-                levelint=0
-				)
-		# Enemy(
-		# 	monster_name,
-		# 	(x,y),
-		# 	[self.visible_sprites,self.attackable_sprites,self.all_moster_sprites],
-		# 	self.obstacle_sprites,
-		# 	self.damage_player,
-		# 	self.trigger_death_particles,
-		# 	self.add_exp)
-	def damage_player(self,amount,attack_type):
-		if self.player.vulnerable:
-			self.player.health -= amount
-			self.player.vulnerable = False
-			self.player.hurt_time = pygame.time.get_ticks()
-			self.animation_player.create_particles(attack_type,self.player.rect.center,[self.all_sprites])
-	def trigger_death_particles(self,pos,particle_type):
-		self.animation_player.create_particles(particle_type,pos,self.all_sprites)
-	#def add_exp(self,amount):#增加或减少善恶值
-		#self.player.exp += amount
-	def toggle_menu(self):
-		self.game_paused = not self.game_paused 
-	def is_win(self):
-		pass
-	def run(self,dt):
-		self.all_sprites.custom_draw(self.player)
-		self.ui.display(self.player)
-		if self.game_paused:
-			self.stop_menu.update()
-		else:
-			self.all_sprites.update(dt)
-			self.all_sprites.enemy_update(self.player)
-		self.is_win()
+                toggle_stop=self.toggle_menu
+                )
+        # Enemy(
+        # 	monster_name,
+        # 	(x,y),
+        # 	[self.visible_sprites,self.attackable_sprites,self.all_moster_sprites],
+        # 	self.obstacle_sprites,
+        # 	self.damage_player,
+        # 	self.trigger_death_particles,
+        # 	self.add_exp)
+    def damage_player(self,amount,attack_type):
+        if self.player.vulnerable:
+            self.player.health -= amount
+            self.player.vulnerable = False
+            self.player.hurt_time = pygame.time.get_ticks()
+            #self.animation_player.create_particles(attack_type,self.player.rect.center,[self.all_sprites])
+    #def trigger_death_particles(self,pos,particle_type):
+        #self.animation_player.create_particles(particle_type,pos,self.all_sprites)
+    #def add_exp(self,amount):#增加或减少善恶值
+        #self.player.exp += amount
+    def toggle_menu(self):
+        self.game_paused = not self.game_paused 
+    def is_win(self):
+        pass
+    def run(self,dt):
+        self.display_surface.fill('black')
+        self.all_sprites.draw(self.display_surface)
+        if self.game_paused:
+            self.stop_menu.update()
+        else:
+            self.all_sprites.update(dt)
+            
+        self.is_win()
+        return 6
 #----------------------到此为止--------------

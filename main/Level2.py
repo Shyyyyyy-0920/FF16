@@ -106,8 +106,8 @@ class Level2:
 					tree_sprites = self.tree_sprites,
 					interaction = self.interaction_sprites,
 					soil_layer = self.soil_layer,
-					toggle_shop = self.toggle_shop,
-					levelint=None)
+					toggle_shop = self.toggle_shop
+					)
 
 			if obj.name == 'Bed':
 				Interaction((obj.x,obj.y), (obj.width,obj.height), self.interaction_sprites, obj.name)
@@ -203,10 +203,10 @@ class Level2:
 		if self.player.sleep:
 			self.transition.play()
 		self.is_win()
-		if g_evene_queue[-1]==4:
-			return 4
 		if g_evene_queue[-1]==5:
-			return 5
+			return 5#与trader对战
+		elif g_evene_queue[-1]==6:
+			return 6#与最终BOSS对战
 		else:
 			return 3
 
