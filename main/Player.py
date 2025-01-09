@@ -629,18 +629,18 @@ class Player_heart(Player):
 		self.hitbox.centerx = round(self.pos.x)#变为范围判定，更准
 		self.rect.centerx = self.hitbox.centerx#再将矩形中心移到改变后的位置
 		self.collision('horizontal')
-		if self.rect.right>=800:
-			self.rect.right=800
-		elif self.rect.left<=0:
-			self.rect.left=0
+		if self.rect.right>=700:
+			self.rect.right=700
+		elif self.rect.left<=100:
+			self.rect.left=100
 		#竖直方向移动
 		self.pos.y += self.direction.y * self.speed * dt
 		self.hitbox.centery = round(self.pos.y)
 		self.rect.centery = self.hitbox.centery
 		#print(f'y坐标为:{self.rect.centery}')
 		self.collision('vertical')
-		if self.rect.bottom>=600:
-			self.rect.bottom=600
+		if self.rect.bottom>=530:
+			self.rect.bottom=530
 		elif self.rect.top<=200:
 			self.rect.top=200
 	def update(self,dt):

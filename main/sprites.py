@@ -182,8 +182,11 @@ class attack(Generic):#sans的一些攻击
 		if self.direction.magnitude() != 0:
 			self.direction = self.direction.normalize()
 		self.rect.x += self.direction.x *self.speed*dt
-		print(self.direction,self.speed,dt)
 		self.rect.y += self.direction.y *self.speed*dt
+		if self.rect.y >=600:
+			self.rect.y=200
+		if self.rect.x>=800:
+			self.rect.x=randint(0,800)
 		#self.rect.center = self.hitbox.center
 	def update(self,dt):
 		self.move(dt)

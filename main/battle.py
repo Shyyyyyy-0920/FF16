@@ -142,7 +142,10 @@ class Trader_Battle:
         self.show_hp.draw_button(self.display_surface)
         self.show_time.draw_button(self.display_surface)
         self.show_boss_hp.draw_button(self.display_surface)
-        pygame.draw.line(self.display_surface,(255,255,255),self.line_start_tuple,self.line_end_tuple)
+        pygame.draw.line(self.display_surface,(255,255,255),(100,200),(700,200))
+        pygame.draw.line(self.display_surface,(255,255,255),(100,200),(100,530))
+        pygame.draw.line(self.display_surface,(255,255,255),(700,200),(700,530))
+        pygame.draw.line(self.display_surface,(255,255,255),(100,530),(700,530))
           
     def reset(self):
         self.all_sprites.empty()
@@ -313,7 +316,10 @@ class Final_battle:
         self.show_hp.draw_button(self.display_surface)
         self.show_time.draw_button(self.display_surface)
         self.show_boss_hp.draw_button(self.display_surface)
-        pygame.draw.line(self.display_surface,(255,255,255),(0,200),(800,200))
+        pygame.draw.line(self.display_surface,(255,255,255),(100,200),(700,200))
+        pygame.draw.line(self.display_surface,(255,255,255),(100,200),(100,530))
+        pygame.draw.line(self.display_surface,(255,255,255),(700,200),(700,530))
+        pygame.draw.line(self.display_surface,(255,255,255),(100,530),(700,530))
     def reset(self):
         self.all_sprites.empty()
         self.attack_sprites.empty()
