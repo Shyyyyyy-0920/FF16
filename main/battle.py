@@ -31,6 +31,7 @@ class Trader_Battle:
 
         self.restart_flag=2
         self.use_time=0
+        self.bout=1
         #声音设置
         self.injury_sound = pygame.mixer.Sound('../assets/sound/injury.wav')
         self.injury_sound.set_volume(0.3)
@@ -42,7 +43,7 @@ class Trader_Battle:
         #添加心脏进入我的战斗
         self.start_time=0
         self.Player_heart=Player_heart((400,500),self.all_sprites,self.collision_sprites,None,self.toggle_stop,None)
-        for i in range(10):
+        for i in range(5):
             #添加子弹进入我的战斗（敌人方）
             self.bullet=bullet((0,200),(800,200))
             self.all_sprites.add(self.bullet)
@@ -53,21 +54,18 @@ class Trader_Battle:
         boss_frames = import_folder('../assets/demon1/react')
         self.boss1=boss((400,70),boss_frames,self.all_sprites)
         self.boss_hp=100
-    def time(self):
-          pass
     def toggle_stop(self):
         self.stop_active = not self.stop_active
     def damage_player(self):
-        #判断是否发生碰撞
-        hits=pygame.sprite.spritecollide(self.Player_heart,self.bullets_sprites,True)
-        if hits:
-            if self.Player_heart.vulnerable:
-                  self.Player_heart.hp -= 5
-                  self.Player_heart.vulnerable=False
-                  self.Player_heart.hurt_time = pygame.time.get_ticks()
-                #   for bullet in hits:
-                #         bullet.kill()
-                  #self.animation_player.create_particles(attack_type,self.player.rect.center,[self.all_sprites])
+        #判断是否发生完美碰撞
+        hits=pygame.sprite.spritecollide(self.Player_heart,self.bullets_sprites,False,pygame.sprite.collide_mask)
+        for sprite in hits:
+            if sprite is not self.Player_heart:
+                if self.Player_heart.vulnerable:
+                      self.Player_heart.hp -= 5
+                      self.Player_heart.vulnerable=False
+                      self.Player_heart.hurt_time = pygame.time.get_ticks()
+               
     def playere_attack(self):
         if self.title_time%5==0:
             if self.title_time /5==1 :
@@ -76,24 +74,54 @@ class Trader_Battle:
                 boss_frames = import_folder('../assets/demon1/attack')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
                 self.injury_sound.play()
+                if self.bout == 1:
+                    for i in range(5):
+                        #添加子弹进入我的战斗（敌人方）
+                        self.bullet=bullet((0,200),(800,200))
+                        self.all_sprites.add(self.bullet)
+                        self.bullets_sprites.add(self.bullet)
+                        #添加进入需要判定碰撞的组
+                        self.collision_sprites.add(self.bullet)
+                        self.bout=2
             elif self.title_time / 5==2:
                 self.boss_hp =30
                 self.boss1.kill()
                 boss_frames = import_folder('../assets/demon1/injury')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
                 self.injury_sound.play()
+                if self.bout == 2:
+                    for i in range(5):
+                        #添加子弹进入我的战斗（敌人方）
+                        self.bullet=bullet((0,200),(800,200))
+                        self.all_sprites.add(self.bullet)
+                        self.bullets_sprites.add(self.bullet)
+                        #添加进入需要判定碰撞的组
+                        self.collision_sprites.add(self.bullet)
+                        self.bout=3
             elif self.title_time / 5 == 3:
                 self.boss_hp =5
                 self.boss1.kill()
                 boss_frames = import_folder('../assets/demon1/injury')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
                 self.injury_sound.play()
+                if self.bout == 3:
+                    for i in range(5):
+                        #添加子弹进入我的战斗（敌人方）
+                        self.bullet=bullet((0,200),(800,200))
+                        self.all_sprites.add(self.bullet)
+                        self.bullets_sprites.add(self.bullet)
+                        #添加进入需要判定碰撞的组
+                        self.collision_sprites.add(self.bullet)
+                        self.bout=4
             elif self.title_time / 5 == 4:
                 self.boss_hp =0
                 self.boss1.kill()
                 boss_frames = import_folder('../assets/demon1/die')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
                 self.die_sound.play()
+                if self.bout == 4:
+                    for sprite in self.bullets_sprites:
+                        sprite.kill()
             
     def is_defeat(self):
         if self.Player_heart.hp<=0:#没血了就进入失败画面
@@ -171,7 +199,7 @@ class Final_battle:
 		self.game_paused = False
 		
         # sprite group setup
-		self.collision_sprites = pygame.sprite.Group()#控制场地大小
+		self.collision_sprites = pygame.sprite.Group()
 		self.all_sprites=pygame.sprite.Group()
         #攻击组分
 

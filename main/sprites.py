@@ -425,10 +425,7 @@ class bullet(pygame.sprite.Sprite):
 	def __init__(self,line_start_tuple:tuple,line_end_tuple:tuple):
 		pygame.sprite.Sprite.__init__(self)
 		self.image=pygame.image.load('../assets/Image/B_DOWN_w.png')
-		self.image.set_colorkey(WHITE)
 		self.rect = self.image.get_rect()
-		#碰撞体积缩小
-		self.hitbox = self.rect.inflate(0,0)
 		#出发的坐标
 		self.line_startx=line_start_tuple[0]
 		self.line_endx=line_end_tuple[0]
@@ -438,6 +435,8 @@ class bullet(pygame.sprite.Sprite):
 		self.rect.y=self.line_endy
 		self.speedy=randrange(3,12)
 		self.speedx=randrange(-4,4)
+		#获取遮罩，用于完美像素判断碰撞
+		self.mask=pygame.mask.from_surface(self.image)
 
 	def update(self,dt):
          self.rect.y +=self.speedy*dt*70

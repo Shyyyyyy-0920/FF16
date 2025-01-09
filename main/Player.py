@@ -24,7 +24,7 @@ class Player(pygame.sprite.Sprite):
 		#运动方面的设置
 		self.direction = pygame.math.Vector2()#用向量来表示移动方向
 		self.pos = pygame.math.Vector2(self.rect.center)#让人物在移动的同时更新矩形框
-		self.speed = 200#玩家速度
+		self.speed = 400#玩家速度
 
 		#碰撞部分的逻辑
 		
@@ -582,6 +582,8 @@ class Player_heart(Player):
 		self.vulnerable = True#受到伤害的标志
 		self.invulnerability_duration = 500
 		self.hurt_time = None
+		#获取遮罩，用于完美像素判断碰撞
+		self.mask=pygame.mask.from_surface(self.image)
 	def animate(self,dt):
 		self.frames=import_folder('../assets/Image/heart')
 		self.frame_index += 15*dt#帧速率，但是会返回一个浮点数，下面这个记得转换
