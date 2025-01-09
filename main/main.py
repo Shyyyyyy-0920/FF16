@@ -13,7 +13,7 @@ class Game:
 		# 初始化混音器
 		pygame.mixer.init()
 		pygame.mixer.music.load('../assets/sound/bgm.ogg')
-		pygame.mixer.music.set_volume(0.5)
+		pygame.mixer.music.set_volume(0.7)
 		pygame.mixer.music.play(loops=-1)  # 循环播放
 
 	def run(self):

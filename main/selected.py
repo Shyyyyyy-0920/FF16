@@ -27,7 +27,7 @@ class selected:
             self.event_queue=add_event(self.Level1.run(dt))
             self.player_will=self.Level1.get_player_will()
         if self.flag == 3:#第三个场景
-            self.event_queue=add_event(self.Level2.run(dt*2))
+            self.event_queue=add_event(self.Level2.run(dt))
             self.player_will=self.Level2.get_player_will()
         if self.flag == 4:#最终游戏胜利后跳转的场景
             self.event_queue=add_event(self.win_menu.run())
