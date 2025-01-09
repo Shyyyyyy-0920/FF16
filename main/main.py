@@ -10,9 +10,9 @@ class Game:
 		self.player_will=10
 		self.flag=selected(self.player_will)
 		
-		# 初始化混音器
+		#初始化混音器
 		pygame.mixer.init()
-		pygame.mixer.music.load('../assets/sound/bgm.ogg')
+		pygame.mixer.music.load('../assets/audio/start_menu.wav')
 		pygame.mixer.music.set_volume(0.7)
 		pygame.mixer.music.play(loops=-1)  # 循环播放
 
@@ -22,9 +22,8 @@ class Game:
 				if event.type == pygame.QUIT:
 					pygame.quit()
 					sys.exit()
-			self.screen.fill(WATER_COLOR)
 			dt = self.clock.tick() / 1000
-			self.flag.run(dt,self.screen)
+			self.flag.run(dt)
 			pygame.display.update()
 
 if __name__ == '__main__':

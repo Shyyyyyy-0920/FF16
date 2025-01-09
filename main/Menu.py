@@ -3,7 +3,7 @@ from Setting import *
 from Timer import Timer
 from UI import button
 import sys
-from add_event import add_event
+from add_event import add_event,g_evene_queue
 
 #这个类主要是各个菜单界面的创建和绘制与反应
 class Menu:
@@ -332,41 +332,43 @@ def defeat_menu(window):
 #------------------------------------------
 
 #--------------------------------------游戏开始界面
-def start_menu(window):
-    window.fill(WHITE)
-    #加载图片
-    image1=pygame.image.load('../assets/photo/background_menu.png')
-    # 渲染图片
-    window.blit(image1,(0,0))
-    pygame.display.update()
-    start_button=button(0,0,0,70,247,280,280,'START GAME',45,255,255,255)
-    set_button=button(0,0,0,70,250,280,360,'STORY',45,255,255,255)
-    quiet_button=button(0,0,0,70,250,300,440,'QUIT ',45,255,255,255)
-    while 1:
-    #检测事件
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
-#----------开始界面三个按钮的建立----------------------------------------
-            start_button.draw_button(window)
-            set_button.draw_button(window)
-            quiet_button.draw_button(window)
-            start_key=start_button.change_color(pygame.mouse.get_pos(),window)
-            set_key=set_button.change_color(pygame.mouse.get_pos(),window)
-            quiet_key=quiet_button.change_color(pygame.mouse.get_pos(),window)
+class start_menu:
+	def __init__(self):
+		self.window=pygame.display.get_surface()
+		self.image=pygame.image.load('../assets/photo/background_menu.png')
+		self.start_button=button(0,0,0,70,247,280,280,'START GAME',45,255,255,255)
+		self.set_button=button(0,0,0,70,250,280,360,'STORY',45,255,255,255)
+		self.quiet_button=button(0,0,0,70,250,300,440,'QUIT ',45,255,255,255)
+		
+	def draw_ui(self):
+		self.start_button.draw_button(self.window)
+		self.set_button.draw_button(self.window)
+		self.quiet_button.draw_button(self.window)
+		self.start_key=self.start_button.change_color(pygame.mouse.get_pos(),self.window)
+		self.set_key=self.set_button.change_color(pygame.mouse.get_pos(),self.window)
+		self.quiet_key=self.quiet_button.change_color(pygame.mouse.get_pos(),self.window)
+	def run(self):
+		self.window.fill(WHITE)
+		self.window.blit(self.image,(0,0))
+		self.draw_ui()
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				pygame.quit()
+				sys.exit()
+			if event.type==pygame.MOUSEBUTTONDOWN:
+				if self.start_key==True:#判断是否按到了开始游戏
+					self.window.fill((255,255,255))
+					return 6
+				elif self.set_key==1:#判断是否按到了故事
+					self.window.fill((255,255,255))
+					return 7
+				elif self.quiet_key==1:#判断是否按到了退出游戏
+					return 9
+		if g_evene_queue[-1]==0:
+			return 0
+		elif g_evene_queue[-1]==1:
+			return 1
 #----------=====================----------------------------------------
-            if event.type==pygame.MOUSEBUTTONDOWN:
-                if start_key==True:#判断是否按到了开始游戏
-                    window.fill((255,255,255))
-                    pygame.display.update()
-                    return 6
-                elif set_key==1:#判断是否按到了故事
-                    window.fill((255,255,255))
-                    pygame.display.update()
-                    return 7
-                elif quiet_key==1:#判断是否按到了退出游戏
-                    return 9
-
 #------------------以下是暂停界面
 class stop_menu:
 	def __init__(self,toggle_menu):

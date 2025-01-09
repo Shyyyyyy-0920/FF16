@@ -11,7 +11,9 @@ from chat import ChatBot
 class selected:
     def __init__(self,player_will):
         self.player_will=player_will
+        self.old_flag=[]
         self.event_queue=add_event(0)
+        self.start_menu=start_menu()
         self.born_place=born_place(player_will)
         self.Level2=Level2(player_will)
         self.win_menu=win_menu()
@@ -19,14 +21,14 @@ class selected:
         self.Trader_Battle=Trader_Battle()
         self.Final_battle=Final_battle()
         self.ChatBot=ChatBot("trader3")
-    def selected_level(self,dt,window):
+    def selected_level(self,dt):
         if self.flag==0:#菜单界面
-            self.start_menu=start_menu(window)
-            self.event_queue=add_event(self.start_menu)
+            self.event_queue=add_event(self.start_menu.run())
         if self.flag == 1:#第一个出生场景
             self.event_queue=add_event(self.born_place.run(dt))
             self.player_will=self.born_place.get_player_will()
         if self.flag == 2:#第二个战斗场景
+ 
             self.event_queue=add_event(self.Level1.run(dt))
             self.player_will=self.Level1.get_player_will()
         if self.flag == 3:#第三个场景
@@ -35,12 +37,13 @@ class selected:
         if self.flag == 4:#最终游戏胜利后跳转的场景
             self.event_queue=add_event(self.win_menu.run())
         if self.flag == 5:#与trader对战的场景
+    
             self.event_queue=add_event(self.Trader_Battle.run(dt))
         if self.flag == 6:#最终boss战
+
             self.event_queue=add_event(self.Final_battle.run(dt))
         if self.flag == 7:#每次对话的场景
             self.event_queue=add_event(self.ChatBot.start())
-
         if self.flag==9:
             pygame.quit()
             sys.exit()
@@ -53,10 +56,11 @@ class selected:
                     self.Level1.toggle_menu()
     def add_event(self):
         self.flag=self.event_queue[-1]
-    def run(self,dt,window):
+        #print(self.flag)
+    def run(self,dt):
        
         self.add_event()
-        self.selected_level(dt,window)
+        self.selected_level(dt)
 #---------------到此为止---------      
 
 

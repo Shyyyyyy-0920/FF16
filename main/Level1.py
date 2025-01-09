@@ -156,6 +156,7 @@ class Level1:
 		return self.player_will
 
 	def run(self,dt):
+		self.display_surface.fill(WATER_COLOR)
 		self.all_sprites.custom_draw(self.player)
 		self.ui.display(self.player)
 		#print(self.player.rect)

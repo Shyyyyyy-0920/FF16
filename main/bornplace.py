@@ -7,13 +7,13 @@ from add_event import g_evene_queue,add_event
 from support import import_folder
 class born_place:
     def __init__(self,player_will):
+        
         self.display_surface= pygame.display.get_surface()
         self.player_will=player_will
         self.all_sprites = CameraGroup()
         self.z=LAYERS['ground']
         self.collision_sprites = pygame.sprite.Group()#用于存储哪些组分需要有碰撞判定
         self.interaction_sprites = pygame.sprite.Group()##用于判断哪些组分碰撞后需要判断有交互
-
         self.set_up()
 
     def set_up(self):
@@ -73,7 +73,6 @@ class born_place:
         self.set_up()
     def run(self,dt):
         self.display_surface.fill('black')
-
         self.all_sprites.custom_draw(self.player)#更新摄像头
         self.all_sprites.update(dt*2)
         #print(self.player.rect)

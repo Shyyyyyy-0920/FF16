@@ -152,43 +152,39 @@ class boss(Generic):
 
 	def update(self,dt):
 		self.animate(dt)
-
-class weapon_gun(Generic):
-	def __init__(self, pos,frames,groups,player):
+class block(Generic):#用来限制人物行动范围
+	def __init__(self, pos, surf, groups, z=LAYERS['main']):
+		super().__init__(pos, surf, groups, z)
+class attack(Generic):#sans的一些攻击
+	def __init__(self, pos,type, groups,speed,vector1):#说明，vector1是方向向量，用来表示这个攻击物的移动方向
 		#动画设置
-		self.frames=frames
 		self.frame_index = 0
-		##从人物的位置发出
-		super().__init__(pos = pos,
-				   surf = self.frames[self.frame_index],
-				   groups = groups)
-		#移动
-		self.pos = pygame.math.Vector2(pos)
-		self.speed = 500
-		self.player=player
-		self.start_x = self.player.rect.centerx - SCREEN_WIDTH / 2
-		self.start_y = self.player.rect.centery - SCREEN_HEIGHT / 2
-		
-		self.mouse_position = pygame.mouse.get_pos()
-		self.direction=pygame.math.Vector2((self.mouse_position[0]-self.player.rect.centerx,self.mouse_position[1]-self.player.rect.centery))
-		self.direction = self.direction.normalize()
-		
-		#碰撞组分
-		self.collision_sprites = groups[1]
-	
+		self.frames=pygame.image.load( '../assets/graphics/monsters/sans/Attacks/battle_1/spr_gasterblaster_0.png')
+		# 群组设置
+		super().__init__(
+				pos = pos, 
+				surf =self.frames, 
+				groups = groups) 
+		self.hitbox = self.rect.inflate(0,-10)
+		self.type=type
+		self.speed=speed
+		self.direction=vector1
 	def animate(self,dt):
-		self.frame_index += 10 * (dt*2)
-		if self.frame_index >= len(self.frames):
-			self.frame_index = 0
-		self.image = self.frames[int(self.frame_index)]
-		self.image=pygame.transform.scale(self.image,(30,40))
-
-	def move(self,dt):#在这里写hitbox连同角色的移动而发生移动
-		#print(f'这是鼠标点的位置{(self.mouse_position)}这是人物的位置{(self.player.rect.centerx,self.player.rect.centery)}')
-		self.pos += self.direction * self.speed * dt
-		self.rect.topleft = (round(self.pos.x), round(self.pos.y))
-
-
+		if self.type == 'battle_1' :
+			self.frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
+			self.frame_index += 5 * dt
+			if self.frame_index >= len(self.frames):
+				self.frame_index = 0
+				self.image = self.frames[int(self.frame_index)]
+		else:
+			pass
+	def move(self,dt):
+		if self.direction.magnitude() != 0:
+			self.direction = self.direction.normalize()
+		self.rect.x += self.direction.x *self.speed*dt
+		print(self.direction,self.speed,dt)
+		self.rect.y += self.direction.y *self.speed*dt
+		#self.rect.center = self.hitbox.center
 	def update(self,dt):
 		self.move(dt)
 		self.animate(dt)
