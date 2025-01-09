@@ -359,7 +359,7 @@ def start_menu(window):
                 if start_key==True:#判断是否按到了开始游戏
                     window.fill((255,255,255))
                     pygame.display.update()
-                    return 5
+                    return 1
                 elif set_key==1:#判断是否按到了故事
                     window.fill((255,255,255))
                     pygame.display.update()

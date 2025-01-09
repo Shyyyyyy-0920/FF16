@@ -26,7 +26,7 @@ class Game:
 			dt = self.clock.tick() / 1000
 			self.flag.run(dt,self.screen)
 			pygame.display.update()
-			#print(self.player_will )
+
 if __name__ == '__main__':
 	game = Game()
 	game.run()

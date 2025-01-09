@@ -46,7 +46,7 @@ class Level2:
 		#音乐
 		self.success = pygame.mixer.Sound('../assets/audio/success.wav')
 		self.success.set_volume(0.3)
-		self.rain_sound = pygame.mixer.Sound('../assets/sound/rain.mp3')
+		self.rain_sound = pygame.mixer.Sound('../assets/sound/rain.wav')
 		self.rain_sound.set_volume(0.2)
 
 

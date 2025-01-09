@@ -31,6 +31,11 @@ class Trader_Battle:
 
         self.restart_flag=2
         self.use_time=0
+        #声音设置
+        self.injury_sound = pygame.mixer.Sound('../assets/sound/injury.wav')
+        self.injury_sound.set_volume(0.3)
+        self.die_sound = pygame.mixer.Sound('../assets/sound/die.mp3')
+        self.die_sound.set_volume(0.3)
 
     def set_up(self):
         
@@ -70,21 +75,26 @@ class Trader_Battle:
                 self.boss1.kill()
                 boss_frames = import_folder('../assets/demon1/attack')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
+                self.injury_sound.play()
             elif self.title_time / 5==2:
                 self.boss_hp =30
                 self.boss1.kill()
                 boss_frames = import_folder('../assets/demon1/injury')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
+                self.injury_sound.play()
             elif self.title_time / 5 == 3:
                 self.boss_hp =5
                 self.boss1.kill()
                 boss_frames = import_folder('../assets/demon1/injury')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
+                self.injury_sound.play()
             elif self.title_time / 5 == 4:
                 self.boss_hp =0
                 self.boss1.kill()
                 boss_frames = import_folder('../assets/demon1/die')
                 self.boss1=boss((400,70),boss_frames,self.all_sprites)
+                self.die_sound.play()
+            
     def is_defeat(self):
         if self.Player_heart.hp<=0:#没血了就进入失败画面
             self.restart_flag=defeat_menu(self.display_surface)
@@ -153,10 +163,6 @@ class Trader_Battle:
  
         
     
-        
-#----------------------到此为止--------------
-
-
 class Final_battle:
 	def __init__(self):
 
@@ -220,5 +226,4 @@ class Final_battle:
 			self.all_sprites.update(dt)
 			self.all_sprites.enemy_update(self.player)
 		self.is_win()
-	
-
+#----------------------到此为止--------------
