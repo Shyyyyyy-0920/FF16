@@ -219,6 +219,7 @@ class Level2:
 		if g_evene_queue[-1]==5:
 			return 5#与trader对战
 		elif g_evene_queue[-1]==6:
+			self.rain_sound.stop()
 			return 6#与最终BOSS对战
 		else:
 			return 3

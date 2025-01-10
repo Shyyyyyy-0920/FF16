@@ -344,9 +344,8 @@ class Final_battle:
         if self.use_time==0:
               self.start_time=pygame.time.get_ticks()
               self.use_time+=1
-        pygame.mixer.music.stop()
-        self.battle_sound.play(loops=-1)
-        
+              pygame.mixer.music.stop()
+              self.battle_sound.play(loops=-1)
         self.display_surface.fill('black')
         self.all_sprites.draw(self.display_surface)
         self.draw_ui()
