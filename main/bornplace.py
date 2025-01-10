@@ -21,6 +21,9 @@ class born_place:
         self.set_up()
         self.talk_flag=False
         self.ChatBot=ChatBot("trader1")
+        #bgm
+        
+        self.music_play=0
 
     def set_up(self):
         stone_image=pygame.image.load('../assets/air/1.png')
@@ -87,6 +90,14 @@ class born_place:
         self.all_sprites.custom_draw(self.player)#更新摄像头
         self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
         self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
+        if self.music_play==0:
+              self.music_play+=1
+              pygame.mixer.music.fadeout(1000)
+              pygame.mixer.quit()
+              pygame.init()
+              pygame.mixer.music.load('../assets/sound/bgm.ogg')
+              pygame.mixer.music.set_volume(0.3)              
+              pygame.mixer.music.play(loops=-1)
         if not self.talk_flag:
             self.all_sprites.update(dt*2)
         else:

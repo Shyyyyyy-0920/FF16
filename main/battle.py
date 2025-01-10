@@ -1,5 +1,4 @@
-import pygame
-import sys
+import pygame,sys
 from Setting import *
 from Menu import defeat_menu,stop_menu
 from UI import button,UI
@@ -200,7 +199,6 @@ class Final_battle:
         # 获取屏幕表面
         self.display_surface = pygame.display.get_surface()
         
-        
         # sprite group setup
         self.collision_sprites = pygame.sprite.Group()
         self.all_sprites=pygame.sprite.Group()
@@ -215,15 +213,13 @@ class Final_battle:
         self.use_time=0
         #人物ui界面
         #self.ui = UI()
-         #善恶值的UI
+        #善恶值的UI
         self.player_will=player_will()
         self.ui=UI()
         
         #粒子效果
         #self.animation_player = AnimationPlayer()
         #战斗音乐
-        self.battle_sound = pygame.mixer.Sound('../assets/audio/in_battle.mp3')
-        self.battle_sound.set_volume(0.3)
         self.injury_sound = pygame.mixer.Sound('../assets/sound/injury.wav')
         self.injury_sound.set_volume(0.3)
         self.die_sound = pygame.mixer.Sound('../assets/sound/die.mp3')
@@ -238,7 +234,7 @@ class Final_battle:
                 interaction=None,
                 toggle_stop=self.toggle_menu
                 )
-         #添加boss进入我的战斗
+        #添加boss进入我的战斗
         boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/common_head')
         self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
         boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/common_body')
@@ -344,8 +340,12 @@ class Final_battle:
         if self.use_time==0:
               self.start_time=pygame.time.get_ticks()
               self.use_time+=1
-              pygame.mixer.music.stop()
-              self.battle_sound.play(loops=-1)
+              pygame.mixer.music.fadeout(1000)
+              pygame.mixer.quit()
+              pygame.init()
+              pygame.mixer.music.load('../assets/audio/in_battle.mp3')
+              pygame.mixer.music.set_volume(0.3)              
+              pygame.mixer.music.play(loops=-1)
         self.display_surface.fill('black')
         self.all_sprites.draw(self.display_surface)
         self.draw_ui()
