@@ -8,6 +8,7 @@ from add_event import add_event,g_evene_queue
 from Player import Player_heart
 from will import player_will
 from random import randint
+from chat import ChatBot
 class Trader_Battle:
     def __init__(self):
         #画障碍线的坐标
@@ -225,8 +226,6 @@ class Final_battle:
         self.attack_sprites = pygame.sprite.Group()
         #初始化
         self.set_up()
-        self.stop_menu=stop_menu(self.toggle_menu)
-        self.game_paused = False
         self.use_time=0
         #人物ui界面
         #self.ui = UI()
@@ -238,7 +237,7 @@ class Final_battle:
         self.time=0
         self.paused_time=0
         self.pause_start_time = 0  # 新增：用于记录暂停开始的时间点
-        self.time_sign=False
+        self.time_sign=True
         #用来记录现在是第几阶段了
         self.bout=0
         self.flag=0##用来平凡切换状态创建一次性角色
@@ -250,6 +249,11 @@ class Final_battle:
         self.injury_sound.set_volume(0.3)
         self.die_sound = pygame.mixer.Sound('../assets/sound/die.mp3')
         self.die_sound.set_volume(0.3)
+        #人物对话部分
+        self.game_paused = True#用于对话过程中暂停游戏
+        self.sans0=ChatBot("sans0")
+        self.sans1=ChatBot("sans1")
+        self.sans2=ChatBot("sans2")
 
     def set_up(self):
         self.start_time=0
@@ -258,7 +262,7 @@ class Final_battle:
                 group=[self.all_sprites],
                 collision_sprites=self.collision_sprites,
                 interaction=None,
-                toggle_stop=self.toggle_menu
+                toggle_stop=None
                 )
         #添加boss进入我的战斗
         boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/common_body')
@@ -275,7 +279,7 @@ class Final_battle:
                     self.player.hp -= 5
                     self.player.vulnerable=False
                     self.player.hurt_time = pygame.time.get_ticks()
-    def sans_states(self,bout):
+    def sans_states_attack(self,bout):
         if bout == 0:
             #四条龙喷激光
             if self.flag == 0:
@@ -317,7 +321,6 @@ class Final_battle:
                         sprite.kill()  # 移除该对象
                 if len(self.attack_sprites) == 0:
                     self.flag=0
-                    self.bout=1
         elif bout == 1:
             #弹幕躲避
             if self.flag == 0:
@@ -351,7 +354,6 @@ class Final_battle:
                         sprite.kill()  # 移除该对象
                 if len(self.attack_sprites) == 0:
                     self.flag=0
-                    self.bout=2
         elif bout == 2:
             if self.flag == 0:
                 if self.sign==0:
@@ -391,9 +393,7 @@ class Final_battle:
                         sprite.kill()  # 移除该对象
                 if len(self.attack_sprites) == 0:
                     self.flag=0
-                    self.bout=3
-    def update_will(self):
-        self.new_player_will=self.player_will.get_player_will()
+        
     def sans_states_animations(self):
         if self.title_time%5==0:
             if self.title_time /5==1 :#一阶段结束
@@ -405,8 +405,9 @@ class Final_battle:
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack1_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
-                #self.bout=1
-                
+                self.bout=1
+                self.sans_states_attack(self.bout)
+                self.toggle_talk()
             elif self.title_time / 5==2:#二阶段结束
                 self.boss_hp =30
                 self.boss_head.kill()
@@ -416,7 +417,9 @@ class Final_battle:
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack2_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
-                #self.bout=2
+                self.bout=2
+                self.sans_states_attack(self.bout)
+                self.toggle_talk()
             elif self.title_time / 5 == 3:#三阶段结束，进入对话
                 self.boss_hp =0
                 self.boss_head.kill()
@@ -426,8 +429,17 @@ class Final_battle:
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/injury_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
-                #self.bout=3
-    def toggle_menu(self):
+                self.bout=3
+                self.toggle_talk()
+                #self.sans_states_attack(self.bout)
+    def sans_talk(self):
+        if self.bout==0:
+            self.sans0.start(True,self.toggle_talk)
+        elif self.bout == 1:
+            self.sans1.start(True,self.toggle_talk)
+        elif self.bout == 2:
+            self.sans2.start(True,self.toggle_talk)
+    def toggle_talk(self):
         self.game_paused = not self.game_paused 
     def record_time(self):
         if not self.game_paused:
@@ -435,13 +447,14 @@ class Final_battle:
             
         else:
             self.paused_time = pygame.time.get_ticks() - self.pause_start_time # 累加暂停时间
-            
+            #print(self.paused_time)
         if self.paused_time !=0:
             self.time=self.paused_time+self.temp_paused_time
 
     def is_win(self):
         pass
     def draw_ui(self):
+        self.new_player_will=self.player_will.get_player_will()
         self.now_time=pygame.time.get_ticks()
         self.adjusted_time = self.now_time - self.time  # 使用调整后的时间
         self.time_clock=(self.adjusted_time-self.start_time)/1000
@@ -460,9 +473,9 @@ class Final_battle:
         pygame.draw.line(self.display_surface,(255,255,255),(100,200),(100,530))
         pygame.draw.line(self.display_surface,(255,255,255),(700,200),(700,530))
         pygame.draw.line(self.display_surface,(255,255,255),(100,530),(700,530))
+        
     def bgm_play(self):
         if self.use_time==0:
-              self.start_time=pygame.time.get_ticks()
               self.use_time+=1
               pygame.mixer.music.fadeout(1000)
               pygame.mixer.quit()
@@ -470,37 +483,31 @@ class Final_battle:
               pygame.mixer.music.load('../assets/audio/in_battle.mp3')
               pygame.mixer.music.set_volume(0.3)              
               pygame.mixer.music.play(loops=-1)
-    def reset(self):
-        self.all_sprites.empty()
-        self.attack_sprites.empty()
-        self.collision_sprites.empty()
-        self.set_up()
     def run(self,dt):
         self.battle_start_time=pygame.time.get_ticks()
-        self.update_will()
         self.bgm_play()
         self.display_surface.fill('black')
         self.all_sprites.draw(self.display_surface)
         self.record_time()#记录暂停的时候的时间
         self.draw_ui()#画UI
-        self.sans_states_animations()#画出boss每个阶段的动画
+        self.sans_states_animations()#画出boss每个阶段的动画,并且判断现在是否进入新阶段的对话
         self.is_win()#判断是否胜利
+        print(self.start_time)
         if not self.game_paused:
             self.all_sprites.update(dt)
-            self.sans_states(self.bout)#sans每个阶段的招式
             add_event(6)
-            return 6
         else:
-            self.menu_flag=self.stop_menu.update()
-            if self.menu_flag == 1:
-                self.reset()
-                self.start_time=pygame.time.get_ticks()
-                self.paused_time = 0  # 重置暂停时间
-                add_event(6)
-                return 6
-            elif self.menu_flag == 0:
+            self.sans_talk()
+            if  not self.game_paused:
                 self.temp_paused_time+=self.paused_time
                 self.paused_time = 0  # 重置暂停时间
+                if self.time_sign:#调控第一次进入
+                    self.start_time=pygame.time.get_ticks()
+                    self.time_sign=False
+                    self.paused_time = 0  # 重置暂停时间
+                    self.temp_paused_time=0
+                    self.time=0
+  
         if g_evene_queue[-1]==6:
               return 6
         else:
