@@ -6,7 +6,7 @@ from sprites import Generic, Water, WildFlower, Tree,Interaction,house,boss,Part
 from pytmx.util_pygame import load_pygame
 from soil import SoilLayer
 from support import *
-from Menu import Menu,stop_menu
+from Menu import Menu
 from transition import Transition
 from sky import Rain, Sky
 from add_event import g_evene_queue 

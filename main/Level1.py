@@ -10,6 +10,7 @@ from sprites import Tile,Weapon,Enemy,house,Interaction
 from add_event import g_evene_queue
 from random import choice, randint
 from will import player_will
+from chat import ChatBot
 class Level1:
 	def __init__(self):
 		# 获取屏幕表面
@@ -38,6 +39,9 @@ class Level1:
         #粒子效果
 		self.animation_player = AnimationPlayer()
 		self.magic_player = MagicPlayer(self.animation_player)
+		#对话方面
+		self.talk_flag=False
+		self.ChatBot=ChatBot("trader3")
 		
 		
 	def set_up(self):
