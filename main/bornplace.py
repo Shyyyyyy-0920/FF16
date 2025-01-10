@@ -59,7 +59,7 @@ class born_place:
         #boss场景部分
         boss_frames = import_folder('../assets/demon1/react')
         boss((1000,547),boss_frames,self.all_sprites)
-        Interaction((1020,550),(80,50),self.interaction_sprites,'Trader')
+        Interaction((1000,540),(80,50),self.interaction_sprites,'Trader')
 
         Generic(
 			pos = (0,0),

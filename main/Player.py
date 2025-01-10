@@ -71,7 +71,7 @@ class Player(pygame.sprite.Sprite):
 		self.sleep = False
 		self.toggle_shop = toggle_shop
 		self.soil_layer = soil_layer
-
+		
 		#音乐
 		self.watering = pygame.mixer.Sound('../assets/audio/water.mp3')
 		self.watering.set_volume(0.2)
@@ -176,6 +176,8 @@ class Player(pygame.sprite.Sprite):
 					if collided_interaction_sprite[0].name == 'Trader':
 						self.toggle_shop()#这里就是碰撞的判断，如果碰到了就改变商店的状态
 					elif collided_interaction_sprite[0].name =='portal':
+						global open_stop_time
+						open_stop_time=pygame.time.get_ticks()
 						self.portal.play()
 						add_event(6)
 					else:
@@ -581,6 +583,8 @@ class Player_heart(Player):
 		self.rect=self.image.get_rect(center = pos)
 		self.hp=100
 		self.vulnerable = True#受到伤害的标志
+		self.stop_open=False#开启暂停页面的标志
+		
 		self.invulnerability_duration = 500
 		self.hurt_time = None
 		#获取遮罩，用于完美像素判断碰撞
@@ -608,7 +612,7 @@ class Player_heart(Player):
 			self.direction.x = -1
 		else:
 			self.direction.x = 0
-		if keys[pygame.K_f]:
+		if keys[pygame.K_f] and self.stop_open:
 			self.toggle_shop()
 	def is_defeat(self):
 		if self.hp<=0:
@@ -618,6 +622,9 @@ class Player_heart(Player):
 		if not self.vulnerable:#无敌时间
 			if current_time - self.hurt_time >= self.invulnerability_duration:
 				self.vulnerable = True
+		if not self.stop_open:
+			if current_time - open_stop_time >=500:
+				self.stop_open= True
 	def move(self,dt):#在这里写hitbox连同角色的移动而发生移动
 
 		#归一化,由于向量的矢量和的性质，斜对角速度会变快，故这里要归一化
@@ -625,9 +632,7 @@ class Player_heart(Player):
 			self.direction = self.direction.normalize()
 		
 #---------由于后面会有碰撞的过程，故需要将水平与竖直方向分开
-
 		#水平方向移动
-		     
 		self.pos.x += self.direction.x * self.speed * dt#这个物体的位置位于方向向量乘以自己的速度和时间增量
 		self.hitbox.centerx = round(self.pos.x)#变为范围判定，更准
 		self.rect.centerx = self.hitbox.centerx#再将矩形中心移到改变后的位置
