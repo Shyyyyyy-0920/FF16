@@ -247,7 +247,7 @@ class Player(pygame.sprite.Sprite):
 		self.animate(dt)
 
 class Player_battle(pygame.sprite.Sprite):
-	def __init__(self,pos,groups,collision_sprites,interaction_sprites,create_attack,destroy_attack,create_magic,levelint):
+	def __init__(self,pos,groups,collision_sprites,interaction_sprites,create_attack,destroy_attack,create_magic,levelint,togggle_talk=None):
 		super().__init__(groups)
 		self.frame_index = 0
 		self.image = pygame.image.load('../assets/graphics/test/player.png').convert_alpha()
@@ -311,7 +311,7 @@ class Player_battle(pygame.sprite.Sprite):
 	
 
 		self.levelint=levelint
-	
+		self.togggle_talk=togggle_talk
 
 	def import_player_assets(self):
 		character_path = '../assets/graphics/player/'
@@ -400,7 +400,7 @@ class Player_battle(pygame.sprite.Sprite):
 						self.portal.play()
 						add_event(self.levelint)
 					elif collided_interaction_sprite[0].name =='Trader':
-						add_event(7)
+						self.togggle_talk()
 					else:
 						self.status = 'left_idle'
 						self.sleep = True

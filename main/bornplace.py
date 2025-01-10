@@ -3,10 +3,11 @@ from Setting import *
 from Level2 import CameraGroup
 from sprites import Generic,collision_rect,Interaction,boss
 from Player import Player_battle
-from add_event import g_evene_queue,add_event
+from add_event import g_evene_queue
 from support import import_folder
 from UI import UI
 from will import player_will
+from chat import ChatBot
 class born_place:
     def __init__(self):
         self.player_will=player_will()
@@ -18,6 +19,8 @@ class born_place:
         self.collision_sprites = pygame.sprite.Group()#用于存储哪些组分需要有碰撞判定
         self.interaction_sprites = pygame.sprite.Group()##用于判断哪些组分碰撞后需要判断有交互
         self.set_up()
+        self.talk_flag=False
+        self.ChatBot=ChatBot("trader1")
 
     def set_up(self):
         stone_image=pygame.image.load('../assets/air/1.png')
@@ -40,7 +43,8 @@ class born_place:
             create_attack=None,
             destroy_attack=None,
             create_magic=None,
-            levelint=2
+            levelint=2,
+            togggle_talk=self.start_talk
         )
         self.player.z=LAYERS['main']
         #传送门部分的空气墙 
@@ -69,6 +73,8 @@ class born_place:
             self.player.rect.centery=773
         if self.player.rect.centerx>=1081.36:
             self.player.rect.centerx=1081.36
+    def start_talk(self):
+        self.talk_flag=not self.talk_flag
     def reset(self):
         # 清空所有精灵组
         self.all_sprites.empty()
@@ -79,9 +85,12 @@ class born_place:
         self.update_will()
         self.display_surface.fill('black')
         self.all_sprites.custom_draw(self.player)#更新摄像头
-        self.all_sprites.update(dt*2)
         self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
         self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
+        if not self.talk_flag:
+            self.all_sprites.update(dt*2)
+        else:
+            self.ChatBot.start()
         if g_evene_queue[-1] ==1:
             return 1
         elif g_evene_queue[-1] ==2:
