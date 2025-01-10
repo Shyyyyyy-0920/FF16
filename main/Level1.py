@@ -154,6 +154,8 @@ class Level1:
 		if number_of_monster == 34:
 			self.portal=house((2153,956),self.portal_image,[self.all_sprites, self.collision_sprites])
 			Interaction((2153,956),(280,146),self.interaction_sprites,'portal')
+	def start_talk(self):
+		self.talk_flag=not self.talk_flag
 
 	def run(self,dt):
 		self.display_surface.fill(WATER_COLOR)

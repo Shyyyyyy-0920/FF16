@@ -222,7 +222,7 @@ class Final_battle:
         #粒子效果
         #self.animation_player = AnimationPlayer()
         #战斗音乐
-        self.battle_sound = pygame.mixer.Sound('../assets/audio/in_battle.wav')
+        self.battle_sound = pygame.mixer.Sound('../assets/audio/in_battle.mp3')
         self.battle_sound.set_volume(0.3)
         self.injury_sound = pygame.mixer.Sound('../assets/sound/injury.wav')
         self.injury_sound.set_volume(0.3)

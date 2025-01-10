@@ -394,13 +394,13 @@ class Player_battle(pygame.sprite.Sprite):
 			if keys[pygame.K_f]:
 				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction_sprites,False)
 				if collided_interaction_sprite:
-					# if collided_interaction_sprite[0].name == 'Trader':
-					# 	self.toggle_shop()#这里就是碰撞的判断，如果碰到了就改变商店的状态
 					if collided_interaction_sprite[0].name =='portal':
 						self.portal.play()
 						add_event(self.levelint)
 					elif collided_interaction_sprite[0].name =='Trader':
 						self.togggle_talk()
+					# elif collided_interaction_sprite[0].name =='Trader':
+					# 	self.togggle_talk()
 					else:
 						self.status = 'left_idle'
 						self.sleep = True
