@@ -7,11 +7,12 @@ from add_event import add_event,g_evene_queue
 
 #这个类主要是各个菜单界面的创建和绘制与反应
 class Menu:
-	def __init__(self, player, toggle_menu):
+	def __init__(self, player, toggle_menu,toggle_talk):
 
 		# 常规设置
 		self.player = player#传入一个角色，下面会用到读取角色的属性，比如身上的物品，善恶值这些
 		self.toggle_menu = toggle_menu#用来执行是否关闭或打开界面
+		self.toggle_talk=toggle_talk#用于执行打开对话环节
 		self.display_surface = pygame.display.get_surface()#获取表面信息
 		self.font = pygame.font.Font('../assets/font/DTM-Mono.otf', 30)#装载字体
 
@@ -102,8 +103,7 @@ class Menu:
 
 				#聊天
 				else:
-	
-					add_event(5)
+					self.toggle_talk()
 			if keys[pygame.K_LCTRL]:
 				self.timer.activate()
 				self.menu_loot.play()
@@ -115,10 +115,7 @@ class Menu:
 						self.player.item_inventory[current_item] += 1
 						self.trader_item_inventory[current_item] -=1
 				else:#聊天
-
-					add_event(5)
-
-
+					self.toggle_talk()
 		# 可以上下滚动保证不出界
 		if self.index < 0:
 			self.index = len(self.options) - 1

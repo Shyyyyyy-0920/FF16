@@ -13,6 +13,7 @@ from add_event import g_evene_queue
 from random import randint
 from UI import UI
 from will import player_will
+from chat import ChatBot
 #这个类用来绘制地图，加载人物，几乎所有的程序都在这里进行
 class Level2:
 	def __init__(self):
@@ -37,11 +38,8 @@ class Level2:
 		self.soil_layer.raining = self.raining
 		self.sky = Sky()
 		# shop
-		self.menu = Menu(self.player, self.toggle_shop)
+		self.menu = Menu(self.player, self.toggle_shop,self.start_talk)
 		self.shop_active = False
-		#暂停界面2，只适用于游戏进行中
-		self.stop_menu = stop_menu(self.toggle_stop)
-		self.stop_active = False
 		#作战
 		self.battle_active = False
 		#ui界面
@@ -53,6 +51,9 @@ class Level2:
 		self.success.set_volume(0.3)
 		self.rain_sound = pygame.mixer.Sound('../assets/sound/rain.wav')
 		self.rain_sound.set_volume(0.2)
+		#对话方面
+		self.talk_flag=False
+		self.ChatBot=ChatBot("trader3")
 
 
 	def setup(self):
@@ -183,6 +184,8 @@ class Level2:
 		self.stop_active = not self.stop_active
 	def update_will(self):
 		self.new_player_will=self.player_will.get_player_will()
+	def start_talk(self):
+		self.talk_flag=not self.talk_flag
 	def run(self,dt):
 		self.update_will()
 		#绘画逻辑
@@ -192,7 +195,10 @@ class Level2:
 		self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
 		#更新
 		if self.shop_active:
-			self.menu.update()
+			if self.talk_flag:
+				self.ChatBot.start(self.talk_flag,self.start_talk)
+			else:
+				self.menu.update()
 		else:
 			self.all_sprites.update(dt)
 			self.plant_collision()
