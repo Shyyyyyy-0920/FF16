@@ -1,4 +1,4 @@
-import pygame
+import pygame,sys
 from openai import OpenAI
 from typing import List, Dict
 from chat_words import *
@@ -20,7 +20,7 @@ class ChatBot:
         """
         self.messages = [{}]  # 存储对话消息
         self.chat_history = []  # 存储聊天历史记录
-        self.bg_color = (0,0,0)  # 设置背景颜色为浅灰色    
+        self.bg_color = (0,0,0)  # 设置背景颜色为黑色  
         self.screen = pygame.display.get_surface()# 屏幕对象   
         self.path = r"..\assets\font\DTM-Sans.otf"
 
@@ -41,7 +41,7 @@ class ChatBot:
         self.person = person  # 设置对话角色
 
 
-    def start(self):
+    def start(self,done,togggle_talk):
         """
         根据聊天类型设置初始消息
         :return: 初始消息列表
@@ -50,7 +50,6 @@ class ChatBot:
         screen = self.screen
         active = False  # 输入框是否激活
         text = ''  # 输入框中的文本
-        done = False  # 是否结束循环
         chat_open = True  # 是否打开聊天界面
 
         if person == "trader3":
@@ -76,14 +75,16 @@ class ChatBot:
         '''judgement_user = Judgement.name.judgement_user'''#暂时不用
 
 
-        while not done:
+        while done:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    done = True  # 如果事件类型是 QUIT，则结束循环
+                    pygame.quit()
+                    sys.exit()  # 如果事件类型是 QUIT，则结束循环
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
                         chat_open = not chat_open  # 按下 'Tab' 键退出聊天界面
-                        done = True
+                        done = False
+                        togggle_talk()
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 
                 if chat_open:
@@ -158,8 +159,6 @@ class ChatBot:
                 break
 
             pygame.display.flip()  # 更新屏幕显示
-
-        pygame.quit()  # 退出 pygame
 
     def update_output(self, message):
         """

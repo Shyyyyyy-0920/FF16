@@ -18,7 +18,6 @@ class selected:
         self.Level1=Level1()
         self.Trader_Battle=Trader_Battle()
         self.Final_battle=Final_battle()
-        self.ChatBot=ChatBot("trader3")
     def selected_level(self,dt):
         if self.flag==0:#菜单界面
             self.event_queue=add_event(self.start_menu.run())
@@ -36,23 +35,19 @@ class selected:
         if self.flag == 6:#最终boss战
 
             self.event_queue=add_event(self.Final_battle.run(dt))
-        if self.flag == 7:#每次对话的场景
-            self.event_queue=add_event(self.ChatBot.start())
         if self.flag==9:
             pygame.quit()
             sys.exit()
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_m:
-                    self.Level1.toggle_menu()
+        # for event in pygame.event.get():
+        #     if event.type == pygame.QUIT:
+        #         pygame.quit()
+        #         sys.exit()
+        #     if event.type == pygame.KEYDOWN:
+        #         if event.key == pygame.K_m:
+        #             self.Level1.toggle_menu()
     def add_event(self):
         self.flag=self.event_queue[-1]
-        #print(self.flag)
     def run(self,dt):
-       
         self.add_event()
         self.selected_level(dt)
 #---------------到此为止---------      

@@ -90,13 +90,11 @@ class born_place:
         if not self.talk_flag:
             self.all_sprites.update(dt*2)
         else:
-            self.ChatBot.start()
+            self.ChatBot.start(self.talk_flag,self.start_talk)
         if g_evene_queue[-1] ==1:
             return 1
         elif g_evene_queue[-1] ==2:
             self.reset()
             return 2
-        elif g_evene_queue[-1] ==7:
-            return 7
-        
+
 #-------------到此为止--------------    
