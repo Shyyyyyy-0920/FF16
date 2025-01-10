@@ -245,10 +245,10 @@ class Final_battle:
                 toggle_stop=self.toggle_menu
                 )
         #添加boss进入我的战斗
+        boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/common_body')
+        self.boss_body=sans((400,65),boss_frames_body,self.all_sprites)
         boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/common_head')
         self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
-        boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/common_body')
-        self.boss_body=sans((400,70),boss_frames_body,self.all_sprites)
         self.boss_hp=100
     def damage_player(self,amount):
         if self.player.vulnerable:
@@ -271,7 +271,7 @@ class Final_battle:
                 self.boss_head.kill()
                 self.boss_body.kill()
                 boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/attack1_body')
-                self.boss_body=sans((410,10),boss_frames_body,self.all_sprites)
+                self.boss_body=sans((395,0),boss_frames_body,self.all_sprites)
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack1_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
@@ -289,7 +289,7 @@ class Final_battle:
                 self.boss_head.kill()
                 self.boss_body.kill()
                 boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/attack2_body')
-                self.boss_body=sans((410,10),boss_frames_body,self.all_sprites)
+                self.boss_body=sans((395,0),boss_frames_body,self.all_sprites)
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack2_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
