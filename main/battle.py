@@ -266,11 +266,14 @@ class Final_battle:
         self.new_player_will=self.player_will.get_player_will()
     def player_attack(self):
         if self.title_time%5==0:
-            if self.title_time /5==1 :
+            if self.title_time /5==1 :#一阶段结束
                 self.boss_hp = 70
-                self.boss1.kill()
-                boss_frames = import_folder('../assets/demon1/attack')
-                self.boss1=boss((400,70),boss_frames,self.all_sprites)
+                self.boss_head.kill()
+                self.boss_body.kill()
+                boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/attack1_body')
+                self.boss_body=sans((410,10),boss_frames_body,self.all_sprites)
+                boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack1_head')
+                self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
                 # if self.bout == 1:
                 #     for i in range(5):
@@ -281,11 +284,14 @@ class Final_battle:
                 #         #添加进入需要判定碰撞的组
                 #         self.collision_sprites.add(self.bullet)
                 #         self.bout=2
-            elif self.title_time / 5==2:
+            elif self.title_time / 5==2:#二阶段结束
                 self.boss_hp =30
-                self.boss1.kill()
-                boss_frames = import_folder('../assets/demon1/injury')
-                self.boss1=boss((400,70),boss_frames,self.all_sprites)
+                self.boss_head.kill()
+                self.boss_body.kill()
+                boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/attack2_body')
+                self.boss_body=sans((410,10),boss_frames_body,self.all_sprites)
+                boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack2_head')
+                self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
                 # if self.bout == 2:
                 #     for i in range(5):
@@ -296,11 +302,14 @@ class Final_battle:
                 #         #添加进入需要判定碰撞的组
                 #         self.collision_sprites.add(self.bullet)
                 #         self.bout=3
-            elif self.title_time / 5 == 3:
-                self.boss_hp =5
-                self.boss1.kill()
-                boss_frames = import_folder('../assets/demon1/injury')
-                self.boss1=boss((400,70),boss_frames,self.all_sprites)
+            elif self.title_time / 5 == 3:#三阶段结束，进入对话
+                self.boss_hp =0
+                self.boss_head.kill()
+                self.boss_body.kill()
+                boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/injury_body')
+                self.boss_body=sans((400,60),boss_frames_body,self.all_sprites)
+                boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/injury_head')
+                self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
                 # if self.bout == 3:
                 #     for i in range(5):
@@ -311,12 +320,12 @@ class Final_battle:
                 #         #添加进入需要判定碰撞的组
                 #         self.collision_sprites.add(self.bullet)
                 #         self.bout=4
-            elif self.title_time / 5 == 4:
-                self.boss_hp =0
-                self.boss1.kill()
-                boss_frames = import_folder('../assets/demon1/die')
-                self.boss1=boss((400,70),boss_frames,self.all_sprites)
-                self.die_sound.play()
+            # elif self.title_time / 5 == 4:
+            #     self.boss_hp =0
+            #     self.boss1.kill()
+            #     boss_frames = import_folder('../assets/demon1/die')
+            #     self.boss1=boss((400,70),boss_frames,self.all_sprites)
+            #     self.die_sound.play()
                 # if self.bout == 4:
                 #     for sprite in self.bullets_sprites:
                 #         sprite.kill()
@@ -369,6 +378,7 @@ class Final_battle:
         self.draw_ui()
         self.is_win()
         self.record_time()
+        self.player_attack()
         if not self.game_paused:
             self.all_sprites.update(dt)
             add_event(6)
