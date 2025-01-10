@@ -27,7 +27,9 @@ class Trader_Battle:
         #善恶值的UI
         self.player_will=player_will()
         self.ui=UI()
-
+        #来累计暂停期间的时间
+        self.paused_time=0
+        self.pause_start_time = 0  # 新增：用于记录暂停开始的时间点
         self.restart_flag=2
         self.use_time=0
         self.bout=1
@@ -133,9 +135,15 @@ class Trader_Battle:
           #无论胜利与否，都会减少善良值增加邪恶值
     def update_will(self):
         self.new_player_will=self.player_will.get_player_will()
+    def record_time(self):
+        if not self.stop_active:
+            self.pause_start_time = pygame.time.get_ticks()-self.start_time  # 记录暂停开始的时间
+        else:
+            self.paused_time = pygame.time.get_ticks() - self.pause_start_time -self.start_time # 累加暂停时间
     def draw_ui(self):
         self.now_time=pygame.time.get_ticks()
-        self.time_clock=(self.now_time-self.start_time)/1000
+        self.adjusted_time = self.now_time - self.paused_time  # 使用调整后的时间
+        self.time_clock=(self.adjusted_time-self.start_time)/1000
         self.title_time=round(self.time_clock)
         #----------------------血量，时间的绘制---------------
         self.show_hp=button(0,0,0,30,30,660,550,f'HP: {self.Player_heart.hp}',30,255,255,255)
@@ -166,23 +174,23 @@ class Trader_Battle:
         self.draw_ui()
         self.playere_attack()
         self.damage_player()
-        
+        self.record_time()
         self.is_defeat()
         if not self.stop_active:
             self.all_sprites.update(dt)
             if self.restart_flag == 1:
-                  print(self.restart_flag)
                   self.reset()
                   self.start_time=pygame.time.get_ticks()
+                  self.paused_time = 0  # 重置暂停时间
             self.restart_flag=2
             add_event(5)
             return 5
         else:
-            self.start_time+=2.475
             self.menu_flag=self.Stop_Menu.update()
             if self.menu_flag == 1:
                   self.reset()
                   self.start_time=pygame.time.get_ticks()
+                  self.paused_time = 0  # 重置暂停时间
                   add_event(5)
                   return 5
             elif self.menu_flag == 2:
@@ -216,7 +224,9 @@ class Final_battle:
         #善恶值的UI
         self.player_will=player_will()
         self.ui=UI()
-        
+        #来累计暂停期间的时间
+        self.paused_time=0
+        self.pause_start_time = 0  # 新增：用于记录暂停开始的时间点
         #粒子效果
         #self.animation_player = AnimationPlayer()
         #战斗音乐
@@ -240,9 +250,6 @@ class Final_battle:
         boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/common_body')
         self.boss_body=sans((400,70),boss_frames_body,self.all_sprites)
         self.boss_hp=100
-        for i in range(6):
-            self.sans_attack1_frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
-            self.sans_attack=attack1((70,200+100*i),self.sans_attack1_frames,self.display_surface,self.all_sprites,self.attack_sprites,pygame.math.Vector2(1,0))
     def damage_player(self,amount):
         if self.player.vulnerable:
             self.player.health -= amount
@@ -250,9 +257,14 @@ class Final_battle:
             self.player.hurt_time = pygame.time.get_ticks()
     def boss_states(self):
         pass
+    def state_one(self):
+        #四条龙喷激光
+        for i in range(4):
+            self.sans_attack1_frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
+            self.sans_attack=attack1((70,200+100*i),self.sans_attack1_frames,self.display_surface,self.all_sprites,self.attack_sprites,pygame.math.Vector2(1,0))
     def update_will(self):
         self.new_player_will=self.player_will.get_player_will()
-    def playere_attack(self):
+    def player_attack(self):
         if self.title_time%5==0:
             if self.title_time /5==1 :
                 self.boss_hp = 70
@@ -310,11 +322,17 @@ class Final_battle:
                 #         sprite.kill()
     def toggle_menu(self):
         self.game_paused = not self.game_paused 
+    def record_time(self):
+        if not self.game_paused:
+            self.pause_start_time = pygame.time.get_ticks()-self.start_time  # 记录暂停开始的时间
+        else:
+            self.paused_time = pygame.time.get_ticks() - self.pause_start_time -self.start_time # 累加暂停时间
     def is_win(self):
         pass
     def draw_ui(self):
         self.now_time=pygame.time.get_ticks()
-        self.time_clock=(self.now_time-self.start_time)/1000
+        self.adjusted_time = self.now_time - self.paused_time  # 使用调整后的时间
+        self.time_clock=(self.adjusted_time-self.start_time)/1000
 
         self.title_time=round(self.time_clock)
         #----------------------血量，时间的绘制---------------
@@ -350,16 +368,17 @@ class Final_battle:
         self.all_sprites.draw(self.display_surface)
         self.draw_ui()
         self.is_win()
+        self.record_time()
         if not self.game_paused:
             self.all_sprites.update(dt)
             add_event(6)
             return 6
         else:
-            self.start_time+=2.465
             self.menu_flag=self.stop_menu.update()
             if self.menu_flag == 1:
                   self.reset()
                   self.start_time=pygame.time.get_ticks()
+                  self.paused_time = 0  # 重置暂停时间
                   add_event(6)
                   return 6
             elif self.menu_flag == 2:

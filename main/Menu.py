@@ -93,14 +93,12 @@ class Menu:
 
 				# get item
 				current_item = self.options[self.index]
-
 				#赠送
 				if self.index <= self.give_border:
 					if self.player.item_inventory[current_item] > 0:
 						self.player.item_inventory[current_item] -= 1
 						self.trader_item_inventory[current_item] +=1
 						#self.player.money += SALE_PRICES[current_item]#这里写善恶值增加
-
 				#聊天
 				else:
 					self.toggle_talk()
