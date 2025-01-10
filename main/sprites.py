@@ -152,45 +152,80 @@ class boss(Generic):
 
 	def update(self,dt):
 		self.animate(dt)
-class block(Generic):#用来限制人物行动范围
-	def __init__(self, pos, surf, groups, z=LAYERS['main']):
-		super().__init__(pos, surf, groups, z)
+
 class attack1(Generic):#sans的一些攻击
-	def __init__(self, pos,frames,display_surface, groups,attack_sprites,vector1):#说明，vector1是方向向量，用来表示这个攻击物的移动方向
+	def __init__(self, pos,frames, groups):#说明，vector1是方向向量，用来表示这个攻击物的移动方向
 		#动画设置
 		self.frame_index = 0
 		self.frames=frames
-		#pygame.image.load( '../assets/graphics/monsters/sans/Attacks/battle_1/spr_gasterblaster_0.png')
 		# 群组设置
 		super().__init__(
 				pos = pos, 
 				surf =self.frames[self.frame_index], 
 				groups = groups) 
-		self.attack_sprites=attack_sprites
 		self.hitbox = self.rect.inflate(0,-10)
-		self.display_surface=display_surface
-		self.direction=vector1#发射子弹方向
+		self.creat_time=pygame.time.get_ticks()
 	def animate(self,dt):
 		self.frame_index += 5 * dt
 		if self.frame_index >= len(self.frames):
 			self.frame_index = 0
 		self.image = self.frames[int(self.frame_index)]
-	def fire(self):
-		line1=pygame.draw.line(self.display_surface,(255,255,255),self.rect.center,(self.rect.centerx+800*self.direction.x,self.rect.centery+800*self.direction.y),64)
-
-	# def move(self,dt):
-	# 	if self.direction.magnitude() != 0:
-	# 		self.direction = self.direction.normalize()
-	# 	self.rect.x += self.direction.x *self.speed*dt
-	# 	self.rect.y += self.direction.y *self.speed*dt
-	# 	if self.rect.y >=600:
-	# 		self.rect.y=200
-	# 	if self.rect.x>=800:
-	# 		self.rect.x=randint(0,800)
-		#self.rect.center = self.hitbox.center
 	def update(self,dt):
-		self.fire()
 		self.animate(dt)
+class light(Generic):
+	def __init__(self, pos, groups,direction:str):
+		if direction == 'right':
+			surf=pygame.image.load('../assets/graphics/monsters/sans/Attacks/light_horizon.png')
+		elif direction == 'left':
+			surf=pygame.image.load('../assets/graphics/monsters/sans/Attacks/light_horizon.png')
+		elif direction == 'up':
+			surf=pygame.image.load('../assets/graphics/monsters/sans/Attacks/light_vertical.png')
+		elif direction == 'down':
+			surf=pygame.image.load('../assets/graphics/monsters/sans/Attacks/light_vertical.png')
+		super().__init__(pos, surf, groups)
+		if direction == 'right':
+			self.rect = self.image.get_rect(midleft = pos)
+		elif direction == 'left':
+			self.rect = self.image.get_rect(midright = pos)
+		elif direction == 'up':
+			self.rect = self.image.get_rect(midbottom = pos)
+		elif direction == 'down':
+			self.rect = self.image.get_rect(midtop= pos)
+		self.creat_time=pygame.time.get_ticks()
+		#获取遮罩，用于完美像素判断碰撞
+		self.mask=pygame.mask.from_surface(self.image)
+class block(Generic):
+	def __init__(self, pos, groups,name:int,direction:str):
+		path=f'../assets/graphics/monsters/sans/Attacks/{name}.png'
+		surf=pygame.image.load(path)
+		super().__init__(pos, surf, groups)
+		self.name=name
+		self.direction=direction
+		self.mask=pygame.mask.from_surface(self.image)
+		self.creat_time=pygame.time.get_ticks()
+	def move(self,dt):
+		if self.direction == 'left':
+			if self.name == 0:
+				self.rect.x-=200*dt
+			elif self.name == 1:
+				self.rect.x-=350*dt
+			elif self.name == 2:
+				self.rect.x-=150*dt
+			elif self.name == 3:
+				self.rect.x-=400*dt
+		elif self.direction == 'right':
+			if self.name == 0:
+				self.rect.x+=200*dt
+			elif self.name == 1:
+				self.rect.x+=350*dt
+			elif self.name == 2:
+				self.rect.x+=150*dt
+			elif self.name == 3:
+				self.rect.x+=400*dt
+		if self.rect.x>=1000 or self.rect.x<=-200:
+			self.kill()
+	def update(self,dt):
+		self.move(dt)
 
 class Enemy(pygame.sprite.Sprite):#所有的怪物类
 	def __init__(self,monster_name,pos,groups,obstacle_sprites,damage_player,trigger_death_particles,add_exp):
@@ -389,9 +424,9 @@ class Tile(Generic):
 		self.hitbox = self.rect.inflate(0,-10)
 	
 class bullet(pygame.sprite.Sprite):
-	def __init__(self,line_start_tuple:tuple,line_end_tuple:tuple):
+	def __init__(self,line_start_tuple:tuple,line_end_tuple:tuple,surf):
 		pygame.sprite.Sprite.__init__(self)
-		self.image=pygame.image.load('../assets/Image/B_DOWN_w.png')
+		self.image=surf
 		self.rect = self.image.get_rect()
 		#出发的坐标
 		self.line_startx=line_start_tuple[0]
@@ -404,6 +439,7 @@ class bullet(pygame.sprite.Sprite):
 		self.speedx=randrange(-4,4)
 		#获取遮罩，用于完美像素判断碰撞
 		self.mask=pygame.mask.from_surface(self.image)
+		self.creat_time=pygame.time.get_ticks()
 
 	def update(self,dt):
          self.rect.y +=self.speedy*dt*70

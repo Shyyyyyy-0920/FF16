@@ -1,13 +1,13 @@
-import pygame,sys
+import pygame
 from Setting import *
 from Menu import defeat_menu,stop_menu
 from UI import button,UI
 from support import *
-from sprites import boss,bullet,sans,attack1
+from sprites import boss,bullet,sans,attack1,light,block
 from add_event import add_event,g_evene_queue
 from Player import Player_heart
 from will import player_will
-
+from random import randint
 class Trader_Battle:
     def __init__(self):
         #画障碍线的坐标
@@ -32,7 +32,8 @@ class Trader_Battle:
         self.pause_start_time = 0  # 新增：用于记录暂停开始的时间点
         self.restart_flag=2
         self.use_time=0
-        self.bout=1
+        self.bout=1#用来记录阶段数
+        
         #声音设置
         self.injury_sound = pygame.mixer.Sound('../assets/sound/injury.wav')
         self.injury_sound.set_volume(0.3)
@@ -46,7 +47,8 @@ class Trader_Battle:
         self.Player_heart=Player_heart((400,500),self.all_sprites,self.collision_sprites,None,self.toggle_stop)
         for i in range(5):
             #添加子弹进入我的战斗（敌人方）
-            self.bullet=bullet((0,200),(800,200))
+            self.bullet_image=pygame.image.load('../assets/Image/B_DOWN_w.png')
+            self.bullet=bullet((0,200),(800,200),self.bullet_image)
             self.all_sprites.add(self.bullet)
             self.bullets_sprites.add(self.bullet)
             #添加进入需要判定碰撞的组
@@ -227,6 +229,10 @@ class Final_battle:
         #来累计暂停期间的时间
         self.paused_time=0
         self.pause_start_time = 0  # 新增：用于记录暂停开始的时间点
+        #用来记录现在是第几阶段了
+        self.bout=0
+        self.flag=0##用来平凡切换状态创建一次性角色
+        self.sign=0
         #粒子效果
         #self.animation_player = AnimationPlayer()
         #战斗音乐
@@ -238,7 +244,7 @@ class Final_battle:
     def set_up(self):
         self.start_time=0
         self.player = Player_heart(
-                pos = (400,500),
+                pos = (400,450),
                 group=[self.all_sprites],
                 collision_sprites=self.collision_sprites,
                 interaction=None,
@@ -250,21 +256,135 @@ class Final_battle:
         boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/common_head')
         self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
         self.boss_hp=100
-    def damage_player(self,amount):
-        if self.player.vulnerable:
-            self.player.health -= amount
-            self.player.vulnerable = False
-            self.player.hurt_time = pygame.time.get_ticks()
-    def boss_states(self):
-        pass
-    def state_one(self):
-        #四条龙喷激光
-        for i in range(4):
-            self.sans_attack1_frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
-            self.sans_attack=attack1((70,200+100*i),self.sans_attack1_frames,self.display_surface,self.all_sprites,self.attack_sprites,pygame.math.Vector2(1,0))
+    def damage_player(self,collision_sprites):
+        #判断是否发生完美碰撞
+        hits=pygame.sprite.spritecollide(self.player,collision_sprites,False,pygame.sprite.collide_mask)
+        for sprite in hits:
+            if sprite is not self.player:
+                if self.player.vulnerable:
+                    self.player.hp -= 5
+                    self.player.vulnerable=False
+                    self.player.hurt_time = pygame.time.get_ticks()
+    def sans_states(self,bout):
+        if bout == 0:
+            #四条龙喷激光
+            if self.flag == 0:
+                if self.sign==0:
+                    for i in range(4):
+                        self.light=light((102,200+100*i),[self.all_sprites,self.attack_sprites],'right')
+                        self.sans_attack1_frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
+                        self.sans_attack=attack1((70,200+100*i),self.sans_attack1_frames,[self.all_sprites,self.attack_sprites])#怪头
+                        self.sign=1
+                self.damage_player(self.attack_sprites)
+                for sprite in self.attack_sprites:  # 使用 copy() 避免迭代过程中改变集合大小的问题
+                    if self.battle_start_time - sprite.creat_time >= 1500:  # 如果存活时间超过2秒
+                        sprite.kill()  # 移除该对象
+                if len(self.attack_sprites) == 0:
+                    self.flag=1
+            if self.flag == 1:
+                if self.sign==1:
+                    for i in range(4):
+                        self.light=light((100+200*i,200),[self.all_sprites,self.attack_sprites],'down')
+                        self.sans_attack1_frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
+                        self.sans_attack=attack1((100+200*i,170),self.sans_attack1_frames,[self.all_sprites,self.attack_sprites])#怪头
+                        self.sign=2
+                self.damage_player(self.attack_sprites)
+                for sprite in self.attack_sprites:  # 使用 copy() 避免迭代过程中改变集合大小的问题
+                    if self.battle_start_time - sprite.creat_time >= 1500:  # 如果存活时间超过2秒
+                        sprite.kill()  # 移除该对象
+                if len(self.attack_sprites) == 0:
+                    self.flag=2
+            if self.flag == 2:
+                if self.sign==2:
+                    for i in range(4):
+                        self.light=light((700,200+100*i),[self.all_sprites,self.attack_sprites],'left')
+                        self.sans_attack1_frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
+                        self.sans_attack=attack1((720,200+100*i),self.sans_attack1_frames,[self.all_sprites,self.attack_sprites])#怪头
+                        self.sign=0
+                self.damage_player(self.attack_sprites)
+                for sprite in self.attack_sprites:  # 使用 copy() 避免迭代过程中改变集合大小的问题
+                    if self.battle_start_time - sprite.creat_time >= 1000:  # 如果存活时间超过1秒
+                        sprite.kill()  # 移除该对象
+                if len(self.attack_sprites) == 0:
+                    self.flag=0
+                    self.bout=1
+        elif bout == 1:
+            #弹幕躲避
+            if self.flag == 0:
+                if self.sign==0:
+                    for i in range(10):
+                        #添加子弹进入我的战斗（敌人方）
+                        self.bullet_image=pygame.image.load('../assets/graphics/monsters/sans/Attacks/spr_s_boneloop_out_0.png')
+                        self.bullet=bullet((100,200),(700,200),self.bullet_image)
+                        self.all_sprites.add(self.bullet)
+                        self.attack_sprites.add(self.bullet)
+                        self.sign=1
+                self.damage_player(self.attack_sprites)
+                for sprite in self.attack_sprites:  # 使用 copy() 避免迭代过程中改变集合大小的问题
+                    if self.battle_start_time - sprite.creat_time >= 2500:  # 如果存活时间超过2.5秒
+                        sprite.kill()  # 移除该对象
+                if len(self.attack_sprites) == 0:
+                    self.flag=1
+            if self.flag == 1:
+                if self.sign==1:
+                    for i in range(10):
+                        #添加子弹进入我的战斗（敌人方）
+                        path=f'../assets/graphics/monsters/sans/Attacks/{randint(0,3)}.png'
+                        self.bullet_image=pygame.image.load(path)
+                        self.bullet=bullet((100,200),(700,200),self.bullet_image)
+                        self.all_sprites.add(self.bullet)
+                        self.attack_sprites.add(self.bullet)
+                        self.sign=0
+                self.damage_player(self.attack_sprites)
+                for sprite in self.attack_sprites:  # 使用 copy() 避免迭代过程中改变集合大小的问题
+                    if self.battle_start_time - sprite.creat_time >= 2500:  # 如果存活时间超过2.5秒
+                        sprite.kill()  # 移除该对象
+                if len(self.attack_sprites) == 0:
+                    self.flag=0
+                    self.bout=2
+        elif bout == 2:
+            if self.flag == 0:
+                if self.sign==0:
+                    block_up1=block((710,200),[self.all_sprites,self.attack_sprites],0,'left')
+                    block_up2=block((560,200),[self.all_sprites,self.attack_sprites],0,'left')
+                    block_up3=block((900,200),[self.all_sprites,self.attack_sprites],2,'left')
+                    block_up4=block((-100,200),[self.all_sprites,self.attack_sprites],2,'right')
+                    block_bottom1=block((720,500),[self.all_sprites,self.attack_sprites],1,'left')
+                    block_bottom2=block((1,438),[self.all_sprites,self.attack_sprites],2,'right')
+                    block_bottom3=block((-60,400),[self.all_sprites,self.attack_sprites],0,'right')
+                    block_bottom4=block((950,400),[self.all_sprites,self.attack_sprites],3,'left')
+                    self.sign=1
+                self.damage_player(self.attack_sprites)
+                for sprite in self.attack_sprites:  # 使用 copy() 避免迭代过程中改变集合大小的问题
+                    if self.battle_start_time - sprite.creat_time >= 2500:  # 如果存活时间超过秒
+                        sprite.kill()  # 移除该对象
+                if len(self.attack_sprites) == 0:
+                    self.flag=1
+            elif self.flag==1:
+                if self.sign==1:
+                    block_up1=block((-150,200),[self.all_sprites,self.attack_sprites],0,'right')
+                    block_up2=block((3,200),[self.all_sprites,self.attack_sprites],0,'right')
+                    block_up3=block((1,438),[self.all_sprites,self.attack_sprites],2,'right')
+                    block_up4=block((570,340),[self.all_sprites,self.attack_sprites],2,'left')
+                    block_bottom1=block((-199,500),[self.all_sprites,self.attack_sprites],1,'right')
+                    block_bottom1=block((40,500),[self.all_sprites,self.attack_sprites],1,'right')
+                    block_bottom1=block((-199,470),[self.all_sprites,self.attack_sprites],1,'right')
+                    block_bottom2=block((900,200),[self.all_sprites,self.attack_sprites],2,'left')
+                    block_bottom3=block((870,440),[self.all_sprites,self.attack_sprites],0,'left')
+                    block_bottom3=block((990,440),[self.all_sprites,self.attack_sprites],0,'left')
+                    for i in range(9):
+                        block_bottom4=block((100-35*i,400),[self.all_sprites,self.attack_sprites],3,'right')
+                    self.sign=0
+                self.damage_player(self.attack_sprites)
+                for sprite in self.attack_sprites:  # 使用 copy() 避免迭代过程中改变集合大小的问题
+                    if self.battle_start_time - sprite.creat_time >= 2500:  # 如果存活时间超过秒
+                        sprite.kill()  # 移除该对象
+                if len(self.attack_sprites) == 0:
+                    self.flag=0
+                    self.bout=3
     def update_will(self):
         self.new_player_will=self.player_will.get_player_will()
-    def player_attack(self):
+    def sans_states_animations(self):
         if self.title_time%5==0:
             if self.title_time /5==1 :#一阶段结束
                 self.boss_hp = 70
@@ -275,15 +395,8 @@ class Final_battle:
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack1_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
-                # if self.bout == 1:
-                #     for i in range(5):
-                #         #添加子弹进入我的战斗（敌人方）
-                #         self.bullet=bullet((0,200),(800,200))
-                #         self.all_sprites.add(self.bullet)
-                #         self.bullets_sprites.add(self.bullet)
-                #         #添加进入需要判定碰撞的组
-                #         self.collision_sprites.add(self.bullet)
-                #         self.bout=2
+                #self.bout=1
+                
             elif self.title_time / 5==2:#二阶段结束
                 self.boss_hp =30
                 self.boss_head.kill()
@@ -293,15 +406,7 @@ class Final_battle:
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack2_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
-                # if self.bout == 2:
-                #     for i in range(5):
-                #         #添加子弹进入我的战斗（敌人方）
-                #         self.bullet=bullet((0,200),(800,200))
-                #         self.all_sprites.add(self.bullet)
-                #         self.bullets_sprites.add(self.bullet)
-                #         #添加进入需要判定碰撞的组
-                #         self.collision_sprites.add(self.bullet)
-                #         self.bout=3
+                #self.bout=2
             elif self.title_time / 5 == 3:#三阶段结束，进入对话
                 self.boss_hp =0
                 self.boss_head.kill()
@@ -311,24 +416,7 @@ class Final_battle:
                 boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/injury_head')
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
                 self.injury_sound.play()
-                # if self.bout == 3:
-                #     for i in range(5):
-                #         #添加子弹进入我的战斗（敌人方）
-                #         self.bullet=bullet((0,200),(800,200))
-                #         self.all_sprites.add(self.bullet)
-                #         self.bullets_sprites.add(self.bullet)
-                #         #添加进入需要判定碰撞的组
-                #         self.collision_sprites.add(self.bullet)
-                #         self.bout=4
-            # elif self.title_time / 5 == 4:
-            #     self.boss_hp =0
-            #     self.boss1.kill()
-            #     boss_frames = import_folder('../assets/demon1/die')
-            #     self.boss1=boss((400,70),boss_frames,self.all_sprites)
-            #     self.die_sound.play()
-                # if self.bout == 4:
-                #     for sprite in self.bullets_sprites:
-                #         sprite.kill()
+                #self.bout=3
     def toggle_menu(self):
         self.game_paused = not self.game_paused 
     def record_time(self):
@@ -345,7 +433,7 @@ class Final_battle:
 
         self.title_time=round(self.time_clock)
         #----------------------血量，时间的绘制---------------
-        self.show_hp=button(0,0,0,30,30,660,550,f'HP: {self.player.hp}',30,255,255,255)
+        self.show_hp=button(0,0,0,30,30,660,550,f'HP: {self.player.hp}',30,255,0,0)
         self.show_time=button(0,0,0,30,30,150,550,f'TIME: {self.title_time}',30,255,255,255)
         self.show_boss_hp=button(0,0,0,30,30,660,100,f'BOSSHP: {self.boss_hp}',30,255,255,255)
         self.show_hp.draw_button(self.display_surface)
@@ -357,13 +445,7 @@ class Final_battle:
         pygame.draw.line(self.display_surface,(255,255,255),(100,200),(100,530))
         pygame.draw.line(self.display_surface,(255,255,255),(700,200),(700,530))
         pygame.draw.line(self.display_surface,(255,255,255),(100,530),(700,530))
-    def reset(self):
-        self.all_sprites.empty()
-        self.attack_sprites.empty()
-        self.collision_sprites.empty()
-        self.set_up()
-    def run(self,dt):
-        self.update_will()
+    def bgm_play(self):
         if self.use_time==0:
               self.start_time=pygame.time.get_ticks()
               self.use_time+=1
@@ -373,12 +455,22 @@ class Final_battle:
               pygame.mixer.music.load('../assets/audio/in_battle.mp3')
               pygame.mixer.music.set_volume(0.3)              
               pygame.mixer.music.play(loops=-1)
+    def reset(self):
+        self.all_sprites.empty()
+        self.attack_sprites.empty()
+        self.collision_sprites.empty()
+        self.set_up()
+    def run(self,dt):
+        self.battle_start_time=pygame.time.get_ticks()
+        self.update_will()
+        self.bgm_play()
         self.display_surface.fill('black')
         self.all_sprites.draw(self.display_surface)
-        self.draw_ui()
-        self.is_win()
-        self.record_time()
-        self.player_attack()
+        self.draw_ui()#画UI
+        self.record_time()#记录暂停的时候的时间
+        self.sans_states_animations()#画出boss每个阶段的动画
+        self.sans_states(self.bout)#sans每个阶段的招式
+        self.is_win()#判断是否胜利
         if not self.game_paused:
             self.all_sprites.update(dt)
             add_event(6)
