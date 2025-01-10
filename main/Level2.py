@@ -9,12 +9,14 @@ from support import *
 from Menu import Menu,stop_menu
 from transition import Transition
 from sky import Rain, Sky
-from add_event import add_event,g_evene_queue 
+from add_event import g_evene_queue 
 from random import randint
+from UI import UI
+from will import player_will
 #这个类用来绘制地图，加载人物，几乎所有的程序都在这里进行
 class Level2:
-	def __init__(self,player_will):
-		self.player_will=player_will
+	def __init__(self):
+		
 		# get the display surface
 		self.display_surface = pygame.display.get_surface()
 	
@@ -42,7 +44,10 @@ class Level2:
 		self.stop_active = False
 		#作战
 		self.battle_active = False
-
+		#ui界面
+		self.ui=UI()
+		#人物的善恶值
+		self.player_will=player_will()
 		#音乐
 		self.success = pygame.mixer.Sound('../assets/audio/success.wav')
 		self.success.set_volume(0.3)
@@ -176,13 +181,15 @@ class Level2:
 	
 	def toggle_stop(self):
 		self.stop_active = not self.stop_active
-	def get_player_will(self):
-		return self.player_will
+	def update_will(self):
+		self.new_player_will=self.player_will.get_player_will()
 	def run(self,dt):
-
+		self.update_will()
 		#绘画逻辑
 		self.display_surface.fill('white')
 		self.all_sprites.custom_draw(self.player)#更新摄像头
+		self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
+		self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
 		#更新
 		if self.shop_active:
 			self.menu.update()

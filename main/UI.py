@@ -1,6 +1,7 @@
 import pygame
 from Setting import *
 from support import import_folder
+from will import player_will
 #这里是按钮类
 class button:
     def __init__(self,r1:int,g1:int,b1:int,height:int,width:int,inix:int,iniy:int,text:str,size:int,r2:int,g2:int,b2:int): 
@@ -51,11 +52,10 @@ class button:
             return False
 #这是ui类
 class UI:
-	def __init__(self,player_will):
+	def __init__(self):
 		# 普通设置
 		self.display_surface = pygame.display.get_surface()
 		self.font = pygame.font.Font(UI_FONT,UI_FONT_SIZE)
-		self.player_will=player_will
 
 		# 血条设置
 		self.health_bar_rect = pygame.Rect(10,10,HEALTH_BAR_WIDTH,BAR_HEIGHT)
@@ -67,7 +67,9 @@ class UI:
 		self.weapon_graphics=import_folder('../assets/graphics/weapons/ui')
 
 		#转换魔术字典
-		self.magic_graphics =import_folder('../assets/graphics/particles/magic_ui')
+		self.magic_graphics =import_folder('../assets/graphics/particles/magic_ui')\
+		#创建人物善恶值实例
+		self.player_will=player_will()
 	def show_bar(self,current,max_amount,bg_rect,color):
 		#画这个血条的背景
 		pygame.draw.rect(self.display_surface,UI_BG_COLOR,bg_rect)
@@ -115,13 +117,14 @@ class UI:
 		magic_rect = magic_surf.get_rect(center = bg_rect.center)
 
 		self.display_surface .blit(magic_surf,magic_rect)
-		
-
+	def update_will(self):
+		self.new_player_will=self.player_will.get_player_will()
 	def display(self,player):
+		self.update_will()
 		self.show_bar(player.health,player.stats['health'],self.health_bar_rect,HEALTH_COLOR)
 		self.show_bar(player.energy,player.stats['energy'],self.energy_bar_rect,ENERGY_COLOR)
-		self.show_bar(self.player_will,10,self.will_value,ENERGY_COLOR)
-		self.show_bar(10-self.player_will,10,self.bad_value,ENERGY_COLOR)
+		self.show_bar(self.new_player_will,10,self.will_value,PLAYER_WILL_COLOR)
+		self.show_bar(10-self.new_player_will,10,self.bad_value,PLAYER_BAD_COLOR)
 		self.show_exp(player.exp)
 		self.weapon_overlay(player.weapon_index,not player.can_switch_weapon)
 		self.magic_overlay(player.magic_index,not player.can_switch_magic)

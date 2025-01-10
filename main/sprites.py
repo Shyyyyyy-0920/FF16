@@ -155,41 +155,41 @@ class boss(Generic):
 class block(Generic):#用来限制人物行动范围
 	def __init__(self, pos, surf, groups, z=LAYERS['main']):
 		super().__init__(pos, surf, groups, z)
-class attack(Generic):#sans的一些攻击
-	def __init__(self, pos,type, groups,speed,vector1):#说明，vector1是方向向量，用来表示这个攻击物的移动方向
+class attack1(Generic):#sans的一些攻击
+	def __init__(self, pos,frames,display_surface, groups,attack_sprites,vector1):#说明，vector1是方向向量，用来表示这个攻击物的移动方向
 		#动画设置
 		self.frame_index = 0
-		self.frames=pygame.image.load( '../assets/graphics/monsters/sans/Attacks/battle_1/spr_gasterblaster_0.png')
+		self.frames=frames
+		#pygame.image.load( '../assets/graphics/monsters/sans/Attacks/battle_1/spr_gasterblaster_0.png')
 		# 群组设置
 		super().__init__(
 				pos = pos, 
-				surf =self.frames, 
+				surf =self.frames[self.frame_index], 
 				groups = groups) 
+		self.attack_sprites=attack_sprites
 		self.hitbox = self.rect.inflate(0,-10)
-		self.type=type
-		self.speed=speed
-		self.direction=vector1
+		self.display_surface=display_surface
+		self.direction=vector1#发射子弹方向
 	def animate(self,dt):
-		if self.type == 'battle_1' :
-			self.frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
-			self.frame_index += 5 * dt
-			if self.frame_index >= len(self.frames):
-				self.frame_index = 0
-				self.image = self.frames[int(self.frame_index)]
-		else:
-			pass
-	def move(self,dt):
-		if self.direction.magnitude() != 0:
-			self.direction = self.direction.normalize()
-		self.rect.x += self.direction.x *self.speed*dt
-		self.rect.y += self.direction.y *self.speed*dt
-		if self.rect.y >=600:
-			self.rect.y=200
-		if self.rect.x>=800:
-			self.rect.x=randint(0,800)
+		self.frame_index += 5 * dt
+		if self.frame_index >= len(self.frames):
+			self.frame_index = 0
+		self.image = self.frames[int(self.frame_index)]
+	def fire(self):
+		line1=pygame.draw.line(self.display_surface,(255,255,255),self.rect.center,(self.rect.centerx+800*self.direction.x,self.rect.centery+800*self.direction.y),64)
+
+	# def move(self,dt):
+	# 	if self.direction.magnitude() != 0:
+	# 		self.direction = self.direction.normalize()
+	# 	self.rect.x += self.direction.x *self.speed*dt
+	# 	self.rect.y += self.direction.y *self.speed*dt
+	# 	if self.rect.y >=600:
+	# 		self.rect.y=200
+	# 	if self.rect.x>=800:
+	# 		self.rect.x=randint(0,800)
 		#self.rect.center = self.hitbox.center
 	def update(self,dt):
-		self.move(dt)
+		self.fire()
 		self.animate(dt)
 
 class Enemy(pygame.sprite.Sprite):#所有的怪物类

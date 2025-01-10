@@ -9,12 +9,9 @@ from Player import MagicPlayer,Player_battle
 from sprites import Tile,Weapon,Enemy,house,Interaction
 from add_event import g_evene_queue
 from random import choice, randint
-from add_event import add_event
-from display_will import will
+from will import player_will
 class Level1:
-	def __init__(self,player_will):
-		#人物善恶值
-		self.player_will=player_will
+	def __init__(self):
 		# 获取屏幕表面
 		self.display_surface = pygame.display.get_surface()
 		self.game_paused = False
@@ -34,7 +31,8 @@ class Level1:
 		self.set_up()
 		self.init_num=len(self.all_moster_sprites)
         #人物ui界面
-		self.ui = UI(self.player_will)
+		self.player_will=player_will()
+		self.ui = UI()
 		self.upgrade = Upgrade(self.player)#升级的场景
 		
         #粒子效果
@@ -144,16 +142,14 @@ class Level1:
 		self.game_paused = not self.game_paused 
 	def check_monster_death_num(self):
 		if self.init_num>len(self.all_moster_sprites):
-			self.player_will-=self.init_num-len(self.all_moster_sprites)
+			self.player_will.modify_player_will(len(self.all_moster_sprites)-self.init_num)
 			self.init_num=len(self.all_moster_sprites)
+
 	def is_win(self):
 		number_of_monster = len(self.all_moster_sprites)
 		if number_of_monster == 34:
 			self.portal=house((2153,956),self.portal_image,[self.all_sprites, self.collision_sprites])
 			Interaction((2153,956),(280,146),self.interaction_sprites,'portal')
-	def get_player_will(self):
-		self.check_monster_death_num()
-		return self.player_will
 
 	def run(self,dt):
 		self.display_surface.fill(WATER_COLOR)
@@ -166,6 +162,7 @@ class Level1:
 			self.all_sprites.update(dt)
 			self.all_sprites.enemy_update(self.player)
 			self.player_attack_logic()
+		self.check_monster_death_num()
 		self.is_win()
 		if g_evene_queue[-1]==3:
 

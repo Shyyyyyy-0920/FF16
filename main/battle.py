@@ -1,13 +1,13 @@
 import pygame
 import sys
 from Setting import *
-from Menu import defeat_menu,stop_menu,Menu
-from Timer import Timer
-from UI import button
+from Menu import defeat_menu,stop_menu
+from UI import button,UI
 from support import *
-from sprites import boss,bullet,sans,attack
+from sprites import boss,bullet,sans,attack1
 from add_event import add_event,g_evene_queue
 from Player import Player_heart
+from will import player_will
 
 class Trader_Battle:
     def __init__(self):
@@ -25,6 +25,9 @@ class Trader_Battle:
         #暂停界面
         self.Stop_Menu=stop_menu(self.toggle_stop)
         self.stop_active = False
+        #善恶值的UI
+        self.player_will=player_will()
+        self.ui=UI()
 
         self.restart_flag=2
         self.use_time=0
@@ -129,11 +132,11 @@ class Trader_Battle:
           elif self.boss_hp <=0:#打赢了boss，进入胜利对话
                 pass
           #无论胜利与否，都会减少善良值增加邪恶值
-        
+    def update_will(self):
+        self.new_player_will=self.player_will.get_player_will()
     def draw_ui(self):
         self.now_time=pygame.time.get_ticks()
         self.time_clock=(self.now_time-self.start_time)/1000
-
         self.title_time=round(self.time_clock)
         #----------------------血量，时间的绘制---------------
         self.show_hp=button(0,0,0,30,30,660,550,f'HP: {self.Player_heart.hp}',30,255,255,255)
@@ -142,6 +145,8 @@ class Trader_Battle:
         self.show_hp.draw_button(self.display_surface)
         self.show_time.draw_button(self.display_surface)
         self.show_boss_hp.draw_button(self.display_surface)
+        self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
+        self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
         pygame.draw.line(self.display_surface,(255,255,255),(100,200),(700,200))
         pygame.draw.line(self.display_surface,(255,255,255),(100,200),(100,530))
         pygame.draw.line(self.display_surface,(255,255,255),(700,200),(700,530))
@@ -153,6 +158,7 @@ class Trader_Battle:
         self.collision_sprites.empty()
         self.set_up()
     def run(self,dt):
+        self.update_will()
         if self.use_time==0:
               self.start_time=pygame.time.get_ticks()
               self.use_time+=1
@@ -209,6 +215,9 @@ class Final_battle:
         self.use_time=0
         #人物ui界面
         #self.ui = UI()
+         #善恶值的UI
+        self.player_will=player_will()
+        self.ui=UI()
         
         #粒子效果
         #self.animation_player = AnimationPlayer()
@@ -236,7 +245,8 @@ class Final_battle:
         self.boss_body=sans((400,70),boss_frames_body,self.all_sprites)
         self.boss_hp=100
         for i in range(6):
-            self.sans_attack=attack((100+i*100,200),'battle_1',[self.all_sprites,self.attack_sprites],400,pygame.math.Vector2(1,1))
+            self.sans_attack1_frames = import_folder('../assets/graphics/monsters/sans/Attacks/battle_1')
+            self.sans_attack=attack1((70,200+100*i),self.sans_attack1_frames,self.display_surface,self.all_sprites,self.attack_sprites,pygame.math.Vector2(1,0))
     def damage_player(self,amount):
         if self.player.vulnerable:
             self.player.health -= amount
@@ -244,6 +254,8 @@ class Final_battle:
             self.player.hurt_time = pygame.time.get_ticks()
     def boss_states(self):
         pass
+    def update_will(self):
+        self.new_player_will=self.player_will.get_player_will()
     def playere_attack(self):
         if self.title_time%5==0:
             if self.title_time /5==1 :
@@ -316,6 +328,8 @@ class Final_battle:
         self.show_hp.draw_button(self.display_surface)
         self.show_time.draw_button(self.display_surface)
         self.show_boss_hp.draw_button(self.display_surface)
+        self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
+        self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
         pygame.draw.line(self.display_surface,(255,255,255),(100,200),(700,200))
         pygame.draw.line(self.display_surface,(255,255,255),(100,200),(100,530))
         pygame.draw.line(self.display_surface,(255,255,255),(700,200),(700,530))
@@ -326,6 +340,7 @@ class Final_battle:
         self.collision_sprites.empty()
         self.set_up()
     def run(self,dt):
+        self.update_will()
         if self.use_time==0:
               self.start_time=pygame.time.get_ticks()
               self.use_time+=1

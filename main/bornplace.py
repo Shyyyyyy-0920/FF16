@@ -5,11 +5,14 @@ from sprites import Generic,collision_rect,Interaction,boss
 from Player import Player_battle
 from add_event import g_evene_queue,add_event
 from support import import_folder
+from UI import UI
+from will import player_will
 class born_place:
-    def __init__(self,player_will):
-        
+    def __init__(self):
+        self.player_will=player_will()
+        self.ui=UI()
         self.display_surface= pygame.display.get_surface()
-        self.player_will=player_will
+        
         self.all_sprites = CameraGroup()
         self.z=LAYERS['ground']
         self.collision_sprites = pygame.sprite.Group()#用于存储哪些组分需要有碰撞判定
@@ -41,6 +44,7 @@ class born_place:
         )
         self.player.z=LAYERS['main']
         #传送门部分的空气墙 
+        collision_rect((570,380),stone_image,self.collision_sprites)
         collision_rect((600,380),stone_image,self.collision_sprites)
         Interaction((605,420),(80,50),self.interaction_sprites,'portal')
         self.image=pygame.image.load('../assets/photo/night_ground.png').convert_alpha()
@@ -48,15 +52,15 @@ class born_place:
         #boss场景部分
         boss_frames = import_folder('../assets/demon1/react')
         boss((1000,547),boss_frames,self.all_sprites)
-        Interaction((1110,620),(80,50),self.interaction_sprites,'Trader')
+        Interaction((1020,550),(80,50),self.interaction_sprites,'Trader')
 
         Generic(
 			pos = (0,0),
 			surf = self.image,
 			groups = self.all_sprites,
 			z = LAYERS['ground'])#z轴坐标用于分层绘图
-    def get_player_will(self):
-        return self.player_will
+    def update_will(self):
+        self.new_player_will=self.player_will.get_player_will()
     def cannot_move(self):#(606,512),(141.809,505.98),133.429
         if self.player.rect.centerx<=93.0294:
             self.player.rect.centerx=93.0294
@@ -72,14 +76,18 @@ class born_place:
         self.interaction_sprites.empty()
         self.set_up()
     def run(self,dt):
+        self.update_will()
         self.display_surface.fill('black')
         self.all_sprites.custom_draw(self.player)#更新摄像头
         self.all_sprites.update(dt*2)
-        #print(self.player.rect)
+        self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
+        self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
         if g_evene_queue[-1] ==1:
             return 1
-        else:
+        elif g_evene_queue[-1] ==2:
             self.reset()
             return 2
+        elif g_evene_queue[-1] ==7:
+            return 7
         
 #-------------到此为止--------------    

@@ -1,15 +1,14 @@
 import pygame, sys
 from Setting import *
 from selected import selected
+
 class Game:
 	def __init__(self):
 		pygame.init()
 		self.screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 		pygame.display.set_caption('UnderTruth')
 		self.clock = pygame.time.Clock()
-		self.player_will=10
-		self.flag=selected(self.player_will)
-		
+		self.flag=selected()
 		#初始化混音器
 		pygame.mixer.init()
 		pygame.mixer.music.load('../assets/audio/start_menu.wav')

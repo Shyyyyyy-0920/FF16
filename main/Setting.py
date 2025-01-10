@@ -1,5 +1,7 @@
 from pygame.math import Vector2
 import pygame
+
+
 FPS=60
 BLACK=(0,0,0)
 WHITE=(255,255,255)
@@ -19,6 +21,8 @@ ITEM_BOX_SIZE = 80
 UI_FONT = '../assets/font/DTM-Mono.otf'
 UI_FONT_SIZE = 18
 # general colors
+PLAYER_WILL_COLOR='#FAC5AB'
+PLAYER_BAD_COLOR='#523947'
 WATER_COLOR = '#71ddee'
 UI_BG_COLOR = '#222222'
 UI_BORDER_COLOR = '#111111'

@@ -7,17 +7,15 @@ from Menu import start_menu,win_menu
 from add_event import add_event
 from battle import Trader_Battle,Final_battle
 from chat import ChatBot
-#
 class selected:
-    def __init__(self,player_will):
-        self.player_will=player_will
+    def __init__(self):
         self.old_flag=[]
         self.event_queue=add_event(0)
         self.start_menu=start_menu()
-        self.born_place=born_place(player_will)
-        self.Level2=Level2(player_will)
+        self.born_place=born_place()
+        self.Level2=Level2()
         self.win_menu=win_menu()
-        self.Level1=Level1(player_will)
+        self.Level1=Level1()
         self.Trader_Battle=Trader_Battle()
         self.Final_battle=Final_battle()
         self.ChatBot=ChatBot("trader3")
@@ -26,14 +24,10 @@ class selected:
             self.event_queue=add_event(self.start_menu.run())
         if self.flag == 1:#第一个出生场景
             self.event_queue=add_event(self.born_place.run(dt))
-            self.player_will=self.born_place.get_player_will()
         if self.flag == 2:#第二个战斗场景
- 
             self.event_queue=add_event(self.Level1.run(dt))
-            self.player_will=self.Level1.get_player_will()
         if self.flag == 3:#第三个场景
             self.event_queue=add_event(self.Level2.run(dt))
-            self.player_will=self.Level2.get_player_will()
         if self.flag == 4:#最终游戏胜利后跳转的场景
             self.event_queue=add_event(self.win_menu.run())
         if self.flag == 5:#与trader对战的场景

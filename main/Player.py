@@ -5,6 +5,7 @@ from Timer import Timer
 from add_event import add_event
 import random
 from math import sin
+from chat import ChatBot
 #人物类，主要是各个人物属性的创建
 class Player(pygame.sprite.Sprite):
 	def __init__(self, pos, group,collision_sprites, tree_sprites,interaction,soil_layer,toggle_shop):
@@ -398,6 +399,8 @@ class Player_battle(pygame.sprite.Sprite):
 					if collided_interaction_sprite[0].name =='portal':
 						self.portal.play()
 						add_event(self.levelint)
+					elif collided_interaction_sprite[0].name =='Trader':
+						add_event(7)
 					else:
 						self.status = 'left_idle'
 						self.sleep = True
