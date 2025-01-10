@@ -1,7 +1,8 @@
-import pygame
+import pygame,sys
 from openai import OpenAI
 from typing import List, Dict
 from chat_words import *
+import judgement
 
 # 初始化 OpenAI 客户端，连接到指定的服务器和 API 密钥
 client = OpenAI(
@@ -20,7 +21,7 @@ class ChatBot:
         """
         self.messages = [{}]  # 存储对话消息
         self.chat_history = []  # 存储聊天历史记录
-        self.bg_color = (0,0,0)  # 设置背景颜色为浅灰色    
+        self.bg_color = (0,0,0)  # 设置背景颜色为黑色  
         self.screen = pygame.display.get_surface()# 屏幕对象   
         self.path = r"..\assets\font\DTM-Sans.otf"
 
@@ -40,50 +41,97 @@ class ChatBot:
         self.color = self.color_inactive  # 初始颜色为未激活颜色
         self.person = person  # 设置对话角色
 
+        self.hint1 = ""
+        self.hint2 = ""
+        self.special_words = ""
 
-    def start(self):
+    def choose(person):#判断对话角色,联系上对应的类
+        if person == "trader3":
+            name1 = trader3
+            name2 = judgement.trader3
+        
+        elif person == "trader1":
+            name1 = trader1
+            name2 = judgement.trader1
+        
+        elif person == "flowey":
+            name1 = monster2a
+            name2 = judgement.monster_a
+        
+        elif person == "papyrus":
+            name1 = monster2b
+            name2 = judgement.monster_a
+
+        elif person == "temmie":
+            name1 = monster2c
+            name2 = judgement.monster_a
+
+        elif person == "undyne":
+            name1 = monster2d
+            name2 = judgement.monster_a
+
+        elif person == "failed life":
+            name1 = monster2e
+            name2 = judgement.monster_b
+
+        elif person == "sans0":
+            name1 = Sans0
+            name2 = judgement.boss_a
+        
+        elif person == "sans1":
+            name1 = Sans1
+            name2 = judgement.boss_b
+
+        elif person == "sans2":
+            name1 = Sans1
+            name2 = judgement.boss_c
+        elif person == "sans3":
+            name1 = Sans2
+
+        else:
+            name1 = None
+            name2 = None
+        return name1,name2
+
+    def start(self,done,togggle_talk,choose = choose):
         """
         根据聊天类型设置初始消息
         :return: 初始消息列表
         """
-        person = self.person
         screen = self.screen
         active = False  # 输入框是否激活
         text = ''  # 输入框中的文本
-        done = False  # 是否结束循环
         chat_open = True  # 是否打开聊天界面
 
-        if person == "trader3":
-            name = trader3
-        if person == "trader1":
-            name = trader1
-        if person == "flowey":
-            name= monster2a
+        name , name_a = choose(self.person)#与对应库的类建立联系
 
         self.messages = [
             {"role": "system", "content": name.quest},#设置对应的角色设定
             {"role": "user", "content": "Hello!"}
         ]
 
-        image_chat = pygame.image.load(name.image).convert_alpha()
+        image_chat = pygame.image.load(name.image).convert_alpha()#设置对应的角色图片
         image_chat=pygame.transform.scale(image_chat,(270,300))
         # image_chat = pygame.transform.scale(image_chat, (64, 64))
 
-        image_main = pygame.image.load(r"..\assets\graphics\player\down\down_0.png").convert_alpha()
+        image_main = pygame.image.load(r"..\assets\graphics\player\down\down_0.png").convert_alpha()#猪脚图片
         # image_main = pygame.transform.scale(image_main, (64, 64))
 
 
-        '''judgement_user = Judgement.name.judgement_user'''#暂时不用
+        judgement_user = name_a.judge_user  #玩家对应输入内容的判定
+        judgement_assistant = name_a.judge_assistant  #聊天对象对应的内容判定
 
 
-        while not done:
+        while done:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    done = True  # 如果事件类型是 QUIT，则结束循环
+                    pygame.quit()
+                    sys.exit()  # 如果事件类型是 QUIT，则结束循环
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_TAB:
                         chat_open = not chat_open  # 按下 'Tab' 键退出聊天界面
-                        done = True
+                        done = False
+                        togggle_talk()
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 
                 if chat_open:
@@ -100,20 +148,22 @@ class ChatBot:
                     if event.type == pygame.KEYDOWN:
                         if active:
                             if event.key == pygame.K_RETURN:
-                                self.messages.append({"role": "user", "content": text})  # 将用户输入添加到消息列表
-                                self.update_output(f"Frisk: {text}")  # 更新输出文本
-                                
+                                self.hint1 , self.hint2 , inputa = judgement_user(name_a,text)
+                                self.messages.append({"role": "user", "content": inputa +"  "+ text})  # 将用户输入添加到消息列表
+                                self.update_output(f"Frisk: \n {inputa} \n {text} \n ")  # 更新输出文本
                                 try:
                                     response = client.chat.completions.create(
                                         model="llama3.2",
                                         messages=self.messages
                                     )
                                     assistant_reply = response.choices[0].message.content  # 获取助手回复
-                                    self.update_output(f"{self.person}: {assistant_reply}")  # 更新输出文本
+                                    outputa = judgement_assistant(name_a,assistant_reply)
+                                    
+                                    self.update_output(f"{self.person}: \n {assistant_reply} \n {outputa} \n")  # 更新输出文本
                                     
                                     self.messages.append({"role": "assistant", "content": assistant_reply})  # 将助手回复添加到消息列表
                                     self.chat_history.append({"user": text, "ai": assistant_reply})  # 更新聊天历史记录
-                                    # judgement_user(text)  # 如果是交易模式，则判断用户输入
+                                    
                                 except Exception as e:
                                     self.update_output(f"Error: {e}")  # 处理异常并更新输出文本
                                     print(f"Error: {e}")
@@ -153,13 +203,22 @@ class ChatBot:
                 self.render_output(screen)  # 渲染输出文本
 
                 screen.blit(image_chat, (520, 0))  # 绘制角色
-                screen.blit(image_main, (670, 490)) 
+                screen.blit(image_main, (670, 490))
+
+                int1 = self.font.render('Type 1 :',True,(255,255,255))  # 渲染提示文本
+                int2 = self.font.render('Type 2 :',True,(255,255,255))
+                Hint1 = self.font.render(self.hint1,True,(255,255,255))
+                Hint2 = self.font.render(self.hint2,True,(255,255,255))
+                screen.blit(int1,(15,350)) 
+                screen.blit(int2,(15,375))
+                screen.blit(Hint1,(110,350))
+                screen.blit(Hint2,(110,375))
+            
+            
             else:
                 break
 
             pygame.display.flip()  # 更新屏幕显示
-
-        pygame.quit()  # 退出 pygame
 
     def update_output(self, message):
         """
@@ -174,7 +233,7 @@ class ChatBot:
         :param screen: pygame 屏幕对象
         """
         output_text = self.output_text
-        output_x = 40
+        output_x = 25
         output_y = 20
         output_height = 300
         font = self.font
