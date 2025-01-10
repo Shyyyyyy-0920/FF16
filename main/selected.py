@@ -30,10 +30,8 @@ class selected:
         if self.flag == 4:#最终游戏胜利后跳转的场景
             self.event_queue=add_event(self.win_menu.run())
         if self.flag == 5:#与trader对战的场景
-    
             self.event_queue=add_event(self.Trader_Battle.run(dt))
         if self.flag == 6:#最终boss战
-
             self.event_queue=add_event(self.Final_battle.run(dt))
         if self.flag==9:
             pygame.quit()

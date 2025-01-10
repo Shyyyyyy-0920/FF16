@@ -247,6 +247,7 @@ class Enemy(pygame.sprite.Sprite):#所有的怪物类
 		self.obstacle_sprites = obstacle_sprites
 
 		#每个怪的属性
+		self.name=monster_name
 		self.monster_name = monster_name
 		monster_info = monster_data[self.monster_name]
 		self.health = monster_info['health']

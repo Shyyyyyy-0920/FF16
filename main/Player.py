@@ -249,7 +249,7 @@ class Player(pygame.sprite.Sprite):
 		self.animate(dt)
 
 class Player_battle(pygame.sprite.Sprite):
-	def __init__(self,pos,groups,collision_sprites,interaction_sprites,create_attack,destroy_attack,create_magic,levelint,togggle_talk=None):
+	def __init__(self,pos,groups,collision_sprites,interaction_sprites,create_attack,destroy_attack,create_magic,levelint,get_talk_info=None,togggle_talk=None):
 		super().__init__(groups)
 		self.frame_index = 0
 		self.image = pygame.image.load('../assets/graphics/test/player.png').convert_alpha()
@@ -314,6 +314,8 @@ class Player_battle(pygame.sprite.Sprite):
 
 		self.levelint=levelint
 		self.togggle_talk=togggle_talk
+		#用来返回碰撞怪物的函数
+		self.get_talk_info=get_talk_info
 
 	def import_player_assets(self):
 		character_path = '../assets/graphics/player/'
@@ -395,14 +397,21 @@ class Player_battle(pygame.sprite.Sprite):
 			
 			if keys[pygame.K_f]:
 				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction_sprites,False)
+				print(9999999)
 				if collided_interaction_sprite:
 					if collided_interaction_sprite[0].name =='portal':
 						self.portal.play()
 						add_event(self.levelint)
 					elif collided_interaction_sprite[0].name =='Trader':
 						self.togggle_talk()
-					# elif collided_interaction_sprite[0].name =='Trader':
-					# 	self.togggle_talk()
+					elif collided_interaction_sprite[0].name =='Flowey':
+						self.get_talk_info("flowey",True)
+					elif collided_interaction_sprite[0].name =='Papyrus':
+						self.get_talk_info("papyrus",True)
+					elif collided_interaction_sprite[0].name =='TEMMIE':
+						self.get_talk_info("temmie",True)
+					elif collided_interaction_sprite[0].name =='Undyne':
+						self.get_talk_info("undyne",True)
 					else:
 						self.status = 'left_idle'
 						self.sleep = True

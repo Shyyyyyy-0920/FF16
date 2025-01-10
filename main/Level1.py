@@ -41,9 +41,12 @@ class Level1:
 		self.magic_player = MagicPlayer(self.animation_player)
 		#对话方面
 		self.talk_flag=False
-		self.ChatBot=ChatBot("trader3")
-		
-		
+		self.Flowey=ChatBot("flowey")
+		self.Papyrus=ChatBot("papyrus")
+		self.TEMMIE=ChatBot("temmie")
+		self.Undyne=ChatBot("undyne")
+		self.dead_monster=ChatBot("monster2e")
+
 	def set_up(self):
 		#加载传送门的图片
 		self.portal_image=pygame.image.load('../assets/photo/spr_undynehouse_door_0.png').convert_alpha()
@@ -90,7 +93,8 @@ class Level1:
 									self.create_attack,
 									self.destroy_attack,
 									self.create_magic,
-									3)
+									3,
+									self.get_talk_info)
 							else:
 								if col == '390': monster_name = 'Flowey'
 								elif col == '391': monster_name = 'TEMMIE'
@@ -99,7 +103,7 @@ class Level1:
 								Enemy(
 									monster_name,
 									(x,y),
-									[self.all_sprites,self.attackable_sprites,self.all_moster_sprites],
+									[self.all_sprites,self.attackable_sprites,self.all_moster_sprites,self.interaction_sprites],
 									self.collision_sprites,
 									self.damage_player,
 									self.trigger_death_particles,
@@ -144,11 +148,29 @@ class Level1:
 		self.player.exp += amount
 	def toggle_menu(self):
 		self.game_paused = not self.game_paused 
+	def toggle_talk(self):
+		self.talk_flag=not self.talk_flag
 	def check_monster_death_num(self):
 		if self.init_num>len(self.all_moster_sprites):
 			self.player_will.modify_player_will(len(self.all_moster_sprites)-self.init_num)
 			self.init_num=len(self.all_moster_sprites)
-
+	def get_talk_info(self,name,activate):
+		if activate==True:
+			self.talk_flag=True
+			self.name=name
+	def monster_start_talk(self):
+		if self.name == "flowey":
+			self.Flowey.start(True,self.start_talk)
+		elif self.name == "papyrus":
+			self.Papyrus.start(True,self.start_talk)
+		elif self.name == "temmie":
+			self.TEMMIE.start(True,self.start_talk)
+		elif self.name == "undyne":
+			self.Undyne.start(True,self.start_talk)
+		else:
+			pass
+		# elif self.name == "monster2d":
+		# 	self.dead_monster.start(True,self.start_talk)
 	def is_win(self):
 		number_of_monster = len(self.all_moster_sprites)
 		if number_of_monster == 34:
@@ -164,6 +186,8 @@ class Level1:
 		#print(self.player.rect)
 		if self.game_paused:
 			self.upgrade.display()
+		elif self.talk_flag:
+			self.monster_start_talk()
 		else:
 			self.all_sprites.update(dt)
 			self.all_sprites.enemy_update(self.player)
@@ -171,10 +195,8 @@ class Level1:
 		self.check_monster_death_num()
 		self.is_win()
 		if g_evene_queue[-1]==3:
-
 			return 3
 		else:
-
 			return 2
 class YSortCameraGroup(CameraGroup):
 	def __init__(self):
