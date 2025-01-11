@@ -10,7 +10,9 @@ client = OpenAI(
     api_key='ollama',  # API 密钥，这里设置为 'ollama'，但实际使用中可能需要有效的密钥
 )
 
-
+###！！！！！！！！！！！警告
+###       以下内容过于屎山QAQ
+###       会尽量用注释弥补的TAT
 
 class ChatBot:
     def __init__(self, person):
@@ -20,30 +22,31 @@ class ChatBot:
         :param chat_history: 聊天历史记录列表
         """
         self.messages = [{}]  # 存储对话消息
-        self.chat_history = []  # 存储聊天历史记录
         self.bg_color = (0,0,0)  # 设置背景颜色为黑色  
-        self.screen = pygame.display.get_surface()# 屏幕对象   
-        self.path = r"..\assets\font\DTM-Sans.otf"
-
-
+        self.screen = pygame.display.get_surface()# 读取屏幕状态   
+        
+        self.path = r"..\assets\font\DTM-Sans.otf"#字体文件路径
         self.font = pygame.font.Font(self.path, 22)  # 设置字体和大小为 22
         
-        self.scroll_position = 0  # 滚动位置
+        self.scroll_position = 0  # 鼠标滚动位置参数初始化
         
         self.output_text = ""  # 存储输出文本
         self.output_x = 10  # 输出文本的 x 坐标
         self.output_y = 10  # 输出文本的 y 坐标
         self.output_height = 400  # 输出文本区域的高度
         
-        self.input_box = pygame.Rect(30, 500, 700, 32)  # 设置输入框的位置和大小
+        self.input_box = pygame.Rect(30, 475, 700, 32)  # 设置输入框的位置和大小
         self.color_inactive = pygame.Color(72,61,139)  # 输入框未激活时的颜色
         self.color_active = pygame.Color(255,255,255)  # 输入框激活时的颜色
         self.color = self.color_inactive  # 初始颜色为未激活颜色
         self.person = person  # 设置对话角色
 
-        self.hint1 = ""
-        self.hint2 = ""
-        self.special_words = ""
+        self.hint1 = "" #有关选项a的对话
+        self.hint2 = "" #选项B的
+        
+        self.will_delta = 0 #善恶值的变化
+        self.fight = False  #是否进入战斗
+        self.anger = 0      #怒气值
 
     def choose(person):#判断对话角色,联系上对应的类
         if person == "trader3":
@@ -83,10 +86,15 @@ class ChatBot:
             name2 = judgement.boss_b
 
         elif person == "sans2":
-            name1 = Sans1
+            name1 = Sans0
             name2 = judgement.boss_c
+        
         elif person == "sans3":
-            name1 = Sans2
+            if judgement.general.end == True:
+                name1 = Sans2
+            else:
+                name1 = Sans1
+            name2 = judgement.boss_d
 
         else:
             name1 = None
@@ -132,6 +140,7 @@ class ChatBot:
                         chat_open = not chat_open  # 按下 'Tab' 键退出聊天界面
                         done = False
                         togggle_talk()
+                        return self.will_delta , self.anger , self.fight   #返回最终的will_delta
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 
                 if chat_open:
@@ -148,21 +157,40 @@ class ChatBot:
                     if event.type == pygame.KEYDOWN:
                         if active:
                             if event.key == pygame.K_RETURN:
-                                self.hint1 , self.hint2 , inputa = judgement_user(name_a,text)
-                                self.messages.append({"role": "user", "content": inputa +"  "+ text})  # 将用户输入添加到消息列表
-                                self.update_output(f"Frisk: \n {inputa} \n {text} \n ")  # 更新输出文本
+                                
+                                self.hint1 , self.hint2 , inputa , chat_on= judgement_user(name_a,text)
+                                
+                                if chat_on == True:
+                                    self.messages.append({"role": "user", "content": inputa})
+                                    self.update_output(f"You: \n {inputa} \n ")
+                                else:
+                                    self.messages.append({"role": "user", "content": inputa +"  "+ text})  # 将用户输入添加到消息列表
+                                    self.update_output(f"You: \n {inputa} \n {text} \n ")  # 更新输出文本
+                                
                                 try:
                                     response = client.chat.completions.create(
                                         model="llama3.2",
                                         messages=self.messages
                                     )
                                     assistant_reply = response.choices[0].message.content  # 获取助手回复
-                                    outputa = judgement_assistant(name_a,assistant_reply)
                                     
-                                    self.update_output(f"{self.person}: \n {assistant_reply} \n {outputa} \n")  # 更新输出文本
+                                    outputa , will_delta , self.anger , self.fight= judgement_assistant(name_a,assistant_reply)
                                     
-                                    self.messages.append({"role": "assistant", "content": assistant_reply})  # 将助手回复添加到消息列表
-                                    self.chat_history.append({"user": text, "ai": assistant_reply})  # 更新聊天历史记录
+                                    if chat_on == True:
+                                        self.update_output(f"{self.person}: \n {outputa} \n")  # 更新输出文本
+                                        self.messages.append({"role": "assistant", "content": outputa})  # 将助手回复添加到消息列表
+                                    else:
+                                        self.update_output(f"{self.person}: \n {assistant_reply} \n {outputa} \n")  # 更新输出文本
+                                        self.messages.append({"role": "assistant", "content": assistant_reply})  # 将助手回复添加到消息列表
+
+                                    
+                                    if will_delta != 0:                 # 对善恶值变化量的比较操作
+                                        if  self.will_delta == will_delta:
+                                            pass
+                                        else:
+                                            self.will_delta = will_delta
+                                            
+
                                     
                                 except Exception as e:
                                     self.update_output(f"Error: {e}")  # 处理异常并更新输出文本
@@ -205,14 +233,18 @@ class ChatBot:
                 screen.blit(image_chat, (520, 0))  # 绘制角色
                 screen.blit(image_main, (670, 490))
 
-                int1 = self.font.render('Type 1 :',True,(255,255,255))  # 渲染提示文本
-                int2 = self.font.render('Type 2 :',True,(255,255,255))
+                int1 = self.font.render('Type 1 :',True,(72,61,139))  # 渲染提示文本
+                int2 = self.font.render('Type 2 :',True,(72,61,139))
                 Hint1 = self.font.render(self.hint1,True,(255,255,255))
                 Hint2 = self.font.render(self.hint2,True,(255,255,255))
-                screen.blit(int1,(15,350)) 
-                screen.blit(int2,(15,375))
-                screen.blit(Hint1,(110,350))
-                screen.blit(Hint2,(110,375))
+                hint_general1 = self.font.render("Use'yes'or'no nonsence' to quick-pass chating",True,(255,255,255))
+                hint_general2 = self.font.render("Press the key 'TAB' to quit this chat",True,(255,255,255))
+                screen.blit(int1,(15,335)) 
+                screen.blit(int2,(15,390))
+                screen.blit(Hint1,(15,365))
+                screen.blit(Hint2,(15,415))
+                screen.blit(hint_general1,(30,520))
+                screen.blit(hint_general2,(30,550))
             
             
             else:

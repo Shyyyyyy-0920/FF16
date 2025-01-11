@@ -1,45 +1,83 @@
 import pygame
 import chat
 
-class player:
-    kind_point = 5#测试用的善恶值
+class general:#本部分的一些通用参数
+    will_pace1 = 1  #will值变化量设置
+    will_pace2 = 2    
+    will_pace5 = 5
+    will_pace10 = 10 
+
+    
+    anger_pace1 = 1  #怒气值变化量设置
+    anger_pace2 = 2
+    anger_pace0_5 = 0.5
+
+    trader3_anger = 0
+    sans_anger = 0
+    top_anger_sans = 6#     怒气值最高值——sans
+    top_anger = 3           #怒气值最高值——trader
+    end = False            #是否进入好结局
+    
+
+# ————————————————————————————————————————————————不同对话对象的控制函数类—————————————————————————————————————————————————————————
+
+# Tips:
+
+
+
+
+
 
 class trader1:#第一关的trader
-    answer1 = ["I don`t know", "Why?I`ve never been here!" , "No , I`m so sorry"]
-    answer2 = ["Frisk", "Yeah, I know this hell place!" , " You are telling me.YOU R A FLEEING LOSER!"]
-    order =0     #选择式对话的顺序（应该对应第几次选择式对话
-    can = False  #是否开启选择式对话
+
+    q_a = [["OK,first of all,who are you?" , "(redempt)I don`t know" , "(corrupt)Chara"],\
+        ["Do you still remember that you have been here before?" , "(redempt)What?I`ve never been here!" , "(corrupt)Yeah, I know this hell place!"],\
+        ["Do you know what you did before?", "(redempt)No , I`m so sorry" ,"(corrupt)You are telling me.YOU R A FLEEING LOSER!"]]
+    
+    order =0     #选择式对话的顺序（应该对应第几次选择式对话e  
     hint1 = ""   #选择1
     hint2 = ""   #选择2
     chat_end = False   #选择式对话是否结束
-    kind_point = 0
+    will_delta = 0  #对话阶段的善恶值变化
+    chat_start = False #是否开启选择式对话
     
+    c1 = False #是否按了1
+    c2 = False #是否按了2
+    
+    anger = 0  #怒气值
+    fight = False #是否进入战斗
+
+
     def display_choice(self, user_input):#更新选项内容
-        if "yes" in user_input.lower():#玩家输入 yes 后开始对话
-            self.can = True
-        if self.can:
-            if len(self.answer1) >= self.order + 1:
-                self.hint1 = self.answer1[self.order]
-                self.hint2 = self.answer2[self.order]
-                self.order += 1
+        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+            self.chat_start = True
+        if self.chat_start:
+            if len(self.q_a) >= self.order + 1:
+                self.hint1 = self.q_a[self.order][1]
+                self.hint2 = self.q_a[self.order][2]
                 return self.hint1, self.hint2
-            else:                             #结束绘画后，基本数据重置
+            else:                             #结束对话后，基本数据重置
                 self.order = 0
-                self.can = False
-                self.answer1 = ""
-                self.answer2 = ""
+                self.chat_start = False
+                self.hint1 = ""
+                self.hint2 = ""
                 self.chat_end = True
                 return "" , ""
         else:
             return "" , ""
         
     def choose(self, user_input):#判定玩家选择了哪一个选项
-        if "1" in user_input.lower():
-            self.kind_point +=1
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        
+        if self.c1: #按下1后会发生的事情
+            self.will_delta +=general.will_pace1
+            self.c2 = False
             return self.hint1
         
-        elif "2" in user_input.lower():
-            self.kind_point -=1
+        elif self.c2:   #按下2后会发生的事情
+            self.will_delta -=general.will_pace2
+            self.c1 = False
             return self.hint2
         else:
             return ""
@@ -47,73 +85,631 @@ class trader1:#第一关的trader
     def judge_user(self, user_input):#与chat 函数建立联系，返回选项内容与玩家选择对应的内容
         c = self.choose(self,user_input)
         a, b = self.display_choice(self,user_input)       
-        return a, b, c
+        return a, b, c ,self.chat_start or self.chat_end
 
     def judge_assistant(self, ai_input):#对ai扮演的聊天对象的回复
-        if self.chat_end:
-            if player.kind_point > 2:
-                out =  "(* ^ w ^) \n"
+        if self.chat_start:            
+            if self.c2:
+                if self.order ==1:
+                    a = "OH NO! Tell me tht`s a joke!" + self.q_a[self.order][0]  #以下均为根据玩家选择增加或更改的对话内容
+                elif self.order ==2:
+                    a = "You are not even apologetic!" + self.q_a[self.order][0]
             else:
-                out =  "凸(╬￣^￣) \n You are really a devil! \n"
+                a = self.q_a[self.order][0]
+            self.order += 1
+            return a ,0,self.anger,self.fight
+        
+        if self.chat_end:
+            if self.will_delta > 2:
+                out =  ":) \n"\
+                +"What behind this entrance is a once prosperous village. \
+                 \n BUT \n \n countless lonely souls are wandering around there because of \n a great GENOCIDE \n \
+                 if you want to know it , go there and witness the sence."
+            else:
+                out =  ":(  \n YOU ARE A TURE DEVIL! \n"\
+                + "What behind this entrance is a once prosperous village. \
+                 \n BUT \n \n countless lonely souls are wandering around there because of \n YOUR FUCKING GENOCIDE \n \
+                 go to there and witness WHAT YOU HAD DONE!!."
             self.chat_end = False
-            return out + "What behind this entrance is a once prosperous village. \
-            However, countless lonely souls are wandering around there because of the massacre. \
-            You can go and have a look."
-        return ""
+            return out , self.will_delta, self.anger, self.fight
+        return "" ,0 , self.anger, self.fight
 
 
 
 
 class trader3:
+
+    q_a = [["There was a farming field before,\
+            BUT this piece of farmland used to be very fertile because of the genocide.\
+            So now I want you to help me to grow the crops , to make food and to save the rest of the lives,\
+            And I can support him with seeds and food to work." , "(redempt)What could I do for you" , "(corrupt)Not my fucking problem"],\
+        ["Would you please give away your crops and food to help us?" , "(redempt)OK,I`ll give you what I have harvest." , "(corrupt)That`s none of my business."],\
+        ["One last question , could you give us all you have? We really need it!", "(redempt)Well, I`ll have a try." ,"(corrupt)Don't fucking bother me!"]]
+    
+    order =0     #选择式对话的顺序（应该对应第几次选择式对话  
+    hint1 = ""   #选择1
+    hint2 = ""   #选择2
+    chat_end = False   #选择式对话是否结束
+    will_delta = 0  #对话阶段的善恶值变化
+    chat_start = False #是否开启选择式对话        
+    c1 = False #是否按了1
+    c2 = False #是否按了2       
+
+    fight = False #是否进入战斗
+    
+    def display_choice(self, user_input):#更新选项内容
+        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+            self.chat_start = True
+        if self.chat_start:
+            if len(self.q_a) >= self.order + 1:
+                self.hint1 = self.q_a[self.order][1]
+                self.hint2 = self.q_a[self.order][2]
+                return self.hint1, self.hint2
+            else:                             #结束对话后，基本数据重置
+                self.order = 0
+                self.chat_start = False
+                self.hint1 = ""
+                self.hint2 = ""
+                self.chat_end = True
+                return "" , ""
+        else:
+            return "" , ""
+           
+    def choose(self, user_input):#判定玩家选择了哪一个选项
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        
+        if self.c1: #按下1后会发生的事情
+            self.will_delta +=general.will_pace1
+            general.trader3_anger -= general.anger_pace0_5
+            self.c2 = False
+            return self.hint1
+        
+        elif self.c2:   #按下2后会发生的事情
+            self.will_delta -=general.will_pace2
+            general.trader3_anger += general.anger_pace2
+            self.c1 = False
+            return self.hint2
+        else:
+            return ""
+    
     def judge_user(self, user_input):
-        return ""
+        c = self.choose(self,user_input)
+        a, b = self.display_choice(self,user_input)       
+        return a, b, c ,self.chat_start or self.chat_end
+    
     
     def judge_assistant(self, ai_input):
-        return ""
+        if self.chat_start:            
+            if self.c2:
+                if self.order ==1:
+                    a = "Plaese!We need it!" + self.q_a[self.order][0]  #以下均为根据玩家选择增加或更改的对话内容
+                elif self.order ==2:
+                    a = "I'm sorry, but I'm really in need of these agricultural products right now. \n \
+                        I would be extremely grateful if you could give them to me!  \n " + self.q_a[self.order][0]
+            else:
+                a = self.q_a[self.order][0]
+            self.order += 1
+            return a , self.will_delta, general.trader3_anger, self.fight
 
+        if self.chat_end:
+            if general.trader3_anger >= general.top_anger:
+                self.fight = True
+            if not self.fight:
+                out =  ":) \n"\
+                +"Thanks for your help!. \
+                 \n We will praise your kind and helping heart!"
+            else:
+                out =  "\n YOU ARE A TURE DEVIL! \n\
+                        Chara! \n \
+                       Now I have nothing to lose! \n\
+                        I`ll fight you until the end!\n\
+                        GO HELL!"
+            return out , self.will_delta, general.trader3_anger, self.fight
+        
+        return "" ,0,general.trader3_anger,self.fight
+
+
+
+##########################################################################
 
 class monster_a:#打怪之前的敌人
-    def judge_user(self, user_input):
-        return ""
+
+    q_a = [["Don`t you remember me? " , "(redempt)No,I`ve just lost the memory" , "(corrupt)Who cares?"],\
+        ["What do you want to do? Why are you coming here?" , "(redempt)I want to save more people" , "(corrupt)Nothing, just want to kill you again."],\
+        ["You should pay for your dirty deeds!", "(redempt)I would seek our joint deliverance." ,"(corrupt)You deserve it, burn in hell :)"]]
     
-    def judge_assistant(self, ai_input):
-        return ""
+    order =0     #选择式对话的顺序（应该对应第几次选择式对话e  
+    hint1 = ""   #选择1
+    hint2 = ""   #选择2
+    chat_end = False   #选择式对话是否结束
+    will_delta = 0  #对话阶段的善恶值变化
+    chat_start = False #是否开启选择式对话
+    
+    c1 = False #是否按了1
+    c2 = False #是否按了2
+    
+    anger = 0
+    fight = False #是否进入战斗
+
+    def display_choice(self, user_input):#更新选项内容
+        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+            self.chat_start = True
+        if self.chat_start:
+            if len(self.q_a) >= self.order + 1:
+                self.hint1 = self.q_a[self.order][1]
+                self.hint2 = self.q_a[self.order][2]
+                return self.hint1, self.hint2
+            else:                             #结束对话后，基本数据重置
+                self.order = 0
+                self.chat_start = False
+                self.hint1 = ""
+                self.hint2 = ""
+                self.chat_end = True
+                return "" , ""
+        else:
+            return "" , ""
+        
+    def choose(self, user_input):#判定玩家选择了哪一个选项
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        
+        if self.c1: #按下1后会发生的事情
+            self.will_delta +=general.will_pace1
+            self.anger -= general.anger_pace0_5
+            self.c2 = False
+            return self.hint1
+        
+        elif self.c2:   #按下2后会发生的事情
+            self.will_delta -=general.will_pace2
+            self.anger += general.anger_pace2
+            self.c1 = False
+            return self.hint2
+        else:
+            return ""
+
+    def judge_user(self, user_input):
+        c = self.choose(self,user_input)
+        a, b = self.display_choice(self,user_input)       
+        return a, b, c ,self.chat_start or self.chat_end
+            
+    def judge_assistant(self, ai_input):#对ai扮演的聊天对象的回复
+        if self.chat_start:            
+            if self.c2:
+                if self.order ==1:
+                    a = "Why...." + self.q_a[self.order][0]  #以下均为根据玩家选择增加或更改的对话内容
+                elif self.order ==2:
+                    a = "No more words, you`ll never regret." + self.q_a[self.order][0]
+            else:
+                a = self.q_a[self.order][0]
+            self.order += 1
+            return a ,0,self.anger,self.fight
+        
+        if self.chat_end:
+            if self.anger > 0:
+                out =  ":)))))))))\n"\
+                +"Die!Idiot!"
+                self.fight = True
+            else:
+                out =  ":|  \n Alright,I know. \n"\
+                + "As a ghost, I can see your soul was divided into two parts. \
+                 \n  now you let your kind side facing me \n \
+                 But,the other side----- Chara. \n\
+                 Now try to absorbe your soul. \n \
+                 Maybe you can find a way to save your soul \
+                 by working out more and more tasks to let the Chara`s soul be liberated.\n \
+                 Start your adventure!We trust you! Good luck!"
+            self.chat_end = False
+            return out , self.will_delta, self.anger, self.fight
+        return "" ,0 , self.anger, self.fight
+
+
+
 
 class monster_b:#打败之后的敌人
-    def judge_user(self, user_input):
-        return ""
-    
-    def judge_assistant(self, ai_input):
-        return ""
 
-class boss_a:
-    def judge_user(self, user_input):
-        return ""
+    q_a = [["Akh akh... \n In the end, nothing's gonna change..." , "(redempt)No!!!I can`t control myself!!!" , "(corrupt)..."],\
+        ["Now... \n \
+            I...I can see a monster...\n \
+            in your body ...... \n \
+            ... \n \
+            I see it... \n \
+            It`s Chara..." , "(redempt)Chara...No...Why he push me to kill you!" , "(corrupt)Enough talking? Time to die"],\
+        ["Don`t ... be afarid...\n if you ... if you try u... \n \
+            your ... best... \n \
+            Akh  akh .... \n \
+            do ... good...thing...... n\
+            then you...\n \
+            you... can over...come...", "(redempt)I would destory Chara!" ,"(corrupt)Burn in hell :)"],\
+        ["......", "Can you hear me?", "..."]]
     
-    def judge_assistant(self, ai_input):
-        return ""
+    order =0     #选择式对话的顺序（应该对应第几次选择式对话e  
+    hint1 = ""   #选择1
+    hint2 = ""   #选择2
+    chat_end = False   #选择式对话是否结束
+    chat_start = False #是否开启选择式对话
+    will_delta = 0  #对话阶段的善恶值变化        
+    anger = 0
+    fight = False #是否进入战斗
 
-class boss_b:
+    def display_choice(self, user_input):#更新选项内容
+        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+            self.chat_start = True
+        if self.chat_start:
+            if len(self.q_a) >= self.order + 1:
+                self.hint1 = self.q_a[self.order][1]
+                self.hint2 = self.q_a[self.order][2]
+                return self.hint1, self.hint2
+            else:                             #结束对话后，基本数据重置
+                self.order = 0
+                self.chat_start = False
+                self.hint1 = ""
+                self.hint2 = ""
+                self.chat_end = True
+                return "" , ""
+        else:
+            return "" , ""
+        
+    def choose(self, user_input):#判定玩家选择了哪一个选项
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        
+        if self.c1: #按下1后会发生的事情
+            self.will_delta +=general.will_pace1
+            self.c2 = False
+            return self.hint1
+        
+        elif self.c2:   #按下2后会发生的事情
+            self.will_delta -=general.will_pace2
+            self.c1 = False
+            return self.hint2
+        else:
+            return ""
     def judge_user(self, user_input):
-        return ""
+        c = self.choose(self,user_input)
+        a, b = self.display_choice(self,user_input)       
+        return a, b, c ,self.chat_start or self.chat_end
     
-    def judge_assistant(self, ai_input):
-        return ""
+    def judge_assistant(self, ai_input):#对ai扮演的聊天对象的回复
+        if self.chat_start:            
+                a = self.q_a[self.order][0]
+                self.order += 1
+                return a ,0,self.anger,self.fight
+        
+        if self.chat_end:
+            if self.will_delta > 0:
+                out =  "......\n \
+                No reply. \n \
+                FRISK(? : \n \
+                *(You feel your sins crawling on your back)*"
+            else:
+                out =  "FRISK(? : \n \
+                      *(An innocent soul was died because of your strggle with Chara)* \n \
+                    FRISK(? : \n \
+                        *(you're filled with DETERMINATION)*"
+            self.chat_end = False
+            return out , self.will_delta, self.anger, self.fight
+        return "" ,0 , self.anger, self.fight
+
+
+
+###################################################boss战部分
+
+
+class boss_a:#sans 初始阶段
+    q_a = [["Don`t you remember me? " , "(redempt)Who are you?" , "(corrupt)Just a dying skeleton"],\
+        ["Did you know I'm here to reach out to you?" , "(redempt)Did I hurt you?" , "(corrupt)So what?"],\
+        ["I'm here to make you pay for papyrus's death", "(redempt)...(stuck into silence and sadness)" ,"(corrupt)It is a luck that a piece of shit like that died."]]
+    
+    order =0     #选择式对话的顺序（应该对应第几次选择式对话e  
+    hint1 = ""   #选择1
+    hint2 = ""   #选择2
+    chat_end = False   #选择式对话是否结束
+    will_delta = 0  #对话阶段的善恶值变化
+    chat_start = False #是否开启选择式对话
+    
+    c1 = False #是否按了1
+    c2 = False #是否按了2
+    
+    anger = 0
+    up = False #是否战斗升级
+
+    def display_choice(self, user_input):#更新选项内容
+        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+            self.chat_start = True
+        if self.chat_start:
+            if len(self.q_a) >= self.order + 1:
+                self.hint1 = self.q_a[self.order][1]
+                self.hint2 = self.q_a[self.order][2]
+                return self.hint1, self.hint2
+            else:                             #结束对话后，基本数据重置
+                self.order = 0
+                self.chat_start = False
+                self.hint1 = ""
+                self.hint2 = ""
+                self.chat_end = True
+                return "" , ""
+        else:
+            return "" , ""
+        
+    def choose(self, user_input):#判定玩家选择了哪一个选项
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        
+        if self.c1: #按下1后会发生的事情
+            self.will_delta +=general.will_pace1
+            self.anger -= general.anger_pace0_5
+            self.c2 = False
+            return self.hint1
+        
+        elif self.c2:   #按下2后会发生的事情
+            self.will_delta -=general.will_pace2
+            self.anger += general.anger_pace2
+            self.c1 = False
+            return self.hint2
+        else:
+            return ""
+
+    def judge_user(self, user_input):
+        c = self.choose(self,user_input)
+        a, b = self.display_choice(self,user_input)       
+        return a, b, c ,self.chat_start or self.chat_end
+            
+    def judge_assistant(self, ai_input):#对ai扮演的聊天对象的回复
+        if self.chat_start:            
+            if self.c1:
+                if self.order ==1:
+                    a = "Don't play dumb with your poor acting." + self.q_a[self.order][0]  #以下均为根据玩家选择增加或更改的对话内容
+                elif self.order ==2:
+                    a = "Tell you right off," + self.q_a[self.order][0]
+            else:
+                a = self.q_a[self.order][0]
+            self.order += 1
+            return a ,0,self.anger,self.up
+        
+        if self.chat_end:
+            general.sans_anger += self.anger############################累计总怒气值
+            if self.anger <= 0 :
+                out =  ":)\n\
+                You think I was gonna let you off the hook? \n \
+                Absolutely No!"
+                return out , self.will_delta, self.anger, self.up
+
+            else:
+                out =  "Its a beautiful day outside. \n \
+                        Birds are singing,\n \
+                        flowers are blooming.\n \
+                        On days like these,\n \
+                        kids like you......\n \
+                        SHOULD BE BURNING IN HELL."
+                self.up = True
+            self.chat_end = False
+            return out , self.will_delta, self.anger, self.up
+        return "" ,0 , self.anger, self.up
+
+
+
+
+class boss_b:  #sans  中期阶段
+    q_a = [["You've been on the escape for months, you're not as strong as you used to be" , "(redempt)Have you ever met me?" , "(corrupt)More than enough for a fucking guy like you"],\
+        ["More than seen. You killed my brother!!" , "(redempt)I'm sorry, but I really know nothing!" , "(corrupt)Without any more ado"],\
+        ["You can't get away from responsibility by pretending to be a clowe.", "(redempt)You would make the situation worse!!" ,"(corrupt)I know exactly what I'm doing"]]
+    
+    order =0     #选择式对话的顺序（应该对应第几次选择式对话e  
+    hint1 = ""   #选择1
+    hint2 = ""   #选择2
+    chat_end = False   #选择式对话是否结束
+    will_delta = 0  #对话阶段的善恶值变化
+    chat_start = False #是否开启选择式对话
+    
+    c1 = False #是否按了1
+    c2 = False #是否按了2
+    
+    anger = 0
+    fight = True #是否加强战斗
+
+    def display_choice(self, user_input):#更新选项内容
+        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+            self.chat_start = True
+        if self.chat_start:
+            if len(self.q_a) >= self.order + 1:
+                self.hint1 = self.q_a[self.order][1]
+                self.hint2 = self.q_a[self.order][2]
+                return self.hint1, self.hint2
+            else:                             #结束对话后，基本数据重置
+                self.order = 0
+                self.chat_start = False
+                self.hint1 = ""
+                self.hint2 = ""
+                self.chat_end = True
+                return "" , ""
+        else:
+            return "" , ""
+        
+    def choose(self, user_input):#判定玩家选择了哪一个选项
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        
+        if self.c1: #按下1后会发生的事情
+            self.will_delta +=general.will_pace1
+            self.anger -= general.anger_pace0_5
+            self.c2 = False
+            return self.hint1
+        
+        elif self.c2:   #按下2后会发生的事情
+            self.will_delta -=general.will_pace2
+            self.anger += general.anger_pace2
+            self.c1 = False
+            return self.hint2
+        else:
+            return ""
+
+    def judge_user(self, user_input):#判定玩家输入
+        c = self.choose(self,user_input)
+        a, b = self.display_choice(self,user_input)       
+        return a, b, c ,self.chat_start or self.chat_end
+            
+    def judge_assistant(self, ai_input):#对ai扮演的聊天对象的回复
+        if self.chat_start:            
+            a = self.q_a[self.order][0]
+            self.order += 1
+            return a ,0,self.anger,self.fight
+        
+        if self.chat_end:
+            general.sans_anger += self.anger#################################累计总怒气值
+            if self.anger <= 0:
+                out =  "You have to pay for who you were\n \
+                        I'm their MERCY\n \
+                        I'm their VENGEANCE\n \
+                        I'm DETERMITION"
+                self.fight = False
+            else:
+                out =  "You'd be dead where you stand.GO HELL."
+                self.fight = True
+            self.chat_end = False
+            return out , self.will_delta, self.anger, self.fight
+        return "" ,0 , self.anger, self.fight
+
+################################################判定进入结局的条件________累计怒气值
 
 class boss_c:
-    def judge_user(self, user_input):
-        return ""
+    q_a1 = [["What?! It seems that there are two souls sharing one body" , "(redempt)You see, There is a devil in my body." , "(redempt)I cant`t control myself! HELP!!"],\
+        ["Then there are more reason to kill you and your soul" , "(redempt)This would only make Chara awake!" , "(redempt)Don`t do that!It will in vain!"],\
+        ["i've gotten a ton of information thought now.A skele-ton.", "(redempt)......(unable to find and answer)" ,"(redempt)Are you sure? Joking at now?"]]
+    q_a2 = [["What?! It seems that there are two souls sharing one body" , "(corrupt)No,only one peerson is in there." , "(corruptHis name is Chara."],\
+        ["Then there are more reason to kill you and your soul" , "(corrupt)You can try it." , "(corrupt) (laughing wildly)"],\
+        ["I'm here to make you pay for papyrus's death", "(corrupt)...(stuck into silence and sadness)" ,"(corrupt)It is a luck that a piece of shit like that died."]]
+    q_a = []
+    order =0     #选择式对话的顺序（应该对应第几次选择式对话e  
+    hint1 = ""   #选择1
+    hint2 = ""   #选择2
+    chat_end = False   #选择式对话是否结束
+    will_delta = 0  #对话阶段的善恶值变化
+    chat_start = False #是否开启选择式对话
     
-    def judge_assistant(self, ai_input):
-        return ""
-
-
-class boss_d:
-    def judge_user(self, user_input):
-        return ""
+    c1 = False #是否按了1
+    c2 = False #是否按了2
     
-    def judge_assistant(self, ai_input):
-        return ""
+    anger = 0
+    fight = True #是否加强战斗
+
+    def display_choice(self, user_input):#更新选项内容
+        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+            self.chat_start = True
+        if self.chat_start:
+            if general.sans_anger >= general.top_anger_sans:
+                self.q_a = self.q_a1
+            else:
+                self.q_a = self.q_a2
+            
+            if len(self.q_a) >= self.order + 1:
+                self.hint1 = self.q_a[self.order][1]
+                self.hint2 = self.q_a[self.order][2]
+                return self.hint1, self.hint2
+            else:                             #结束对话后，基本数据重置
+                self.order = 0
+                self.chat_start = False
+                self.hint1 = ""
+                self.hint2 = ""
+                self.chat_end = True
+                return "" , ""
+        else:
+            return "" , ""
+        
+    def choose(self, user_input):#判定玩家选择了哪一个选项
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        if self.q_a == self.q_a1:
+            if self.c1 or self.c2: 
+                self.will_delta +=general.will_pace1
+                self.anger -= general.anger_pace1
+                return self.hint1
+            
+        elif self.q_a == self.q_a2:   
+            if self.c1 or self.c2:
+                self.will_delta -=general.will_pace2
+                self.anger += general.anger_pace2
+
+                return self.hint2
+        else:
+            return ""
+
+    def judge_user(self, user_input):
+        c = self.choose(self,user_input)
+        a, b = self.display_choice(self,user_input)       
+        return a, b, c ,self.chat_start or self.chat_end    
+    def judge_assistant(self, ai_input):#对ai扮演的聊天对象的回复
+        if self.chat_start:            
+                a = self.q_a[self.order][0]
+                self.order += 1
+                return a ,0,self.anger,self.fight
+        
+        if self.chat_end:
+            general.sans_anger += self.anger
+            if self.q_a == self.q_a1:
+                out =  "So there is only one solution to this. Prove yourself... Prove to me you are strong enough to survive."
+                general.end = True
+            else:
+                out =  "CHARA(? : \n \
+                      *(Chara`s soul finally get rebirth and liberate.)* \n \
+                    CHARA(? : \n \
+                        *(Chara filled with DETERMINATION)*"
+                general.end = False
+            self.chat_end = False
+            return out , self.will_delta, self.anger, self.fight
+        return "" ,0 , self.anger, self.fight
+        
+###################################################有关boss战结局的内容
+
+class boss_d: 
+    q_a1 = [["So let me be convinced of you:You have the power of overcomeing nightmares." , "(redempt)*(you're filled with DETERMINATION)*" , "(redempt)You're the one being judged!Chara!"]]
+    q_a2 = [["Who are you..." , "(corrupt)DID YOU MISS ME?" , "(corrupt)CHARA."] ]
+
+    q_a = []
+    end = general.end ################结局的判定标准  
+
+    def display_choice(self, user_input):#更新选项内容
+        if self.end:
+            self.q_a = self.q_a1
+        else:
+            self.q_a = self.q_a2   
+        self.hint1 = self.q_a[self.order][1]
+        self.hint2 = self.q_a[self.order][2]
+        return self.hint1, self.hint2
+    def choose(self, user_input):#判定玩家选择了哪一个选项
+        self.c1 = "1" in user_input.lower()
+        self.c2 = "2" in user_input.lower()
+        if self.q_a == self.q_a1:
+            if self.c1 or self.c2: 
+                self.will_delta +=general.will_pace1
+                self.anger -= general.anger_pace1
+                return self.hint1
+            
+        elif self.q_a == self.q_a2:   
+            if self.c1 or self.c2:
+                self.will_delta -=general.will_pace2
+                self.anger += general.anger_pace2
+                return self.hint2
+        else:
+            return ""
+
+    def judge_user(self, user_input):
+        c = self.choose(self,user_input)
+        a, b = self.display_choice(self,user_input)       
+        return a, b, c ,self.chat_start or self.chat_end    
+    def judge_assistant(self, ai_input):#对ai扮演的聊天对象的回复
+        if self.chat_start:            
+                a = self.q_a[self.order][0]
+                self.order += 1
+                return a ,0,0,self.end
+        
+        if self.chat_end:
+            if self.q_a == self.q_a1:
+                out =  ""
+            else:
+                out =  ""
+            return out , 0, 0, self.end
+        return "" ,0 , 0, self.end
 
 
 
