@@ -206,7 +206,7 @@ class trader3:
                        Now I have nothing to lose! \n\
                         I`ll fight you until the end!\n\
                         GO HELL!"
-                self.fight = False
+
             return out , self.will_delta, general.trader3_anger, self.fight
         
         return "" ,0,general.trader3_anger,self.fight

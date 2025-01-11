@@ -162,23 +162,28 @@ class Level2:
 		self.shop_active = not self.shop_active#用于转换，每一次会变成相反数
 		# print(self.shop_active)
 	def is_win(self):
-		
 		one_loot_item=0#用来记录有几个物品被抢完了
 		one_give_item=0#用来记录送光了多少物品
+		one_mission_item=0#用来记录完成了几个任务
 		#检查商店的物品数量
 		for values in self.menu.trader_item_inventory.values():
-			if values ==0:
+			if values ==0:#抢夺
 				one_loot_item+=1
-		if one_loot_item == 4:#小boss屋部分
-			self.portal=house((2065,1741),self.portal_image,[self.all_sprites, self.collision_sprites])
-			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
-		for values in self.player.item_inventory.values():
+			if values == 6:##完成任务也可以过	
+				one_mission_item+=1
+		if one_loot_item == 4:#抢光了直接进入战斗
+			self.battle_flag=True
+		for values in self.player.item_inventory.values():#只要清空背包就行
 			if values ==0:
 				one_give_item+=1
 				values=1
 		if one_give_item == 4:
 			self.portal=house((2065,1741),self.portal_image,[self.all_sprites, self.collision_sprites])
 			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
+		if one_mission_item == 4:
+			self.portal=house((2065,1741),self.portal_image,[self.all_sprites, self.collision_sprites])
+			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
+			self.player_will.modify_player_will(20)
 
 		
 	def plant_collision(self):
