@@ -15,7 +15,7 @@ client = OpenAI(
 ###       会尽量用注释弥补的TAT
 
 class ChatBot:
-    def __init__(self, person):
+    def __init__(self, person , end = None):  #end 判定是否直接进入好结局对话，默认为None
         """
         初始化 ChatBox 类
         :param messages: 初始消息列表
@@ -26,7 +26,7 @@ class ChatBot:
         self.screen = pygame.display.get_surface()# 读取屏幕状态   
         
         self.path = r"..\assets\font\DTM-Sans.otf"#字体文件路径
-        self.font = pygame.font.Font(self.path, 22)  # 设置字体和大小为 22
+        self.font = pygame.font.Font(self.path, 20)  # 设置字体和大小为 20
         
         self.scroll_position = 0  # 鼠标滚动位置参数初始化
         
@@ -35,7 +35,7 @@ class ChatBot:
         self.output_y = 10  # 输出文本的 y 坐标
         self.output_height = 400  # 输出文本区域的高度
         
-        self.input_box = pygame.Rect(30, 475, 700, 32)  # 设置输入框的位置和大小
+        self.input_box = pygame.Rect(25, 475, 700, 32)  # 设置输入框的位置和大小
         self.color_inactive = pygame.Color(72,61,139)  # 输入框未激活时的颜色
         self.color_active = pygame.Color(255,255,255)  # 输入框激活时的颜色
         self.color = self.color_inactive  # 初始颜色为未激活颜色
@@ -47,72 +47,71 @@ class ChatBot:
         self.will_delta = 0 #善恶值的变化
         self.fight = None  #是否进入战斗
         self.anger = 0      #怒气值
+        self.end = end     #判定结局
 
-    def choose(person):#判断对话角色,联系上对应的类
-        if person == "trader3":
+    def choose(person , end):#判断对话角色,联系上对应的类
+        if person == "trader3":#第三关的trader
             name1 = trader3
             name2 = judgement.trader3
         
-        elif person == "trader1":
+        elif person == "trader1":#第一关的trader
             name1 = trader1
             name2 = judgement.trader1
         
-        elif person == "flowey":
+        elif person == "flowey":#精神状态格外美丽的小花（？
             name1 = monster2a
             name2 = judgement.monster_a
         
-        elif person == "papyrus":
+        elif person == "papyrus":#pap
             name1 = monster2b
             name2 = judgement.monster_a
 
-        elif person == "temmie":
+        elif person == "temmie":#修勾勾（？
             name1 = monster2c
             name2 = judgement.monster_a
 
-        elif person == "undyne":
+        elif person == "undyne":#undead鱼姐
             name1 = monster2d
             name2 = judgement.monster_a
 
-        elif person == "failed life":
-            name1 = monster2e
-            name2 = judgement.monster_b
-
-        elif person == "sans0":
+        elif person == "sans0":   #sans对话1
             name1 = Sans0
             name2 = judgement.boss_a
         
         elif person == "sans1":
             name1 = Sans1
-            name2 = judgement.boss_b
+            name2 = judgement.boss_b  #sans对话2
 
         elif person == "sans2":
             name1 = Sans0
-            name2 = judgement.boss_c
+            name2 = judgement.boss_c   #sans对话3
         
-        elif person == "sans3":
-            if judgement.general.end == True:
-                name1 = Sans2
+        elif person == "sans3":   #结局对话
+            if judgement.general.end == True  or \
+                    end == True  or \
+                    judgement.general.end == None  :#进入好结局的两种情况1. 按照流程走（内部程序判定） 2.累计善恶值(外部判定并传输）达到一定值，直接跳过中间过程，进入好结局
+                name1 = Sans3
+                name2 = judgement.boss_d
             else:
-                name1 = Sans1
-            name2 = judgement.boss_d
+                name1 = Sans4
+                name2 = judgement.boss_e
 
         else:
             name1 = None
             name2 = None
         return name1,name2
 
-    def start(self,done,togggle_talk,get_pause_time=None,choose = choose):
+    def start(self,done,togggle_talk,choose = choose):
         """
         根据聊天类型设置初始消息
         :return: 初始消息列表
         """
-        start_time=pygame.time.get_ticks()
         screen = self.screen
         active = False  # 输入框是否激活
         text = ''  # 输入框中的文本
         chat_open = True  # 是否打开聊天界面
 
-        name , name_a = choose(self.person)#与对应库的类建立联系
+        name , name_a = choose(self.person , self.end)#与对应库的类建立联系
 
         self.messages = [
             {"role": "system", "content": name.quest},#设置对应的角色设定
@@ -123,7 +122,11 @@ class ChatBot:
         image_chat=pygame.transform.scale(image_chat,(270,300))
         # image_chat = pygame.transform.scale(image_chat, (64, 64))
 
-        image_main = pygame.image.load(r"..\assets\graphics\player\down\down_0.png").convert_alpha()#猪脚图片
+        if judgement.general.end == False:
+            image_main = pygame.image.load(r"..\assets\chat\chara.png").convert_alpha()#猪脚变成Chara力（悲
+            image_main = pygame.transform.scale(image_main, (80, 80))
+        else:
+            image_main = pygame.image.load(r"..\assets\graphics\player\down\down_0.png").convert_alpha()#猪脚图片
         # image_main = pygame.transform.scale(image_main, (64, 64))
 
 
@@ -141,9 +144,6 @@ class ChatBot:
                         chat_open = not chat_open  # 按下 'Tab' 键退出聊天界面
                         done = False
                         togggle_talk()
-                        end_time=pygame.time.get_ticks()
-                        if get_pause_time !=None:
-                            get_pause_time(start_time,end_time)
                         return self.will_delta , self.anger , self.fight   #返回最终的will_delta
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 
@@ -243,12 +243,12 @@ class ChatBot:
                 Hint2 = self.font.render(self.hint2,True,(255,255,255))
                 hint_general1 = self.font.render("Use'yes'or'no nonsence' to quick-pass chating",True,(255,255,255))
                 hint_general2 = self.font.render("Press the key 'TAB' to quit this chat",True,(255,255,255))
-                screen.blit(int1,(15,335)) 
-                screen.blit(int2,(15,390))
-                screen.blit(Hint1,(15,365))
-                screen.blit(Hint2,(15,415))
-                screen.blit(hint_general1,(30,520))
-                screen.blit(hint_general2,(30,550))
+                screen.blit(int1,(20,345)) 
+                screen.blit(int2,(20,405))
+                screen.blit(Hint1,(15,375))
+                screen.blit(Hint2,(15,430))
+                screen.blit(hint_general1,(25,520))
+                screen.blit(hint_general2,(25,555))
             
             
             else:
