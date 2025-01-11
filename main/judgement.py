@@ -18,12 +18,7 @@ class general:#本部分的一些通用参数
     end = None            #是否进入好结局
     
 
-# ————————————————————————————————————————————————不同对话对象的控制函数类—————————————————————————————————————————————————————————
-
-# Tips:
-
-
-
+# ————————————————————————————————————————————————不同对话对象的剧情对话————————————————————————————————————————————————————————
 
 
 
@@ -48,7 +43,7 @@ class trader1:#第一关的trader
 
 
     def display_choice(self, user_input):#更新选项内容
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:
@@ -138,7 +133,7 @@ class trader3:
     fight = None #是否进入战斗
     
     def display_choice(self, user_input):#更新选项内容
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:
@@ -235,7 +230,7 @@ class monster_a:#打怪之前的敌人
     fight = None #是否进入战斗
 
     def display_choice(self, user_input):#更新选项内容
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:
@@ -331,7 +326,7 @@ class boss_a:#sans 初始阶段
     up = None #是否战斗难度升级
 
     def display_choice(self, user_input):#更新选项内容
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:
@@ -426,7 +421,7 @@ class boss_b:  #sans  中期阶段
     fight = None #是否加强战斗
 
     def display_choice(self, user_input):#更新选项内容
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:
@@ -508,7 +503,7 @@ class boss_c:  #sans  后期阶段
     fight = None #是否加强战斗
 
     def display_choice(self, user_input):#更新选项内容
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:
@@ -581,7 +576,7 @@ class boss_d: #结局A——————Frisk战胜Chara
     q_a1 = [["Ao!It hurts! Now I notarize you DETERMINATION have it`s power!" , "I believe I can destory Chara by myself!" , "Get out of my mind! Chara!"],\
         ["Hold on your will!Or he`ll absorbe your soul. " , "I want to be alive!With all my friends!" , "Please , Sans!Help me!Let Chara liberate in peace!"],\
         ["I got it , The  Chara`s soul! \n \
-         Papyrus , Toriel ,Undyne ,I avenge you!", "(redempt)-999999999999999999" ,"......"] , \
+         Papyrus ,Undyne ,I avenge you!", "(redempt)-999999999999999999" ,"......"] , \
         ["......(Sans panting) \n \
          Finally , all tragic storys come to the end!", "Bye Chara, may you rest in peace...", "......"]]
     
@@ -597,7 +592,7 @@ class boss_d: #结局A——————Frisk战胜Chara
     end = general.end ################结局的判定标准  
 
     def display_choice(self, user_input):#更新选项内容 
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:
@@ -638,7 +633,7 @@ class boss_d: #结局A——————Frisk战胜Chara
         if self.chat_end:
                 out =  "The souls who could not rest because of Chara are calmed now... \n \
                         The Underworld will have it`s bright and new future... \n \
-                        But you still need to rebuilt our world , don`t run away~~~ \n \
+                        Now you can leave an back to your world~~~ \n \
                         ............ \n \
                         (Ending --- Redemption)"
                 self.chat_end = True
@@ -679,7 +674,7 @@ class boss_e:#结局B——————Chara战胜Frisk
     end = general.end ################结局的判定标准  
 
     def display_choice(self, user_input):#更新选项内容 
-        if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
+        if "skip" in user_input.lower() or "break" in user_input.lower():#玩家输入 yes 后开始对话
             self.chat_start = True
         if self.chat_start:
             if len(self.q_a) >= self.order + 1:

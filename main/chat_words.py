@@ -1,8 +1,7 @@
 import pygame
 # 以下是关于角色对话的文字要求
 
-kindpoint = 10
-
+pygame.mixer.init()
 class general:  #对AI提供的基本要求
     words = "The requirements for the speech are as follows. You must strictly abide by them."\
             "1.You should tell the user that "\
@@ -48,6 +47,8 @@ class trader1:  #第一关的trader
        
     
     image = r"..\assets\demon1\attack\attack1.png"
+
+    sound = r"..\assets\audio\demon.mp3"
         
 
 class trader3:  #第三关的trader
@@ -60,15 +61,8 @@ class trader3:  #第三关的trader
             "So you need to be patient to check him grow the crops and sold all the thing to you."\
             "You can`t tell him your true plan ,just pretend to be a guy who didn`t know the boy`s past."\
             "You need to tell the user "\
-            "[I have something to tell you, would you want to know where it is and why are you here?]"
-            
-            
-
-
-#这部分内容暂时作废
-#################################################################
-    a = "If the user want to trade some sources,"\
-    "You can tell him type 'trade' to buy or sell."\
+             "If the user want to trade some sources,"\
+            "You can tell him type 'trade' to buy or sell."\
             "Tips:If the user didn`t type 'trade' ,the following information will not be displayed:"\
             "the instrctions about a trader to buy and sell goods are as follows:"\
             "Available goods and prices: "\
@@ -80,9 +74,12 @@ class trader3:  #第三关的trader
             "if the user want to buy or sell goods, use the format as follows: "\
             "'buy 'good's name' 'good's quantity' for buying goods, "\
             "'sell 'good's name' 'good's quantity' for selling goods. "
-####################################################################
+
     
     image = r"..\assets\demon1\attack\attack1.png"
+
+    sound = r"..\assets\audio\demon.mp3"
+
     
 
 class monster2a:  #flowey
@@ -94,6 +91,9 @@ class monster2a:  #flowey
 
     image = r"..\assets\graphics\monsters\Flowey\attack\0.png"
 
+    sound = r"..\assets\audio\Flowey_talk.wav"
+
+
 class monster2b:  #papyrus
     quest = general.words + general.background_setting + \
             "The boy have killed you , your friends and your family members."\
@@ -103,6 +103,9 @@ class monster2b:  #papyrus
 
     image = r"..\assets\graphics\monsters\Papyrus\idle\0.png"
 
+    sound = r"..\assets\audio\Papyrus_talk.wav"
+
+
 class monster2c:  #temmie
     quest = general.words + general.background_setting + \
             "The boy have killed you , your friends and your family members."\
@@ -111,6 +114,9 @@ class monster2c:  #temmie
             "You only want him to die and revenge for your friends and family." 
 
     image = r"..\assets\graphics\monsters\TEMMIE\idle\0.png"
+
+    sound = r"..\assets\audio\TEMMIE_talk.wav"
+
 
 class monster2d:  #undyne
     quest = general.words + general.background_setting + \
@@ -122,6 +128,9 @@ class monster2d:  #undyne
 
     image = r"..\assets\graphics\monsters\Undyne\move\0.png"
 
+    sound = r"..\assets\audio\Undyne_talk.wav"
+
+
 
 class Sans0:  #初始阶段的Sans
     quest = general.words + general.background_setting + \
@@ -132,6 +141,9 @@ class Sans0:  #初始阶段的Sans
             "You only want him to die and revenge for your friends and family." 
                 
     image = r"..\assets\chat\sans_a.png"
+
+    sound = r"..\assets\audio\sans_talk.wav"
+
 
 class Sans1:  #战斗过程阶段的Sans_发怒
     quest = general.words + general.background_setting + \
@@ -146,6 +158,8 @@ class Sans1:  #战斗过程阶段的Sans_发怒
                 
     image = r"..\assets\chat\sans_a.png"
 
+    sound = Sans0.sound
+
 class Sans2:  #战斗末尾的Sans_清醒
     quest = general.words + general.background_setting + \
             "Your name is Sans"\
@@ -157,6 +171,8 @@ class Sans2:  #战斗末尾的Sans_清醒
             "So you need to help him to save himself and the rest of the lives."
                 
     image = r"..\assets\chat\sans_a.png"
+
+    sound = Sans0.sound
 
 class Sans3:  #战斗末尾的Sans_好结局
     quest = general.words + general.background_setting + \
@@ -178,7 +194,10 @@ class Sans4:  #战斗末尾的Sans_击败_坏结局
             "And the Chara has already stolen the soul of the boy , the devil has reborn."\
             "Unfortunately ,you failed,Chara has absorbed the boy`s soul and kill you"\
             "Now you are dying (So yo need to use a lot of '...' to act a dying man)"\
+            "(for example : 'Akh akh... \n In the end... nothing's gonna change...')"\
             "The last wish of you is to persuade the devil not to kill the rest lives."\
                 
     image = r"..\assets\chat\sans_failed.png"
+
+    sound = Sans0.sound
 

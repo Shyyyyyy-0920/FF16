@@ -101,16 +101,16 @@ class ChatBot:
             name2 = None
         return name1,name2
 
-    def start(self,done,togggle_talk,get_pause_time=None,choose = choose):
+    def start(self,done,togggle_talk,choose = choose):
         """
         根据聊天类型设置初始消息
         :return: 初始消息列表
         """
-        start_time=pygame.time.get_ticks()
         screen = self.screen
         active = False  # 输入框是否激活
         text = ''  # 输入框中的文本
         chat_open = True  # 是否打开聊天界面
+        sound_start = False
 
         name , name_a = choose(self.person , self.end)#与对应库的类建立联系
 
@@ -130,11 +130,12 @@ class ChatBot:
             image_main = pygame.image.load(r"..\assets\graphics\player\down\down_0.png").convert_alpha()#猪脚图片
         # image_main = pygame.transform.scale(image_main, (64, 64))
 
+        voice = name.sound
 
         judgement_user = name_a.judge_user  #玩家对应输入内容的判定
         judgement_assistant = name_a.judge_assistant  #聊天对象对应的内容判定
 
-
+        
         while done:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -145,9 +146,6 @@ class ChatBot:
                         chat_open = not chat_open  # 按下 'esc' 键退出聊天界面
                         done = False
                         togggle_talk()
-                        if get_pause_time !=None:
-                            end_time=pygame.time.get_ticks()
-                            get_pause_time(start_time,end_time)
                         return self.will_delta , self.anger , self.fight   #返回最终的will_delta
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 
@@ -165,7 +163,7 @@ class ChatBot:
                     if event.type == pygame.KEYDOWN:
                         if active:
                             if event.key == pygame.K_RETURN:
-                                
+                                sound_start = True
                                 self.hint1 , self.hint2 , inputa , chat_on= judgement_user(name_a,text)
                                 
                                 if chat_on == True:
@@ -197,8 +195,6 @@ class ChatBot:
                                             pass
                                         else:
                                             self.will_delta = will_delta
-                                            
-
                                     
                                 except Exception as e:
                                     self.update_output(f"Error: {e}")  # 处理异常并更新输出文本
@@ -207,7 +203,15 @@ class ChatBot:
                             elif event.key == pygame.K_BACKSPACE:
                                 text = text[:-1]  # 删除最后一个字符
                             else:
-                                text += event.unicode  # 添加字符到输入框
+                                sound_start = False
+                                text += event.unicode  # 添加字符到输入
+
+                    if sound_start:
+                        pygame.mixer.music.load(voice)
+                        pygame.mixer.music.set_volume(0.3)              
+                        pygame.mixer.music.play(loops=-1)
+                    else:
+                        pygame.mixer.music.stop()
 
 # ——————————————————————————————————————————————————————输出框部分—————————————————————————
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -245,7 +249,7 @@ class ChatBot:
                 int2 = self.font.render('Type 2 :',True,(72,61,139))
                 Hint1 = self.font.render(self.hint1,True,(255,255,255))
                 Hint2 = self.font.render(self.hint2,True,(255,255,255))
-                hint_general1 = self.font.render("Use'yes'or'no nonsence' to quick-pass chating",True,(255,255,255))
+                hint_general1 = self.font.render("Type'skip'or'beak' to have a quick chat",True,(255,255,255))
                 hint_general2 = self.font.render("Press the key 'Esc' to quit this chat",True,(255,255,255))
                 screen.blit(int1,(20,345)) 
                 screen.blit(int2,(20,405))
@@ -253,7 +257,6 @@ class ChatBot:
                 screen.blit(Hint2,(15,430))
                 screen.blit(hint_general1,(25,520))
                 screen.blit(hint_general2,(25,555))
-            
             
             else:
                 break
