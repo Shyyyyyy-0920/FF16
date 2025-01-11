@@ -1,4 +1,5 @@
 import pygame
+from add_event import add_event,g_evene_queue
 class story:
     def __init__(self):
         self.image_files = [] 
@@ -7,7 +8,7 @@ class story:
         self.images = [pygame.image.load(file).convert() for file in self.image_files]
         self.display_surface = pygame.display.get_surface()
         # 图片切换的时间间隔（秒）
-        self.interval = 2000  # 1000 毫秒 = 1 秒
+        self.interval = 200  # 1000 毫秒 = 1 秒
         # 当前显示的图片索引
         self.frame_index = 0
         self.use_time=0
@@ -20,11 +21,18 @@ class story:
     def draw(self):
         self.display_surface.fill('black')
         self.get_time()
+        self.display_surface.blit(self.images[self.frame_index], (0, 0))
         if self.now_interval>=self.interval:
             if self.frame_index >= 16:
                 self.frame_index=16
             else:
                 self.frame_index = self.frame_index+1
             self.start_time=pygame.time.get_ticks()
-        self.display_surface.blit(self.images[self.frame_index], (0, 0))
-        return 5
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                    add_event(0)
+        if g_evene_queue[-1]==5:
+            return 5
+        elif g_evene_queue[-1]==0:
+            return 0

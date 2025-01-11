@@ -651,7 +651,7 @@ class Final_battle:
               self.start_time=pygame.time.get_ticks()
               pygame.mixer.music.fadeout(1000)
               pygame.mixer.quit()
-              pygame.init()
+              pygame.mixer.init()
               pygame.mixer.music.load('../assets/audio/in_battle.mp3')
               pygame.mixer.music.set_volume(0.3)              
               pygame.mixer.music.play(loops=-1)
