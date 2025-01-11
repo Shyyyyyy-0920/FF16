@@ -362,7 +362,7 @@ class start_menu:
 					return 1
 				elif self.set_key==1:#判断是否按到了故事
 					self.window.fill((255,255,255))
-					return 8
+					return 5
 				elif self.quiet_key==1:#判断是否按到了退出游戏
 					return 9
 		if g_evene_queue[-1]==0:

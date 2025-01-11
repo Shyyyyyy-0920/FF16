@@ -7,6 +7,7 @@ from Menu import start_menu,win_menu
 from add_event import add_event
 from battle import Final_battle
 from final_scene import final_scene_False,final_scene_True
+from story import story
 class selected:
     def __init__(self):
         self.old_flag=[]
@@ -19,6 +20,7 @@ class selected:
         self.Final_battle=Final_battle()
         self.final_scene_True=final_scene_True()
         self.final_scene_False=final_scene_False()
+        self.story=story()
     def selected_level(self,dt):
         if self.flag==0:#菜单界面
             self.event_queue=add_event(self.start_menu.run())
@@ -31,7 +33,7 @@ class selected:
         if self.flag == 4:#最终游戏胜利后跳转的场景
             self.event_queue=add_event(self.win_menu.run())
         if self.flag == 5:#开局的背景说明
-            pass
+            self.event_queue=add_event(self.story.draw())
             #self.event_queue=add_event(self.win_menu.run())
         if self.flag == 6:#最终boss战
             self.event_queue=add_event(self.Final_battle.run(dt))
