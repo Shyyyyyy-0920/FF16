@@ -45,7 +45,7 @@ class ChatBot:
         self.hint2 = "" #选项B的
         
         self.will_delta = 0 #善恶值的变化
-        self.fight = False  #是否进入战斗
+        self.fight = None  #是否进入战斗
         self.anger = 0      #怒气值
 
     def choose(person):#判断对话角色,联系上对应的类

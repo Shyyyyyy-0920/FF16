@@ -45,7 +45,7 @@ class trader1:#第一关的trader
     c2 = False #是否按了2
     
     anger = 0  #怒气值
-    fight = False #是否进入战斗
+    fight = None #是否进入战斗
 
 
     def display_choice(self, user_input):#更新选项内容
@@ -110,6 +110,7 @@ class trader1:#第一关的trader
                 + "What behind this entrance is a once prosperous village. \
                  \n BUT \n \n countless lonely souls are wandering around there because of \n YOUR FUCKING GENOCIDE \n \
                  go to there and witness WHAT YOU HAD DONE!!."
+            self.fight = False
             self.chat_end = False
             return out , self.will_delta, self.anger, self.fight
         return "" ,0 , self.anger, self.fight
@@ -135,7 +136,7 @@ class trader3:
     c1 = False #是否按了1
     c2 = False #是否按了2       
 
-    fight = False #是否进入战斗
+    fight = None #是否进入战斗
     
     def display_choice(self, user_input):#更新选项内容
         if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
@@ -205,6 +206,7 @@ class trader3:
                        Now I have nothing to lose! \n\
                         I`ll fight you until the end!\n\
                         GO HELL!"
+                self.fight = False
             return out , self.will_delta, general.trader3_anger, self.fight
         
         return "" ,0,general.trader3_anger,self.fight
@@ -230,7 +232,7 @@ class monster_a:#打怪之前的敌人
     c2 = False #是否按了2
     
     anger = 0
-    fight = False #是否进入战斗
+    fight = None #是否进入战斗
 
     def display_choice(self, user_input):#更新选项内容
         if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
@@ -299,6 +301,7 @@ class monster_a:#打怪之前的敌人
                  Maybe you can find a way to save your soul \
                  by working out more and more tasks to let the Chara`s soul be liberated.\n \
                  Start your adventure!We trust you! Good luck!"
+                self.fight = False
             self.chat_end = False
             return out , self.will_delta, self.anger, self.fight
         return "" ,0 , self.anger, self.fight
@@ -330,7 +333,7 @@ class monster_b:#打败之后的敌人
     chat_start = False #是否开启选择式对话
     will_delta = 0  #对话阶段的善恶值变化        
     anger = 0
-    fight = False #是否进入战斗
+    fight = None #是否进入战斗
 
     def display_choice(self, user_input):#更新选项内容
         if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
@@ -387,6 +390,7 @@ class monster_b:#打败之后的敌人
                       *(An innocent soul was died because of your strggle with Chara)* \n \
                     FRISK(? : \n \
                         *(you're filled with DETERMINATION)*"
+            self.Fight = False
             self.chat_end = False
             return out , self.will_delta, self.anger, self.fight
         return "" ,0 , self.anger, self.fight
@@ -412,7 +416,7 @@ class boss_a:#sans 初始阶段
     c2 = False #是否按了2
     
     anger = 0
-    up = False #是否战斗升级
+    up = None #是否战斗升级
 
     def display_choice(self, user_input):#更新选项内容
         if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
@@ -473,6 +477,7 @@ class boss_a:#sans 初始阶段
                 out =  ":)\n\
                 You think I was gonna let you off the hook? \n \
                 Absolutely No!"
+                self.up = False
                 return out , self.will_delta, self.anger, self.up
 
             else:
@@ -506,7 +511,7 @@ class boss_b:  #sans  中期阶段
     c2 = False #是否按了2
     
     anger = 0
-    fight = True #是否加强战斗
+    fight = None #是否加强战斗
 
     def display_choice(self, user_input):#更新选项内容
         if "yes" in user_input.lower() or "no nonsence" in user_input.lower():#玩家输入 yes 后开始对话
