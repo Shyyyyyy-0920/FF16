@@ -101,11 +101,12 @@ class ChatBot:
             name2 = None
         return name1,name2
 
-    def start(self,done,togggle_talk,choose = choose):
+    def start(self,done,togggle_talk,get_pause_time=None,choose = choose):
         """
         根据聊天类型设置初始消息
         :return: 初始消息列表
         """
+        start_time=pygame.time.get_ticks()
         screen = self.screen
         active = False  # 输入框是否激活
         text = ''  # 输入框中的文本
@@ -140,6 +141,9 @@ class ChatBot:
                         chat_open = not chat_open  # 按下 'Tab' 键退出聊天界面
                         done = False
                         togggle_talk()
+                        end_time=pygame.time.get_ticks()
+                        if get_pause_time !=None:
+                            get_pause_time(start_time,end_time)
                         return self.will_delta , self.anger , self.fight   #返回最终的will_delta
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 

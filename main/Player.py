@@ -6,6 +6,7 @@ from add_event import add_event
 import random
 from math import sin
 from chat import ChatBot
+open_stop_time=	None
 #人物类，主要是各个人物属性的创建
 class Player(pygame.sprite.Sprite):
 	def __init__(self, pos, group,collision_sprites, tree_sprites,interaction,soil_layer,toggle_shop):
@@ -176,8 +177,6 @@ class Player(pygame.sprite.Sprite):
 					if collided_interaction_sprite[0].name == 'Trader':
 						self.toggle_shop()#这里就是碰撞的判断，如果碰到了就改变商店的状态
 					elif collided_interaction_sprite[0].name =='portal':
-						global open_stop_time
-						open_stop_time=pygame.time.get_ticks()
 						self.portal.play()
 						add_event(6)
 					else:
@@ -249,24 +248,26 @@ class Player(pygame.sprite.Sprite):
 		self.animate(dt)
 
 class Player_battle(pygame.sprite.Sprite):
-	def __init__(self,pos,groups,collision_sprites,interaction_sprites,create_attack,destroy_attack,create_magic,levelint,get_talk_info=None,togggle_talk=None):
+	def __init__(self,pos,groups,collision_sprites,interaction_sprites,create_attack,destroy_attack,create_magic,levelint,get_talk_info=None,togggle_talk=None,togggle_menu=None):
 		super().__init__(groups)
 		self.frame_index = 0
 		self.image = pygame.image.load('../assets/graphics/test/player.png').convert_alpha()
 		self.rect = self.image.get_rect(topleft = pos)
 		self.hitbox = self.rect.inflate(0,-26)
+		self.togggle_menu=togggle_menu
 
 		#图片设置
 		self.import_player_assets()
 		self.status = 'down'#初始状态
 
 		#移动的初始设置
+		self.pos = pygame.math.Vector2(self.rect.center)#让人物在移动的同时更新矩形框
 		self.direction = pygame.math.Vector2()
 		self.attacking = False
 		self.attack_cooldown = 400
 		self.attack_time = None
 
-		self.obstacle_sprites =collision_sprites
+		self.collision_sprites =collision_sprites
 		self.interaction_sprites=interaction_sprites
 
 		#武器
@@ -288,9 +289,9 @@ class Player_battle(pygame.sprite.Sprite):
 		self.magic_switch_time = None
 
 		#角色的基本属性
-		self.stats = {'health': 100,'energy':60,'attack': 10,'magic': 4,'speed': 5}
-		self.max_stats = {'health': 300, 'energy': 140, 'attack': 20, 'magic' : 10, 'speed': 10}
-		self.upgrade_cost = {'health': 100, 'energy': 100, 'attack': 100, 'magic' : 100, 'speed': 100}
+		self.stats = {'health': 100,'energy':60,'attack': 10,'magic': 4,'speed': 250}
+		self.max_stats = {'health': 300, 'energy': 140, 'attack': 20, 'magic' : 10, 'speed': 500}
+		self.upgrade_cost = {'health': 400, 'energy': 200, 'attack': 150, 'magic' : 150, 'speed': 200}
 		self.health = self.stats['health'] * 0.5
 		self.energy = self.stats['energy'] * 0.8
 		self.exp = 5000
@@ -397,7 +398,7 @@ class Player_battle(pygame.sprite.Sprite):
 			
 			if keys[pygame.K_f]:
 				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction_sprites,False)
-				print(9999999)
+
 				if collided_interaction_sprite:
 					if collided_interaction_sprite[0].name =='portal':
 						self.portal.play()
@@ -405,16 +406,18 @@ class Player_battle(pygame.sprite.Sprite):
 					elif collided_interaction_sprite[0].name =='Trader':
 						self.togggle_talk()
 					elif collided_interaction_sprite[0].name =='Flowey':
-						self.get_talk_info("flowey",True)
+						self.get_talk_info("flowey",True,collided_interaction_sprite[0])
 					elif collided_interaction_sprite[0].name =='Papyrus':
-						self.get_talk_info("papyrus",True)
+						self.get_talk_info("papyrus",True,collided_interaction_sprite[0])
 					elif collided_interaction_sprite[0].name =='TEMMIE':
-						self.get_talk_info("temmie",True)
+						self.get_talk_info("temmie",True,collided_interaction_sprite[0])
 					elif collided_interaction_sprite[0].name =='Undyne':
-						self.get_talk_info("undyne",True)
+						self.get_talk_info("undyne",True,collided_interaction_sprite[0])
 					else:
 						self.status = 'left_idle'
 						self.sleep = True
+			if keys[pygame.K_m]:
+				self.togggle_menu()
 
 	def get_status(self):
 
@@ -499,35 +502,41 @@ class Player_battle(pygame.sprite.Sprite):
 		else:
 			self.energy = self.stats['energy']
 	def collision(self, direction):
-		if direction == 'horizontal':
-			for sprite in self.obstacle_sprites:
+		for sprite in self.collision_sprites.sprites():
+			if hasattr(sprite, 'hitbox'):
 				if sprite.hitbox.colliderect(self.hitbox):
-					if self.direction.x > 0: # moving right
-						self.hitbox.right = sprite.hitbox.left
-					if self.direction.x < 0: # moving left
-						self.hitbox.left = sprite.hitbox.right
+					if direction == 'horizontal':
+						if self.direction.x > 0: #向右移
+							self.hitbox.right = sprite.hitbox.left
+						if self.direction.x < 0: #向左移
+							self.hitbox.left = sprite.hitbox.right
+						self.rect.centerx = self.hitbox.centerx
+						self.pos.x = self.hitbox.centerx
 
-		if direction == 'vertical':
-			for sprite in self.obstacle_sprites:
-				if sprite.hitbox.colliderect(self.hitbox):
-					if self.direction.y > 0: # moving down
-						self.hitbox.bottom = sprite.hitbox.top
-					if self.direction.y < 0: # moving up
-						self.hitbox.top = sprite.hitbox.bottom
+					if direction == 'vertical':
+						if self.direction.y > 0: #向下移
+							self.hitbox.bottom = sprite.hitbox.top
+						if self.direction.y < 0: # 向上移
+							self.hitbox.top = sprite.hitbox.bottom
+						self.rect.centery = self.hitbox.centery
+						self.pos.y = self.hitbox.centery
 
 	def move(self,speed,dt):#在这里写hitbox连同角色的移动而发生移动
-
-		#归一化,由于向量的矢量和的性质，斜对角速度会变快，故这里要归一化
-		if self.direction.magnitude() != 0:#用于检测这个向量的长度是否为0，如果为0就没有方向，所以不能为0
-			self.direction = self.direction.normalize()*1.3
+#归一化,由于向量的矢量和的性质，斜对角速度会变快，故这里要归一化
+		if self.direction.magnitude() > 0:#用于检测这个向量的长度是否为0，如果为0就没有方向，所以不能为0
+			self.direction = self.direction.normalize()
 		
 #---------由于后面会有碰撞的过程，故需要将水平与竖直方向分开
 
 		#水平方向移动
-		self.hitbox.x += self.direction.x * (speed-3) * (dt*100)#这个物体的位置位于方向向量乘以自己的速度和时间增量
+		self.pos.x += self.direction.x * speed * dt#这个物体的位置位于方向向量乘以自己的速度和时间增量
+		self.hitbox.centerx =round(self.pos.x)#变为范围判定，更准
+		#self.rect.centerx = self.hitbox.centerx#再将矩形中心移到改变后的位置
 		self.collision('horizontal')
 		#竖直方向移动
-		self.hitbox.y += self.direction.y * (speed-3) * (dt*100)
+		self.pos.y += self.direction.y * speed * dt
+		self.hitbox.centery = round(self.pos.y)
+		#self.rect.centery = self.hitbox.centery
 		self.collision('vertical')
 		self.rect.center = self.hitbox.center
 	def update(self,dt):
@@ -579,7 +588,7 @@ class MagicPlayer:
 					self.animation_player.create_particles('flame',(x,y),groups)
 
 class Player_heart(Player):
-	def __init__(self, pos, group, collision_sprites,interaction,toggle_stop):
+	def __init__(self, pos, group, collision_sprites,interaction,toggle_stop,toggle_battle=None):
 		super().__init__(
 			pos = pos, 
 			group = group, 
@@ -596,6 +605,7 @@ class Player_heart(Player):
 		
 		self.invulnerability_duration = 500
 		self.hurt_time = None
+		self.toggle_battle=toggle_battle
 		#获取遮罩，用于完美像素判断碰撞
 		self.mask=pygame.mask.from_surface(self.image)
 	def animate(self,dt):
@@ -621,8 +631,16 @@ class Player_heart(Player):
 			self.direction.x = -1
 		else:
 			self.direction.x = 0
-		if keys[pygame.K_f] and self.stop_open:
-			self.toggle_shop()
+		for event in pygame.event.get():
+			if event.type == pygame.KEYDOWN:
+				if event.key == pygame.K_f:
+					self.toggle_shop()
+				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction,False)
+				if collided_interaction_sprite:
+					if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+						if collided_interaction_sprite[0].name =='portal':
+							self.portal.play()
+							self.toggle_battle()
 	def is_defeat(self):
 		if self.hp<=0:
 			self.kill()
@@ -631,9 +649,6 @@ class Player_heart(Player):
 		if not self.vulnerable:#无敌时间
 			if current_time - self.hurt_time >= self.invulnerability_duration:
 				self.vulnerable = True
-		if not self.stop_open:
-			if current_time - open_stop_time >=500:
-				self.stop_open= True
 	def move(self,dt):#在这里写hitbox连同角色的移动而发生移动
 
 		#归一化,由于向量的矢量和的性质，斜对角速度会变快，故这里要归一化

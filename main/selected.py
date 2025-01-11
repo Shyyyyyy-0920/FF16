@@ -16,7 +16,6 @@ class selected:
         self.Level2=Level2()
         self.win_menu=win_menu()
         self.Level1=Level1()
-        self.Trader_Battle=Trader_Battle()
         self.Final_battle=Final_battle()
     def selected_level(self,dt):
         if self.flag==0:#菜单界面
@@ -29,8 +28,6 @@ class selected:
             self.event_queue=add_event(self.Level2.run(dt))
         if self.flag == 4:#最终游戏胜利后跳转的场景
             self.event_queue=add_event(self.win_menu.run())
-        if self.flag == 5:#与trader对战的场景
-            self.event_queue=add_event(self.Trader_Battle.run(dt))
         if self.flag == 6:#最终boss战
             self.event_queue=add_event(self.Final_battle.run(dt))
         if self.flag==9:

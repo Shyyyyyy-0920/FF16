@@ -3,7 +3,7 @@ from Setting import *
 from Level2 import CameraGroup
 from support import *
 from UI import UI
-from Menu import Upgrade
+from Menu import Upgrade,defeat_menu
 from particles import AnimationPlayer
 from Player import MagicPlayer,Player_battle
 from sprites import Tile,Weapon,Enemy,house,Interaction
@@ -34,7 +34,7 @@ class Level1:
         #人物ui界面
 		self.player_will=player_will()
 		self.ui = UI()
-		self.upgrade = Upgrade(self.player)#升级的场景
+		self.upgrade = Upgrade(self.player,self.toggle_menu)#升级的场景
 		
         #粒子效果
 		self.animation_player = AnimationPlayer()
@@ -46,6 +46,14 @@ class Level1:
 		self.TEMMIE=ChatBot("temmie")
 		self.Undyne=ChatBot("undyne")
 		self.dead_monster=ChatBot("monster2e")
+		self.object = None
+		##用于接受对话返回到信息
+		self.will_change=None
+		self.anger_point=None
+		self.fight_bool=True
+		self.monster_vanish_hp=0
+		#失败界面
+		self.restart_flag=0
 
 	def set_up(self):
 		#加载传送门的图片
@@ -94,7 +102,8 @@ class Level1:
 									self.destroy_attack,
 									self.create_magic,
 									3,
-									self.get_talk_info)
+									self.get_talk_info,
+									togggle_menu=self.toggle_menu)
 							else:
 								if col == '390': monster_name = 'Flowey'
 								elif col == '391': monster_name = 'TEMMIE'
@@ -152,38 +161,95 @@ class Level1:
 		self.talk_flag=not self.talk_flag
 	def check_monster_death_num(self):
 		if self.init_num>len(self.all_moster_sprites):
-			self.player_will.modify_player_will(len(self.all_moster_sprites)-self.init_num)
-			self.init_num=len(self.all_moster_sprites)
-	def get_talk_info(self,name,activate):
+			if self.monster_vanish_hp>0:
+				self.player_will.modify_player_will(self.will_change)
+				self.monster_vanish_hp=	0
+				self.init_num=len(self.all_moster_sprites)
+			else:
+				self.player_will.modify_player_will((len(self.all_moster_sprites)-self.init_num))
+				self.init_num=len(self.all_moster_sprites)
+				if self.player_will.get_player_will()<=0:
+					self.player_will.set_player_will(0)
+	def is_defeat(self):
+		if self.player.health <=0:
+			self.restart_flag=defeat_menu(self.display_surface)
+	def get_talk_info(self,name,activate,object):
 		if activate==True:
 			self.talk_flag=True
 			self.name=name
+			self.object=object
 	def monster_start_talk(self):
 		if self.name == "flowey":
-			self.Flowey.start(True,self.start_talk)
+			self.will_change, self.anger_point, self.fight_bool=self.Flowey.start(True,self.start_talk)
+			if self.fight_bool == False:
+				self.remove_sprites_by_name("Flowey")
+				self.monster_vanish_hp=self.object.health
+			else:
+				pass
 		elif self.name == "papyrus":
-			self.Papyrus.start(True,self.start_talk)
+			self.will_change, self.anger_point, self.fight_bool=self.Papyrus.start(True,self.start_talk)
+			if self.fight_bool == False:
+				self.remove_sprites_by_name("Papyrus")
+				self.monster_vanish_hp=self.object.health
+			else:
+				pass
 		elif self.name == "temmie":
-			self.TEMMIE.start(True,self.start_talk)
+			self.will_change, self.anger_point, self.fight_bool=self.TEMMIE.start(True,self.start_talk)
+			if self.fight_bool == False:
+				self.remove_sprites_by_name("TEMMIE")
+				self.monster_vanish_hp=self.object.health
+			else:
+				pass
 		elif self.name == "undyne":
-			self.Undyne.start(True,self.start_talk)
+			self.will_change, self.anger_point, self.fight_bool=self.Undyne.start(True,self.start_talk)
+			if self.fight_bool == False:
+				self.remove_sprites_by_name("Undyne")
+				self.monster_vanish_hp=self.object.health
+			else:
+				pass
 		else:
 			pass
-		# elif self.name == "monster2d":
-		# 	self.dead_monster.start(True,self.start_talk)
+	def remove_sprites_by_name(self,target_name):
+		# 创建一个包含所有需要移除的精灵的列表
+		sprites_to_remove = [sprite for sprite in self.all_moster_sprites if sprite.name == target_name]
+		# 从精灵组中移除这些精灵
+		for sprite in sprites_to_remove:
+			sprite.kill()
 	def is_win(self):
 		number_of_monster = len(self.all_moster_sprites)
-		if number_of_monster == 34:
+		if number_of_monster == 0:
 			self.portal=house((2153,956),self.portal_image,[self.all_sprites, self.collision_sprites])
 			Interaction((2153,956),(280,146),self.interaction_sprites,'portal')
 	def start_talk(self):
 		self.talk_flag=not self.talk_flag
-
+	def reset(self):
+		self.all_sprites.empty()
+		self.attackable_sprites.empty()
+		self.all_moster_sprites.empty()
+		self.interaction_sprites.empty()
+		self.collision_sprites.empty()
+		self.set_up()
+		#对话方面
+		self.talk_flag=False
+		self.Flowey=ChatBot("flowey")
+		self.Papyrus=ChatBot("papyrus")
+		self.TEMMIE=ChatBot("temmie")
+		self.Undyne=ChatBot("undyne")
+		self.dead_monster=ChatBot("monster2e")
+		self.object = None
+		##用于接受对话返回到信息
+		self.will_change=None
+		self.anger_point=None
+		self.fight_bool=True
+		self.monster_vanish_hp=0
+		#失败界面
+		self.restart_flag=0
 	def run(self,dt):
+		print(len(self.all_moster_sprites))
 		self.display_surface.fill(WATER_COLOR)
 		self.all_sprites.custom_draw(self.player)
 		self.ui.display(self.player)
-		#print(self.player.rect)
+		self.is_defeat()
 		if self.game_paused:
 			self.upgrade.display()
 		elif self.talk_flag:
@@ -192,6 +258,9 @@ class Level1:
 			self.all_sprites.update(dt)
 			self.all_sprites.enemy_update(self.player)
 			self.player_attack_logic()
+			if self.restart_flag == 1:
+				self.reset()
+				self.restart_flag=0
 		self.check_monster_death_num()
 		self.is_win()
 		if g_evene_queue[-1]==3:

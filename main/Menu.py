@@ -3,8 +3,8 @@ from Setting import *
 from Timer import Timer
 from UI import button
 import sys
-from add_event import add_event,g_evene_queue
-
+from add_event import g_evene_queue
+from will import player_will
 #这个类主要是各个菜单界面的创建和绘制与反应
 class Menu:
 	def __init__(self, player, toggle_menu,toggle_talk):
@@ -15,6 +15,7 @@ class Menu:
 		self.toggle_talk=toggle_talk#用于执行打开对话环节
 		self.display_surface = pygame.display.get_surface()#获取表面信息
 		self.font = pygame.font.Font('../assets/font/DTM-Mono.otf', 30)#装载字体
+		self.player_will=player_will()
 
 		# 选项设置
 		self.width = 400
@@ -98,7 +99,7 @@ class Menu:
 					if self.player.item_inventory[current_item] > 0:
 						self.player.item_inventory[current_item] -= 1
 						self.trader_item_inventory[current_item] +=1
-						#self.player.money += SALE_PRICES[current_item]#这里写善恶值增加
+						self.player_will.modify_player_will(10)
 				#聊天
 				else:
 					self.toggle_talk()
@@ -112,6 +113,7 @@ class Menu:
 					if self.player.item_inventory[current_item] > 0 and self.trader_item_inventory[current_item]>0:
 						self.player.item_inventory[current_item] += 1
 						self.trader_item_inventory[current_item] -=1
+						self.player_will.modify_player_will(-10)
 				else:#聊天
 					self.toggle_talk()
 		# 可以上下滚动保证不出界
@@ -156,7 +158,7 @@ class Menu:
 			self.show_entry(text_surf, amount, top, self.index == text_index)
 
 class Upgrade:
-	def __init__(self,player):
+	def __init__(self,player,togggle_menu):
 		#普通设置
 		self.display_surface = pygame.display.get_surface()
 		self.player = player#传入玩家类
@@ -174,6 +176,8 @@ class Upgrade:
 		self.selection_time = None
 		#用于调控能否开始移动
 		self.can_move = True
+		self.togggle_menu=togggle_menu
+
 		self.switch_left = pygame.mixer.Sound('../assets/audio/Menu3.wav')
 		self.switch_left.set_volume(0.8)
 		self.switch_right=pygame.mixer.Sound('../assets/audio/Menu7.wav')
@@ -201,6 +205,8 @@ class Upgrade:
 				self.menu_fix.play()
 				self.selection_time = pygame.time.get_ticks()
 				self.item_list[self.selection_index].trigger(self.player)
+			if keys[pygame.K_ESCAPE]:
+				self.togggle_menu()
 
 	def selection_cooldown(self):#时钟
 		if not self.can_move:
@@ -353,7 +359,7 @@ class start_menu:
 			if event.type==pygame.MOUSEBUTTONDOWN:
 				if self.start_key==True:#判断是否按到了开始游戏
 					self.window.fill((255,255,255))
-					return 3
+					return 1
 				elif self.set_key==1:#判断是否按到了故事
 					self.window.fill((255,255,255))
 					return 7

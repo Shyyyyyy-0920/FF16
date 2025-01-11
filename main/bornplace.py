@@ -53,13 +53,13 @@ class born_place:
         #传送门部分的空气墙 
         collision_rect((570,380),stone_image,self.collision_sprites)
         collision_rect((600,380),stone_image,self.collision_sprites)
-        Interaction((605,420),(80,50),self.interaction_sprites,'portal')
+        
         self.image=pygame.image.load('../assets/photo/night_ground.png').convert_alpha()
         self.image=pygame.transform.scale(self.image, (SCREEN_WIDTH+400,SCREEN_HEIGHT+400))
         #boss场景部分
         boss_frames = import_folder('../assets/demon1/react')
         boss((1000,547),boss_frames,self.all_sprites)
-        Interaction((1000,540),(80,50),self.interaction_sprites,'Trader')
+        Interaction((980,600),(80,50),self.interaction_sprites,'Trader')
 
         Generic(
 			pos = (0,0),
@@ -88,8 +88,8 @@ class born_place:
         self.update_will()
         self.display_surface.fill('black')
         self.all_sprites.custom_draw(self.player)#更新摄像头
-        self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
-        self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
+        self.ui.show_bar(self.new_player_will,100,self.ui.will_value,PLAYER_WILL_COLOR)
+        self.ui.show_bar(100-self.new_player_will,100,self.ui.bad_value,PLAYER_BAD_COLOR)
         if self.music_play==0:
               self.music_play+=1
               pygame.mixer.music.fadeout(1000)
@@ -101,11 +101,12 @@ class born_place:
         if not self.talk_flag:
             self.all_sprites.update(dt*2)
         else:
-            self.ChatBot.start(self.talk_flag,self.start_talk)
+            will_change, anger_point, fight_bool=self.ChatBot.start(True,self.start_talk)
+            self.player_will.modify_player_will(will_change)
+            Interaction((605,420),(80,50),self.interaction_sprites,'portal')#对话完后创建传送门
         if g_evene_queue[-1] ==1:
             return 1
         elif g_evene_queue[-1] ==2:
             self.reset()
             return 2
-
 #-------------到此为止--------------    

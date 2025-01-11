@@ -14,6 +14,7 @@ from random import randint
 from UI import UI
 from will import player_will
 from chat import ChatBot
+from battle import Trader_Battle
 #这个类用来绘制地图，加载人物，几乎所有的程序都在这里进行
 class Level2:
 	def __init__(self):
@@ -40,8 +41,8 @@ class Level2:
 		# shop
 		self.menu = Menu(self.player, self.toggle_shop,self.start_talk)
 		self.shop_active = False
-		#作战
-		self.battle_active = False
+		#限制次数
+		self.use_time =0
 		#ui界面
 		self.ui=UI()
 		#人物的善恶值
@@ -54,7 +55,15 @@ class Level2:
 		#对话方面
 		self.talk_flag=False
 		self.ChatBot=ChatBot("trader3")
-
+		##用于接受对话返回到信息
+		self.will_change=None
+		self.will_change_keep=0
+		self.anger_point=None
+		self.fight_bool=False
+		#与 trader 对战
+		self.Trader_Battle=Trader_Battle(self.start_talk)
+		#打完trader回来的标志
+		self.battle_flag=False
 
 	def setup(self):
 		#加载传送门的图片
@@ -100,7 +109,7 @@ class Level2:
 		
 		#boss场景部分
 		boss_frames = import_folder('../assets/demon1/react')
-		boss((923,340),boss_frames,self.all_sprites)
+		self.boss=boss((923,340),boss_frames,self.all_sprites)
 		
 		#玩家部分
 		for obj in tmx_data.get_layer_by_name('Player'):
@@ -166,6 +175,7 @@ class Level2:
 		for values in self.player.item_inventory.values():
 			if values ==0:
 				one_give_item+=1
+				values=1
 		if one_give_item == 4:
 			self.portal=house((2065,1741),self.portal_image,[self.all_sprites, self.collision_sprites])
 			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
@@ -179,31 +189,45 @@ class Level2:
 					plant.kill()
 					Particle(plant.rect.topleft, plant.image, self.all_sprites, z = LAYERS['main'])
 					self.soil_layer.grid[plant.rect.centery // TILE_SIZE][plant.rect.centerx // TILE_SIZE].remove('P')
-	
+	def talk_with_trader(self):
+		self.will_change, self.anger_point, self.fight_bool=self.ChatBot.start(True,self.start_talk)
+		if self.fight_bool:
+			self.battle_flag=True
+			self.will_change_keep=self.will_change
 	def toggle_stop(self):
 		self.stop_active = not self.stop_active
 	def update_will(self):
 		self.new_player_will=self.player_will.get_player_will()
 	def start_talk(self):
 		self.talk_flag=not self.talk_flag
+	def check_trader_health(self):
+		if self.Trader_Battle.boss_hp<=0 and self.use_time == 0:
+			self.player_will.modify_player_will(self.will_change_keep)
+			self.boss.kill()
+			self.use_time=1
+			self.portal=house((2065,1741),self.portal_image,[self.all_sprites, self.collision_sprites])
+			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
+
 	def run(self,dt):
 		self.update_will()
 		#绘画逻辑
 		self.display_surface.fill('white')
 		self.all_sprites.custom_draw(self.player)#更新摄像头
-		self.ui.show_bar(self.new_player_will,10,self.ui.will_value,PLAYER_WILL_COLOR)
-		self.ui.show_bar(10-self.new_player_will,10,self.ui.bad_value,PLAYER_BAD_COLOR)
+		self.ui.show_bar(self.new_player_will,100,self.ui.will_value,PLAYER_WILL_COLOR)
+		self.ui.show_bar(100-self.new_player_will,100,self.ui.bad_value,PLAYER_BAD_COLOR)
 		#更新
 		if self.shop_active:
-			if self.talk_flag:
-				self.ChatBot.start(self.talk_flag,self.start_talk)
+			if self.talk_flag and not self.battle_flag:
+				self.talk_with_trader()
+			elif not self.talk_flag and self.battle_flag:
+				self.Trader_Battle.run(dt)
 			else:
 				self.menu.update()
 		else:
 			self.all_sprites.update(dt)
 			self.plant_collision()
-
-		self.overlay.display()
+			self.overlay.display()
+		self.check_trader_health()
 		# 天气
 		self.overlay.display()
 		if self.raining and not self.shop_active:
@@ -216,9 +240,8 @@ class Level2:
 		if self.player.sleep:
 			self.transition.play()
 		self.is_win()
-		if g_evene_queue[-1]==5:
-			return 5#与trader对战
-		elif g_evene_queue[-1]==6:
+#--------检查是否跳转页面
+		if g_evene_queue[-1]==6:
 			self.rain_sound.stop()
 			return 6#与最终BOSS对战
 		else:
