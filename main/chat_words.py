@@ -6,7 +6,7 @@ kindpoint = 10
 class general:  #对AI提供的基本要求
     words = "The requirements for the speech are as follows. You must strictly abide by them."\
             "1.You should tell the user that "\
-            "Press 'TAB' to end the conversation."\
+            "Press 'Esc' to end the conversation."\
             "and your words should be in English,except the user want you to speak in Chinese."\
             "2.Make your words be polite and proper to your identity."\
             "And you should make your words be short , if the sentences are too long,"\

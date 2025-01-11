@@ -140,8 +140,8 @@ class ChatBot:
                     pygame.quit()
                     sys.exit()  # 如果事件类型是 QUIT，则结束循环
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_TAB:
-                        chat_open = not chat_open  # 按下 'Tab' 键退出聊天界面
+                    if event.key == pygame.K_ESCAPE:
+                        chat_open = not chat_open  # 按下 'esc' 键退出聊天界面
                         done = False
                         togggle_talk()
                         return self.will_delta , self.anger , self.fight   #返回最终的will_delta
@@ -242,7 +242,7 @@ class ChatBot:
                 Hint1 = self.font.render(self.hint1,True,(255,255,255))
                 Hint2 = self.font.render(self.hint2,True,(255,255,255))
                 hint_general1 = self.font.render("Use'yes'or'no nonsence' to quick-pass chating",True,(255,255,255))
-                hint_general2 = self.font.render("Press the key 'TAB' to quit this chat",True,(255,255,255))
+                hint_general2 = self.font.render("Press the key 'Esc' to quit this chat",True,(255,255,255))
                 screen.blit(int1,(20,345)) 
                 screen.blit(int2,(20,405))
                 screen.blit(Hint1,(15,375))
