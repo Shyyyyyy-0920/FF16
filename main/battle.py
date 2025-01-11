@@ -261,6 +261,7 @@ class Final_battle:
         self.sans0=ChatBot("sans0")
         self.sans1=ChatBot("sans1")
         self.sans2=ChatBot("sans2")
+        self.sans3=ChatBot("sans3")
         ##用于接受对话返回到信息
         self.will_change=None
         self.will_change_keep=0
@@ -555,8 +556,20 @@ class Final_battle:
                 self.injury_sound.play()
                 self.toggle_talk()
                 self.game_ac=2
-            elif self.title_time / 5 == 3 and self.game_ac==2:#三阶段结束，进入对话
-
+            elif self.title_time /5==3 and self.game_ac == 2 :#三阶段结束
+                self.boss_hp = 5
+#------------新的动画形象----------------
+                self.boss_head.kill()
+                self.boss_body.kill()
+                boss_frames_body = import_folder('../assets/graphics/monsters/sans/Battle/attack1_body')
+                self.boss_body=sans((395,0),boss_frames_body,self.all_sprites)
+                boss_frames_head = import_folder('../assets/graphics/monsters/sans/Battle/attack1_head')
+                self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
+#---------------------------------------
+                self.injury_sound.play()
+                self.toggle_talk()
+                self.game_ac=3
+            elif self.title_time / 5 == 4 and self.game_ac==3:#阶段结束，退出对话
                 self.boss_hp =0
                 self.boss_head.kill()
                 self.boss_body.kill()
@@ -567,8 +580,15 @@ class Final_battle:
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
 #---------------------------------------
                 self.injury_sound.play()
-                self.toggle_talk()
-                self.game_ac==3
+                for sprite in self.attack_sprites:
+                    sprite.kill()
+                if self.state_boll:
+                    add_event(7)
+                    return 7
+                elif not self.state_boll:
+                    add_event(8)
+                    return 8
+               
     def sans_talk(self):
         if self.bout==0:#第一次对话
             self.will_change, self.anger_point, self.fight_bool=self.sans0.start(True,self.toggle_talk,get_pause_time=self.get_pause_time)
@@ -584,14 +604,20 @@ class Final_battle:
             self.will_change, self.anger_point, self.fight_bool=self.sans2.start(True,self.toggle_talk,get_pause_time=self.get_pause_time)
             self.player_will.modify_player_will(self.will_change)
             self.state_boll=self.fight_bool
-            self.bout=3
+            self.bout=randint(0,2)
+        elif self.bout == 3:#第四次对话
+            self.will_change, self.anger_point, self.fight_bool=self.sans3.start(True,self.toggle_talk,get_pause_time=self.get_pause_time)
+            self.player_will.modify_player_will(self.will_change)
+            self.state_boll=self.fight_bool
     def toggle_talk(self):
         self.game_paused = not self.game_paused 
     def get_pause_time(self,start_time,end_time):
         self.paused_time=end_time-start_time
         self.time+=self.paused_time
     def is_win(self):#如果善良值满了就直接胜利
-        pass
+        if self.player_will.get_player_will() >=100:
+            self.toggle_talk()
+            self.bout == 3
     def is_defeat(self):
         if self.player.hp<=0:
             self.restart_flag=defeat_menu(self.display_surface)
@@ -665,7 +691,6 @@ class Final_battle:
         self.draw_ui()#画UI
         self.is_defeat()
         if not self.game_paused:
-            #print(self.bout)
             self.battle_start_time=pygame.time.get_ticks()
             self.all_sprites.update(dt)
             self.sans_states_attack(self.bout)
@@ -673,12 +698,17 @@ class Final_battle:
             if self.restart_flag == 1:
                 self.reset()
                 self.restart_flag=0
-            add_event(6)
+            if g_evene_queue[-1]==6:
+                add_event(6)
         else:
             self.sans_talk()
         self.is_win()#判断是否胜利
         if g_evene_queue[-1]==6:
               return 6
+        elif g_evene_queue[-1]==7:
+              return 7
+        elif g_evene_queue[-1]==8:
+              return 8
         else:
               pass
 #----------------------到此为止--------------

@@ -245,7 +245,6 @@ class Level1:
 		#失败界面
 		self.restart_flag=0
 	def run(self,dt):
-		print(len(self.all_moster_sprites))
 		self.display_surface.fill(WATER_COLOR)
 		self.all_sprites.custom_draw(self.player)
 		self.ui.display(self.player)

@@ -1,4 +1,4 @@
-import pygame
+import pygame,sys
 from Setting import *
 from support import *
 from Timer import Timer
@@ -358,19 +358,26 @@ class Player_battle(pygame.sprite.Sprite):
 
 			#攻击输入
 			if keys[pygame.K_SPACE]:
-				self.attacking = True
-				self.attack_time = pygame.time.get_ticks()
-				self.create_attack()
-				self.weapon_attack_sound.play()
+				
+				if self.create_attack !=None:
+					self.attacking = True
+					self.attack_time = pygame.time.get_ticks()
+					self.create_attack()
+					self.weapon_attack_sound.play()
+				else:
+					pass
 
 			# 魔法 input 
 			if keys[pygame.K_LCTRL]:
-				self.attacking = True
-				self.attack_time = pygame.time.get_ticks()
-				style = list(magic_data.keys())[self.magic_index]
-				strength = list(magic_data.values())[self.magic_index]['strength'] + self.stats['magic']
-				cost = list(magic_data.values())[self.magic_index]['cost']
-				self.create_magic(style,strength,cost)
+				if self.create_magic != None:
+					self.attacking = True
+					self.attack_time = pygame.time.get_ticks()
+					style = list(magic_data.keys())[self.magic_index]
+					strength = list(magic_data.values())[self.magic_index]['strength'] + self.stats['magic']
+					cost = list(magic_data.values())[self.magic_index]['cost']
+					self.create_magic(style,strength,cost)
+				else:
+					pass
 
 			if keys[pygame.K_q] and self.can_switch_weapon:
 				self.switch_weapon.play()
@@ -681,4 +688,122 @@ class Player_heart(Player):
 		self.move(dt)
 		self.animate(dt)
 		self.is_defeat()
+class Chara(Player):
+	def __init__(self, pos, group, collision_sprites, interaction):
+		super().__init__(
+			pos = pos, 
+			group = group, 
+			collision_sprites =collision_sprites, 
+			tree_sprites=None, 
+			interaction = interaction, 
+			soil_layer=None, 
+			toggle_shop=None)
+		self.frame_index = 0
+		self.hitbox = self.rect.inflate(0,-26)
+		self.image=pygame.image.load('../assets/graphics/Chara/down/spr_charad_0.png')
+		self.rect=self.image.get_rect(center = pos)
+		self.import_player_assets()
+		self.status = 'down'#初始状态
+	def import_player_assets(self):
+		character_path = '../assets/graphics/Chara/'
+		self.animations = {'up': [],'down': [],'left': [],'right': [],
+			'right_idle':[],'left_idle':[],'up_idle':[],'down_idle':[]}
+
+		for animation in self.animations.keys():
+			full_path = character_path + animation
+			self.animations[animation] = import_folder(full_path)
+	def get_status(self):
+
+		# 发呆的状态
+		if self.direction.x == 0 and self.direction.y == 0:
+			if not 'idle' in self.status and not 'attack' in self.status:
+				self.status = self.status + '_idle'
+	def animate(self,dt):
+		animation = self.animations[self.status]
+
+		self.frame_index += 4*dt
+		if self.frame_index >= len(animation):
+			self.frame_index = 0
+
+		#设置图片
+		self.image = animation[int(self.frame_index)]
+		self.rect = self.image.get_rect(center = self.hitbox.center)
+	def input(self):
+		keys = pygame.key.get_pressed()
+		#方向
+		if keys[pygame.K_w]:
+			self.direction.y = -1#这些都表示某个方向向量
+			self.status = 'up'
+		elif keys[pygame.K_s]:
+			self.direction.y = 1
+			self.status = 'down'
+		else:
+			self.direction.y = 0
+
+		if keys[pygame.K_d]:
+			self.direction.x = 1
+			self.status = 'right'
+		elif keys[pygame.K_a]:
+			self.direction.x = -1
+			self.status = 'left'
+		else:
+			self.direction.x = 0
+		if keys[pygame.K_f]:
+				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction_sprites,False)
+				if collided_interaction_sprite:
+					if collided_interaction_sprite[0].name =='portal':
+						self.portal.play()
+						pygame.quit()
+						sys.exit()
+	def update(self,dt):
+		self.input()
+		self.get_status()
+		self.move(dt)
+		self.animate(dt)
+class Toriel(Chara):
+	def __init__(self, pos, group, collision_sprites, interaction):
+		super().__init__(pos, group, collision_sprites, interaction)
+		self.image=pygame.image.load('../assets/graphics/Toriel/down/spr_toriel_handhold_d_0.png')
+		self.speed = 200
+	def import_player_assets(self):
+		character_path = '../assets/graphics/Toriel/'
+		self.animations = {'up': [],'down': [],'left': [],'right': [],
+			'right_idle':[],'left_idle':[],'up_idle':[],'down_idle':[]}
+
+		for animation in self.animations.keys():
+			full_path = character_path + animation
+			self.animations[animation] = import_folder(full_path)
+	def input(self):
+		keys = pygame.key.get_pressed()
+		#方向
+		if keys[pygame.K_w]:
+			self.direction.y = -1#这些都表示某个方向向量
+			self.status = 'up'
+		elif keys[pygame.K_s]:
+			self.direction.y = 1
+			self.status = 'down'
+		else:
+			self.direction.y = 0
+
+		if keys[pygame.K_d]:
+			self.direction.x = 1
+			self.status = 'right'
+		elif keys[pygame.K_a]:
+			self.direction.x = -1
+			self.status = 'left'
+		else:
+			self.direction.x = 0
+		if keys[pygame.K_f]:
+				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction_sprites,False)
+				if collided_interaction_sprite:
+					if collided_interaction_sprite[0].name =='portal':
+						self.portal.play()
+						pygame.quit()
+						sys.exit()
+	def update(self,dt):
+		self.input()
+		self.get_status()
+		self.move(dt)
+		self.animate(dt)
+	
 #----------------到此为止-------------	

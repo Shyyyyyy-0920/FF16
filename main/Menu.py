@@ -359,10 +359,10 @@ class start_menu:
 			if event.type==pygame.MOUSEBUTTONDOWN:
 				if self.start_key==True:#判断是否按到了开始游戏
 					self.window.fill((255,255,255))
-					return 3
+					return 1
 				elif self.set_key==1:#判断是否按到了故事
 					self.window.fill((255,255,255))
-					return 7
+					return 8
 				elif self.quiet_key==1:#判断是否按到了退出游戏
 					return 9
 		if g_evene_queue[-1]==0:
