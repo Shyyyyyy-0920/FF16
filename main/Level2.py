@@ -158,6 +158,11 @@ class Level2:
 
 		#天空更新
 		self.sky.start_color = [255,255,255]
+	def cannot_move(self):
+		if self.player.pos.x>=2543:
+			self.player.pos.x=2543
+		elif self.player.pos.y<=387:
+			self.player.pos.y=387
 	def toggle_shop(self):
 		self.shop_active = not self.shop_active#用于转换，每一次会变成相反数
 		# print(self.shop_active)
@@ -214,7 +219,6 @@ class Level2:
 			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
 
 	def run(self,dt):
-		print(self.player_will.get_player_will())
 		self.update_will()
 		#绘画逻辑
 		self.display_surface.fill('white')
@@ -231,6 +235,7 @@ class Level2:
 				self.menu.update()
 		else:
 			self.all_sprites.update(dt)
+			self.cannot_move()
 			self.plant_collision()
 			self.overlay.display()
 		self.check_trader_health()

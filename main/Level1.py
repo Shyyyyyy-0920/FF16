@@ -154,7 +154,7 @@ class Level1:
 	def trigger_death_particles(self,pos,particle_type):
 		self.animation_player.create_particles(particle_type,pos,self.all_sprites)
 	def add_exp(self,amount):
-		self.player.exp += amount
+		self.player.exp += amount*1000
 	def toggle_menu(self):
 		self.game_paused = not self.game_paused 
 	def toggle_talk(self):
@@ -217,7 +217,7 @@ class Level1:
 			sprite.kill()
 	def is_win(self):
 		number_of_monster = len(self.all_moster_sprites)
-		if number_of_monster == 0:
+		if number_of_monster == 34:
 			self.portal=house((2153,956),self.portal_image,[self.all_sprites, self.collision_sprites])
 			Interaction((2153,956),(280,146),self.interaction_sprites,'portal')
 	def start_talk(self):

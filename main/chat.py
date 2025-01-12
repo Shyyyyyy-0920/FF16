@@ -114,7 +114,6 @@ class ChatBot:
         sound_start = False
 
         name , name_a = choose(self.person , self.end)#与对应库的类建立联系
-
         self.messages = [
             {"role": "system", "content": name.quest},#设置对应的角色设定
             {"role": "user", "content": "Hello!"}

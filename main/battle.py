@@ -694,6 +694,7 @@ class Final_battle:
         self.anger_point=None
         self.fight_bool=False
         self.total_anger=0
+        self.start_time=pygame.time.get_ticks()
     def run(self,dt):
         self.update_will()
         self.bgm_play()
