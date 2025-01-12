@@ -228,7 +228,23 @@ class Level1:
 		self.all_moster_sprites.empty()
 		self.interaction_sprites.empty()
 		self.collision_sprites.empty()
+		self.attack_sprites.empty9
+		# 获取屏幕表面
+		self.display_surface = pygame.display.get_surface()
+		self.game_paused = False
+        #攻击组分
+		self.current_attack = None
+        #初始化
 		self.set_up()
+		self.init_num=len(self.all_moster_sprites)
+        #人物ui界面
+		self.player_will=player_will()
+		self.ui = UI()
+		self.upgrade = Upgrade(self.player,self.toggle_menu)#升级的场景
+		
+        #粒子效果
+		self.animation_player = AnimationPlayer()
+		self.magic_player = MagicPlayer(self.animation_player)
 		#对话方面
 		self.talk_flag=False
 		self.Flowey=ChatBot("flowey")
@@ -293,3 +309,4 @@ class YSortCameraGroup(CameraGroup):
 		enemy_sprites = [sprite for sprite in self.sprites() if hasattr(sprite,'sprite_type') and sprite.sprite_type == 'enemy']
 		for enemy in enemy_sprites:
 			enemy.enemy_update(player)
+#---------到此为止------------
