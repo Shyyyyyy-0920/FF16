@@ -228,7 +228,7 @@ class Level1:
 		self.all_moster_sprites.empty()
 		self.interaction_sprites.empty()
 		self.collision_sprites.empty()
-		self.attack_sprites.empty9
+		self.attack_sprites.empty()
 		# 获取屏幕表面
 		self.display_surface = pygame.display.get_surface()
 		self.game_paused = False
