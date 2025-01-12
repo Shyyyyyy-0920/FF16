@@ -255,3 +255,4 @@ trader_chat.chat("trader")
 # 创建并运行PlayerChat实例
 # player_chat = ChatBox()
 # player_chat.chat("player")
+#---------到此为止------------
