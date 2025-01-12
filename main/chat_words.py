@@ -43,7 +43,9 @@ class trader1:  #第一关的trader
             "Before your questioning , please say[I want to ask you some questions,are you ready?]"\
             "You need to ask one question at a time in order."\
             "The questuons and their answers will sonnly give you one by one." \
-            "After you finished asking , Dom`t said anything!:"\
+            "You can also let the user play some words game with you."\
+            "like this:"\
+            ""
        
     
     image = r"..\assets\demon1\attack\attack1.png"
@@ -185,6 +187,7 @@ class Sans3:  #战斗末尾的Sans_好结局
             "So you need to help him to save himself and the rest of the lives."
                 
     image = r"..\assets\chat\sans_a.png"
+
     sound = Sans0.sound
 
 class Sans4:  #战斗末尾的Sans_击败_坏结局
@@ -201,5 +204,4 @@ class Sans4:  #战斗末尾的Sans_击败_坏结局
     image = r"..\assets\chat\sans_failed.png"
 
     sound = Sans0.sound
-#---------到此为止------------
 
