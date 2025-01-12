@@ -1,0 +1,4 @@
+需要安装的第三方库：
+pygame
+openai
+pytmx
