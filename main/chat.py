@@ -256,7 +256,7 @@ class ChatBot:
                 int2 = self.font.render('Type 2 :',True,(72,61,139))
                 Hint1 = self.font.render(self.hint1,True,(255,255,255))
                 Hint2 = self.font.render(self.hint2,True,(255,255,255))
-                hint_general1 = self.font.render("Type'skip'or'beak' to have a quick chat",True,(255,255,255))
+                hint_general1 = self.font.render("Type'skip'or'break' to have a quick chat",True,(255,255,255))
                 hint_general2 = self.font.render("Press the key 'Esc' to quit this chat",True,(255,255,255))
                 screen.blit(int1,(20,345)) 
                 screen.blit(int2,(20,405))
