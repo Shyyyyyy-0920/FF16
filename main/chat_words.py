@@ -5,8 +5,7 @@ pygame.mixer.init()
 class general:  #对AI提供的基本要求
     words = "The requirements for the speech are as follows. You must strictly abide by them."\
             "1.You should tell the user that "\
-            "Press 'Esc' to end the conversation."\
-            "and your words should be in English,except the user want you to speak in Chinese."\
+            "and your words should be in English"\
             "2.Make your words be polite and proper to your identity."\
             "And you should make your words be short , if the sentences are too long,"\
             "try to divide them into more lines"\
@@ -45,7 +44,17 @@ class trader1:  #第一关的trader
             "The questuons and their answers will sonnly give you one by one." \
             "You can also let the user play some words game with you."\
             "like this:"\
-            ""
+            "User have an integer in his mind. You can ask me an integer each time, \
+            and user will tell you whether the answer will be larger or smaller than the number asked. \
+            You need to use the minimum number of questions to answer what the answer is. \
+            For example, when the answer in my mind is 200,\
+            you can ask 100 and user will tell you that the answer is greater than 100.\
+            you can only say one integer each time, the I`ll give some hint."\
+            "Or the second game is like this:"\
+            "You know a character in UnderTale game.you can give the user 3 hint about the character`s characteristics.\
+            You would let the user to guess who he is.\
+            if the user wants more hints,you cangive him at most 10 hints.\
+            if he still don`t know about ,you should give out the answer."
        
     
     image = r"..\assets\demon1\attack\attack1.png"
@@ -72,6 +81,8 @@ class trader3:  #第三关的trader
             "1 tomato per 5 dollars for user to buy, 20 dollars for user to sell. "\
             "1 apple per 2 dollars for user to sell. "\
             "1 wood per 4 dollars for user to sell. "\
+            "1 HUAWEI Mate XT per 4599 dollars for user to buy."\
+            "(Dont`t ask me why the under world can have HUAWEI Mate XT)"\
             "You should tell the user how to buy or sell goods."\
             "if the user want to buy or sell goods, use the format as follows: "\
             "'buy 'good's name' 'good's quantity' for buying goods, "\
