@@ -83,7 +83,7 @@ class ChatBot:
             name2 = judgement.boss_b  #sans对话2
 
         elif person == "sans2":
-            name1 = Sans0
+            name1 = Sans2
             name2 = judgement.boss_c   #sans对话3
         
         elif person == "sans3":   #结局对话
@@ -95,6 +95,10 @@ class ChatBot:
             else:
                 name1 = Sans4
                 name2 = judgement.boss_e
+        
+        elif person == "sans4":   #结局对话————坏结局
+            name1 = Sans4
+            name2 = judgement.boss_e
 
         else:
             name1 = None
