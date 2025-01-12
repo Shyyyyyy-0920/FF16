@@ -184,7 +184,11 @@ class Level2:
 			self.portal=house((2065,1741),self.portal_image,[self.all_sprites, self.collision_sprites])
 			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
 			self.player_will.modify_player_will(20)
-
+	def cannot_move(self):
+		if self.player.pos.x>=2543:
+			self.player.pos.x=2543
+		elif self.player.pos.y<=387:
+			self.player.pos.y=387
 		
 	def plant_collision(self):
 		if self.soil_layer.plant_sprites:
@@ -231,6 +235,7 @@ class Level2:
 				self.menu.update()
 		else:
 			self.all_sprites.update(dt)
+			self.cannot_move()
 			self.plant_collision()
 			self.overlay.display()
 		self.check_trader_health()

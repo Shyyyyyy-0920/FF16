@@ -95,6 +95,10 @@ class ChatBot:
             else:
                 name1 = Sans4
                 name2 = judgement.boss_e
+        
+        elif person == "sans4":   #结局对话————坏结局
+            name1 = Sans4
+            name2 = judgement.boss_e
 
         else:
             name1 = None
@@ -114,6 +118,7 @@ class ChatBot:
         sound_start = False
 
         name , name_a = choose(self.person , self.end)#与对应库的类建立联系
+
         self.messages = [
             {"role": "system", "content": name.quest},#设置对应的角色设定
             {"role": "user", "content": "Hello!"}
