@@ -4,7 +4,9 @@ import pygame
 pygame.mixer.init()
 class general:  #对AI提供的基本要求
     words = "The requirements for the speech are as follows. You must strictly abide by them."\
-            "1.Your words should be in English."\
+            "1.You should tell the user that "\
+            "Press 'Esc' to end the conversation."\
+            "and your words should be in English,except the user want you to speak in Chinese."\
             "2.Make your words be polite and proper to your identity."\
             "And you should make your words be short , if the sentences are too long,"\
             "try to divide them into more lines"\
@@ -41,14 +43,9 @@ class trader1:  #第一关的trader
             "Before your questioning , please say[I want to ask you some questions,are you ready?]"\
             "You need to ask one question at a time in order."\
             "The questuons and their answers will sonnly give you one by one." \
-            "After you finished asking , Dom`t said anything!:"\
-            "You can also ask the user if he would like to play words game with you like this."\
-            "you have an integer in his mind(smaller than 100). user can ask you an integer each time, \
-            and user will tell you whether the answer will be larger or smaller than the number asked. \
-            You need to use the minimum number of questions to answer what the answer is. \
-            For example, when the answer in your mind is 50,\
-            user can ask 25 and you will tell him that the answer is greater than 100.\
-            user can only say one integer each time, the you`ll give some hint."
+            "You can also let the user play some words game with you."\
+            "like this:"\
+            ""
        
     
     image = r"..\assets\demon1\attack\attack1.png"
@@ -190,6 +187,8 @@ class Sans3:  #战斗末尾的Sans_好结局
             "So you need to help him to save himself and the rest of the lives."
                 
     image = r"..\assets\chat\sans_a.png"
+
+    sound = Sans0.sound
 
 class Sans4:  #战斗末尾的Sans_击败_坏结局
     quest = general.words + general.background_setting + \
