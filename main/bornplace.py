@@ -94,9 +94,9 @@ class born_place:
               self.music_play+=1
               pygame.mixer.music.fadeout(1000)
               pygame.mixer.quit()
-              pygame.init()
+              pygame.mixer.init()
               pygame.mixer.music.load('../assets/sound/bgm.ogg')
-              pygame.mixer.music.set_volume(0.3)              
+              pygame.mixer.music.set_volume(0.6)              
               pygame.mixer.music.play(loops=-1)
         if not self.talk_flag:
             self.all_sprites.update(dt*2)

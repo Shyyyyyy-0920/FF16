@@ -4,7 +4,7 @@ class player_will:#制造单例类
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(player_will, cls).__new__(cls)
-            cls._instance.player_will = 10
+            cls._instance.player_will = 0
         return cls._instance
 
     def get_player_will(self):
@@ -15,4 +15,4 @@ class player_will:#制造单例类
 
     def modify_player_will(self, delta):
         self.player_will += delta
-
+#---------到此为止------------

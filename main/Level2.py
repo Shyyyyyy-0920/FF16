@@ -214,6 +214,7 @@ class Level2:
 			Interaction((2075,1850),(280,146),self.interaction_sprites,'portal')
 
 	def run(self,dt):
+		print(self.player_will.get_player_will())
 		self.update_will()
 		#绘画逻辑
 		self.display_surface.fill('white')

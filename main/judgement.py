@@ -739,7 +739,7 @@ class boss_e:#结局B——————Chara战胜Frisk
                 return out , 0, 0, self.end
         else:
             return "" ,0 , 0, self.end
-
+#---------到此为止------------
 
 
 

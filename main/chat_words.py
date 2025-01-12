@@ -185,6 +185,7 @@ class Sans3:  #战斗末尾的Sans_好结局
             "So you need to help him to save himself and the rest of the lives."
                 
     image = r"..\assets\chat\sans_a.png"
+    sound = Sans0.sound
 
 class Sans4:  #战斗末尾的Sans_击败_坏结局
     quest = general.words + general.background_setting + \
@@ -200,4 +201,5 @@ class Sans4:  #战斗末尾的Sans_击败_坏结局
     image = r"..\assets\chat\sans_failed.png"
 
     sound = Sans0.sound
+#---------到此为止------------
 

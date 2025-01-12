@@ -261,7 +261,8 @@ class Final_battle:
         self.sans0=ChatBot("sans0")
         self.sans1=ChatBot("sans1")
         self.sans2=ChatBot("sans2")
-        self.sans3=ChatBot("sans3")
+        self.sans3=ChatBot("sans3")#好结局
+        self.sans4=ChatBot("sans4")#坏结局
         ##用于接受对话返回到信息
         self.will_change=None
         self.will_change_keep=0
@@ -269,6 +270,7 @@ class Final_battle:
         self.fight_bool=False
         self.total_anger=0
 
+        self.temp_anger=0
     def set_up(self):
         self.start_time=0
         self.player = Player_heart(
@@ -580,14 +582,14 @@ class Final_battle:
                 self.boss_head=sans((435,10),boss_frames_head,self.all_sprites)
 #---------------------------------------
                 self.injury_sound.play()
+                self.toggle_talk()
+                if self.temp_anger <=-9:
+                    self.bout=3
+                else :
+                    self.bout=4
                 for sprite in self.attack_sprites:
                     sprite.kill()
-                if self.state_boll:
-                    add_event(7)
-                    return 7
-                elif not self.state_boll:
-                    add_event(8)
-                    return 8
+
                
     def sans_talk(self):
         if self.bout==0:#第一次对话
@@ -600,15 +602,24 @@ class Final_battle:
             self.player_will.modify_player_will(self.will_change)
             self.state_boll=self.fight_bool
             self.bout=2
-        elif self.bout == 2:#第三次对话
+        elif self.bout == 2:#第三次对话,确定结局分支
             self.will_change, self.anger_point, self.fight_bool=self.sans2.start(True,self.toggle_talk,get_pause_time=self.get_pause_time)
             self.player_will.modify_player_will(self.will_change)
             self.state_boll=self.fight_bool
             self.bout=randint(0,2)
-        elif self.bout == 3:#第四次对话
+        elif self.bout == 3:#第四次对话,好结局
             self.will_change, self.anger_point, self.fight_bool=self.sans3.start(True,self.toggle_talk,get_pause_time=self.get_pause_time)
             self.player_will.modify_player_will(self.will_change)
             self.state_boll=self.fight_bool
+            add_event(7)#进入好结局
+            return 7
+        elif self.bout == 4:#第四次对话，坏结局
+            self.will_change, self.anger_point, self.fight_bool=self.sans4.start(True,self.toggle_talk,get_pause_time=self.get_pause_time)
+            self.player_will.modify_player_will(self.will_change)
+            self.state_boll=self.fight_bool
+            add_event(8)
+            return 8
+        self.temp_anger+=self.anger_point
     def toggle_talk(self):
         self.game_paused = not self.game_paused 
     def get_pause_time(self,start_time,end_time):
@@ -684,6 +695,7 @@ class Final_battle:
         self.fight_bool=False
         self.total_anger=0
     def run(self,dt):
+        print(self.temp_anger)
         self.update_will()
         self.bgm_play()
         self.display_surface.fill('black')

@@ -101,11 +101,12 @@ class ChatBot:
             name2 = None
         return name1,name2
 
-    def start(self,done,togggle_talk,choose = choose):
+    def start(self,done,togggle_talk,get_pause_time = None,choose = choose):
         """
         根据聊天类型设置初始消息
         :return: 初始消息列表
         """
+        start_time=pygame.time.get_ticks()
         screen = self.screen
         active = False  # 输入框是否激活
         text = ''  # 输入框中的文本
@@ -131,7 +132,8 @@ class ChatBot:
         # image_main = pygame.transform.scale(image_main, (64, 64))
 
         voice = name.sound
-
+        self.talk_sound=pygame.mixer.Sound(voice)
+        self.talk_sound.set_volume(0.3)
         judgement_user = name_a.judge_user  #玩家对应输入内容的判定
         judgement_assistant = name_a.judge_assistant  #聊天对象对应的内容判定
 
@@ -139,13 +141,18 @@ class ChatBot:
         while done:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
+                    self.talk_sound.stop()
                     pygame.quit()
                     sys.exit()  # 如果事件类型是 QUIT，则结束循环
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
+                        self.talk_sound.stop()
                         chat_open = not chat_open  # 按下 'esc' 键退出聊天界面
                         done = False
                         togggle_talk()
+                        end_time=pygame.time.get_ticks()
+                        if get_pause_time != None:
+                            get_pause_time(start_time,end_time)
                         return self.will_delta , self.anger , self.fight   #返回最终的will_delta
 
 #————————————————————————————————————————————正式开始聊天界面，输入框颜色变化“对焦与失焦”—————————————————————————————————— 
@@ -206,12 +213,12 @@ class ChatBot:
                                 sound_start = False
                                 text += event.unicode  # 添加字符到输入
 
-                    if sound_start:
-                        pygame.mixer.music.load(voice)
-                        pygame.mixer.music.set_volume(0.3)              
-                        pygame.mixer.music.play(loops=-1)
+                    if sound_start:  
+                        if self.talk_sound.get_num_channels()>0:
+                            self.talk_sound.stop()            
+                        self.talk_sound.play()
                     else:
-                        pygame.mixer.music.stop()
+                        self.talk_sound.stop()
 
 # ——————————————————————————————————————————————————————输出框部分—————————————————————————
                     if event.type == pygame.MOUSEBUTTONDOWN:
@@ -314,6 +321,6 @@ class ChatBot:
             # 如果已经超过了可见区域的最后一行，停止绘制
             if i >= visible_lines + self.scroll_position // line_height:
                 break
-
+#---------到此为止------------
 
 

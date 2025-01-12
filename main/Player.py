@@ -424,7 +424,8 @@ class Player_battle(pygame.sprite.Sprite):
 						self.status = 'left_idle'
 						self.sleep = True
 			if keys[pygame.K_m]:
-				self.togggle_menu()
+				if self.togggle_menu != None:
+					self.togggle_menu()
 
 	def get_status(self):
 
@@ -704,6 +705,7 @@ class Chara(Player):
 		self.rect=self.image.get_rect(center = pos)
 		self.import_player_assets()
 		self.status = 'down'#初始状态
+		self.speed = 150
 	def import_player_assets(self):
 		character_path = '../assets/graphics/Chara/'
 		self.animations = {'up': [],'down': [],'left': [],'right': [],
@@ -749,12 +751,11 @@ class Chara(Player):
 		else:
 			self.direction.x = 0
 		if keys[pygame.K_f]:
-				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction_sprites,False)
+				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction,False)
 				if collided_interaction_sprite:
 					if collided_interaction_sprite[0].name =='portal':
 						self.portal.play()
-						pygame.quit()
-						sys.exit()
+						return True
 	def update(self,dt):
 		self.input()
 		self.get_status()
@@ -764,7 +765,7 @@ class Toriel(Chara):
 	def __init__(self, pos, group, collision_sprites, interaction):
 		super().__init__(pos, group, collision_sprites, interaction)
 		self.image=pygame.image.load('../assets/graphics/Toriel/down/spr_toriel_handhold_d_0.png')
-		self.speed = 200
+		self.speed = 100
 	def import_player_assets(self):
 		character_path = '../assets/graphics/Toriel/'
 		self.animations = {'up': [],'down': [],'left': [],'right': [],
@@ -794,16 +795,14 @@ class Toriel(Chara):
 		else:
 			self.direction.x = 0
 		if keys[pygame.K_f]:
-				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction_sprites,False)
+				collided_interaction_sprite = pygame.sprite.spritecollide(self,self.interaction,False)
 				if collided_interaction_sprite:
 					if collided_interaction_sprite[0].name =='portal':
 						self.portal.play()
-						pygame.quit()
-						sys.exit()
+						return True
 	def update(self,dt):
 		self.input()
 		self.get_status()
 		self.move(dt)
 		self.animate(dt)
-	
 #----------------到此为止-------------	
