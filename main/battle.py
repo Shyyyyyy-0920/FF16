@@ -695,7 +695,6 @@ class Final_battle:
         self.fight_bool=False
         self.total_anger=0
     def run(self,dt):
-        print(self.temp_anger)
         self.update_will()
         self.bgm_play()
         self.display_surface.fill('black')

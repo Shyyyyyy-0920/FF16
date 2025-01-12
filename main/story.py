@@ -8,7 +8,7 @@ class story:
         self.images = [pygame.image.load(file).convert() for file in self.image_files]
         self.display_surface = pygame.display.get_surface()
         # 图片切换的时间间隔（秒）
-        self.interval = 200  # 1000 毫秒 = 1 秒
+        self.interval = 1500  # 1000 毫秒 = 1 秒
         # 当前显示的图片索引
         self.frame_index = 0
         self.use_time=0
@@ -32,7 +32,10 @@ class story:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                     add_event(0)
+                elif event.key == pygame.K_ESCAPE:
+                    add_event(0)
         if g_evene_queue[-1]==5:
             return 5
         elif g_evene_queue[-1]==0:
             return 0
+#---------到此为止------------
