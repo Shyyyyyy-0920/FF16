@@ -47,7 +47,7 @@ class Menu:
 		self.menu_loot=pygame.mixer.Sound('../assets/audio/Menu11.wav')
 		self.menu_loot.set_volume(0.8)
 	def display_money(self):#用于展示现在玩家的金额，总的来说是读取金额数再显示出
-		text_surf = self.font.render(f'${self.player.money}', False, 'Black')#这里是将字打出来
+		text_surf = self.font.render(f'Kindness{self.player_will.get_player_will()}', False, 'Black')#这里是将字打出来
 		text_rect = text_surf.get_rect(midbottom = (SCREEN_WIDTH / 2,SCREEN_HEIGHT - 20))#获取字的矩形框大小
 
 		pygame.draw.rect(self.display_surface,'White',text_rect.inflate(10,10),0,4)#在字的周围画上矩形框
@@ -359,7 +359,7 @@ class start_menu:
 			if event.type==pygame.MOUSEBUTTONDOWN:
 				if self.start_key==True:#判断是否按到了开始游戏
 					self.window.fill((255,255,255))
-					return 1
+					return 3
 				elif self.set_key==1:#判断是否按到了故事
 					self.window.fill((255,255,255))
 					return 5
