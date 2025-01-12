@@ -573,7 +573,7 @@ class boss_c:  #sans  后期阶段
 ###################################################有关boss战结局的内容
 
 class boss_d: #结局A——————Frisk战胜Chara
-    q_a1 = [["Ao!It hurts! Now I notarize you DETERMINATION have it`s power!" , "I believe I can destory Chara by myself!" , "Get out of my mind! Chara!"],\
+    q_a = [["Ao!It hurts! Now I notarize you DETERMINATION have it`s power!" , "I believe I can destory Chara by myself!" , "Get out of my mind! Chara!"],\
         ["Hold on your will!Or he`ll absorbe your soul. " , "I want to be alive!With all my friends!" , "Please , Sans!Help me!Let Chara liberate in peace!"],\
         ["I got it , The  Chara`s soul! \n \
          Papyrus ,Undyne ,I avenge you!", "(redempt)-999999999999999999" ,"......"] , \
@@ -608,7 +608,7 @@ class boss_d: #结局A——————Frisk战胜Chara
                 return "" , ""
         else:
             return " " , " "
-    def choose(self, user_input ,quick_end):#判定玩家选择了哪一个选项
+    def choose(self, user_input ):#判定玩家选择了哪一个选项
         self.c1 = "1" in user_input.lower()
         self.c2 = "2" in user_input.lower()
         if self.c1 :

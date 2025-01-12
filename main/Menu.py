@@ -99,7 +99,7 @@ class Menu:
 					if self.player.item_inventory[current_item] > 0:
 						self.player.item_inventory[current_item] -= 1
 						self.trader_item_inventory[current_item] +=1
-						self.player_will.modify_player_will(3)
+						self.player_will.modify_player_will(5)
 				#聊天
 				else:
 					self.toggle_talk()
@@ -113,7 +113,7 @@ class Menu:
 					if self.player.item_inventory[current_item] > 0 and self.trader_item_inventory[current_item]>0:
 						self.player.item_inventory[current_item] += 1
 						self.trader_item_inventory[current_item] -=1
-						self.player_will.modify_player_will(-3)
+						self.player_will.modify_player_will(-5)
 				else:#聊天
 					self.toggle_talk()
 		# 可以上下滚动保证不出界
